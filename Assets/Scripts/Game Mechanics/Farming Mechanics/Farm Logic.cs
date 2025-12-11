@@ -1,0 +1,114 @@
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class FarmLogic : MonoBehaviour
+{
+    public static FarmLogic instance;
+    public List<PD> PlantDetails;
+    public List<int> SlotPrices = new();
+    public List<int> BuyXP = new();
+    int p;
+    int xp;
+    [Header("UI Elements")]
+    public GameObject SlotPrefab;
+    public GameObject BuySlotPrefab;
+    public List<GameObject> Slots;
+    public Transform SlotsHolder;
+
+    private void Awake()
+    {
+        instance = this;
+        PlayerProfile.instance.Awake();
+        StaticDatas.LoadDatas();
+        int price = 100;
+        int axp = 5;
+        for (int i = 0; i < 32; i++)
+        {
+            SlotPrices.Add(price * (i + 1));
+            BuyXP.Add(axp * (i + 1));
+        }
+        p = SlotPrices[StaticDatas.PlayerData.land_slot_count - 1];
+        xp = BuyXP[StaticDatas.PlayerData.land_slot_count - 1];
+        for (int i = StaticDatas.PlayerData.FarmSlots.Count; i < StaticDatas.PlayerData.land_slot_count; i++)
+        {
+            StaticDatas.PlayerData.FarmSlots.Add(new FarmSlotStats()
+            {
+                state = LandState.Empty,
+                PlantDetails = new PD()
+                {
+                    plant = Plants.None
+                }
+            });
+        }
+        StaticDatas.SaveDatas();
+        for (int i = 0; i < StaticDatas.PlayerData.FarmSlots.Count; i++)
+        {
+            PopulateSlots(i);
+        }
+        StaticDatas.SaveDatas();
+        AddBuySlot();
+    }
+
+    private void PopulateSlots(int i)
+    {
+        GameObject dublicate = Instantiate(SlotPrefab, SlotsHolder);
+        FarmingTS fts = dublicate.GetComponent<FarmingTS>();
+        dublicate.name = StaticDatas.PlayerData.FarmSlots[i].PlantDetails.plant.ToString();
+        fts.SlotNumber = i;
+        fts.ThePlant = StaticDatas.PlayerData.FarmSlots[i].PlantDetails;
+        fts.landstate = StaticDatas.PlayerData.FarmSlots[i].state;
+        fts.LoadUI();
+        Slots.Add(dublicate);
+    }
+
+    private void AddBuySlot()
+    {
+        if (StaticDatas.PlayerData.land_slot_count < 32)
+        {
+            GameObject buySlot = Instantiate(BuySlotPrefab, SlotsHolder);
+
+            Button button = buySlot.GetComponent<Button>();
+            button.onClick.AddListener(() => BuySlot());
+
+            Transform price = buySlot.transform.Find("Price");
+            Transform ptext = price.transform.Find("Price Text");
+            TextMeshProUGUI text = ptext.GetComponent<TextMeshProUGUI>();
+            text.text = p.ToString();
+        }
+    }
+
+    private void BuySlot()
+    {
+        if (MoneySystem.instance.hasEnough(Currency.Coin, p))
+        {
+            StaticDatas.PlayerData.land_slot_count++;
+            StaticDatas.UpdateFarmSlotDatas();
+            MoneySystem.instance.UpdateCoin(-p);
+            MoneySystem.instance.UpdateXp(xp);
+            p = SlotPrices[StaticDatas.PlayerData.land_slot_count - 1];
+            xp = BuyXP[StaticDatas.PlayerData.land_slot_count - 1];
+            Transform child = SlotsHolder.Find("Farm Buy Slot(Clone)");
+            if (child != null)
+            {
+                Destroy(child.gameObject);
+            }
+
+            PopulateSlots(Slots.Count);
+            AddBuySlot();
+        }
+    }
+
+    public void ResetSituation()
+    {
+        for (int i = 0; i < Slots.Count; i++)
+        {
+            FarmingTS fts = Slots[i].GetComponent<FarmingTS>();
+            if (fts.landstate == LandState.Empty)
+            {
+                fts.btn.onClick.RemoveAllListeners();
+            }
+        }
+    }
+}

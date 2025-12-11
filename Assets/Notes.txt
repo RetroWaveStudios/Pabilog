@@ -1,0 +1,60 @@
+Farming:
+	Grids:
+		Create 3x3 grid feature for every cell.
+		Unlocking grid feature will be with crystal
+		Each cell will cost coin
+		Player can plant to those cell on want
+
+	Drying:
+		Each slot will dry after usage
+		Reactivating those slots will cost 1 water
+
+	Plawing:
+		Each slot must be plawed after 10-15 usage
+		Cost of it is a gem or a "Rake"
+
+Forest:
+	Stump:
+		After each full usage of tree there will be Stump left
+		Cost of removing it is a gem or a "Axe"
+
+Animals:
+
+Machinary:
+
+Store:
+	Considering:
+		Store sell limit: limitless ?
+		Store sell price limit: limitless ?
+
+Marketplace:
+	Considering:
+		Marketplace system: Steamlike ?
+		Marketplace system: HayDaylike ?
+
+Storage:
+	Considering:
+		2 different storage:	Plants and Fruits
+								Products and Items
+	Must do:
+		Create storage expanding logic using Items.
+		
+
+Perks:
+	Automation:
+		Applied cell/slot will automate action repeatedly till stopped
+	General Automation:
+		This allows to apply automation to any cell/slot wanted
+
+	Amount increaser:
+		Applied cell/slot's harvest amount will increased based on level of perk
+		Each cell's "Amount Increaser" have it's level system
+
+
+Others:
+	Considering:
+		Create lottery system and that system will give necessary items at created random pool after each action
+		Create Seasons:
+					Dry Season: Every plant slot dries after usage
+					Rain Season: No plant needs watering to growh
+					Snow Season: No able to plant any plant;

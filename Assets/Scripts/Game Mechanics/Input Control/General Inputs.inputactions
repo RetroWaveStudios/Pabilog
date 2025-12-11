@@ -1,0 +1,35 @@
+{
+    "version": 1,
+    "name": "General Inputs",
+    "maps": [
+        {
+            "name": "Menus",
+            "id": "a09a25e0-b736-4f08-9a47-8c2259a43859",
+            "actions": [
+                {
+                    "name": "Pop-Up Info",
+                    "type": "Value",
+                    "id": "554aa53f-7811-432e-9050-ca825aca6e09",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "bce5ee78-b07e-411a-aa75-3ac1b4ce7b97",
+                    "path": "<Touchscreen>/primaryTouch/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pop-Up Info",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

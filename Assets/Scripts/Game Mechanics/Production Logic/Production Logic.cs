@@ -1,0 +1,63 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ProductionLogic : MonoBehaviour
+{
+    public static ProductionLogic instance;
+    public List<MachineProduct> MachineDetails;
+
+    public GameObject machPrefab;
+    public List<GameObject> Machines;
+    public List<Sprite> MachinesSprites;
+
+    private void Awake()
+    {
+        StaticDatas.LoadDatas();
+        instance = this;
+        PopulateMachines();
+    }
+
+    private void PopulateMachines()
+    {
+        for (int i = 0; i < StaticDatas.PlayerData.unlocked_items.u_machines.Count; i++)
+        {
+            string m = StaticDatas.PlayerData.unlocked_items.u_machines[i].MachineName;
+            if (StaticDatas.PlayerData.unlocked_items.u_machines[i].owned)
+            {
+                if (StaticDatas.PlayerData.MachineStats.Find(e => e.MachineName == m) == null)
+                {
+                    MachineStats ms = new MachineStats()
+                    {
+                        MachineName = m,
+                        state = ASpotState.Empty,
+                        qLimit = 1,
+                    };
+                    StaticDatas.PlayerData.MachineStats.Add(ms);
+                    StaticDatas.SaveDatas();
+                }
+                
+
+                GameObject dublicate = Instantiate(machPrefab, transform.Find("Machinary"));
+                Machine machine = dublicate.GetComponent<Machine>();
+
+                var stats = StaticDatas.PlayerData.MachineStats.Find(e => e.MachineName == m);
+                MachineProduct details = MachineDetails.Find(e => e.MachineName == m);
+                if (stats.qLimit == 0) stats.qLimit = 1;
+                StaticDatas.SaveDatas();
+                PrD product = (stats.queue != null && stats.queue.Count > 0)
+                    ? stats.queue[0]
+                    : new PrD() { state = AState.None, product = Products.None };
+
+                machine.Init(product, stats, details);
+
+                Machines.Add(dublicate);
+            }
+            else Debug.Log("machine is locked " + m);
+        }
+    }
+
+    public void ResetSituation()
+    {
+        foreach (Transform item in MachinePH.instance.Holder) Destroy(item.gameObject);
+    }
+}
