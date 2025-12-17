@@ -15,8 +15,8 @@ public class MenuHovering : MonoBehaviour
     {
         for (int i = 0; i < Menus.Count; i++)
         {
-            if (i != index) Menus[i].SetActive(false);
-            else Menus[i].SetActive(true);
+            if (i == index) StaticDatas.AdjustCanvasGroup(Menus[i].GetComponent<CanvasGroup>(), true);
+            else StaticDatas.AdjustCanvasGroup(Menus[i].GetComponent<CanvasGroup>(), false);
         }
     }
 

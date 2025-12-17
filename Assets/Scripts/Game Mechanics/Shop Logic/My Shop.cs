@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class MyShop : MonoBehaviour
 {
     public static MyShop instance;
+    private CanvasGroup canvasGroup;
 
     [Header("Shop Window")]
     public Transform ShopHolder;
@@ -83,8 +84,9 @@ public class MyShop : MonoBehaviour
     };
     private Dictionary<Items, int> ItemPR = new Dictionary<Items, int>()
     {
-        { Items.Rake, 120 },               { Items.Bolt, 100 },               { Items.Screw, 100 },
-        { Items.Axe, 120 },                { Items.Hammer, 100 },
+        { Items.Rake, 120 },                { Items.Bolt, 200 },                { Items.Screw, 200 },
+        { Items.Axe, 120 },                 { Items.Hammer, 200 },              { Items.Tape, 400},
+        { Items.Drill, 400 },               { Items.Pliers, 400 },              { Items.ToolSet, 1000},
     };
     private Dictionary<a_f_types, int> afPR = new Dictionary<a_f_types, int>()
     {
@@ -101,6 +103,7 @@ public class MyShop : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        canvasGroup = GetComponent<CanvasGroup>();
         SellWindow.SetActive(false);
         PopulateShop();
     }
@@ -420,5 +423,6 @@ public class MyShop : MonoBehaviour
     public void ResetSituation()
     {
         SellWindowState(false);
+        if (canvasGroup != null) StaticDatas.AdjustCanvasGroup(canvasGroup, false);
     }
 }

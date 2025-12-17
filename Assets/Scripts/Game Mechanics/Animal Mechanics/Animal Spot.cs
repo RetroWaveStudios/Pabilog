@@ -250,6 +250,7 @@ public class AnimalSpot : MonoBehaviour
             StaticDatas.PlayerData.AnimalSpots[SpotNumber].AnimalProductDetails = TheAnimal;
             FoodPL.instance.UpdateAnimalFood(AnimalsLogic.instance.TheFood, -1);
             StaticDatas.SaveDatas();
+            LuckyBox.instance.TryToFindBox();
         }
     }
 
@@ -340,6 +341,7 @@ public class AnimalSpot : MonoBehaviour
             StaticDatas.PlayerData.AnimalSpots[SpotNumber].AnimalProductDetails = TheAnimal;
             StaticDatas.PlayerData.AnimalSpots[SpotNumber].state = spotState;
             StaticDatas.SaveDatas();
+            LuckyBox.instance.TryToFindBox();
         }
     }
 

@@ -518,6 +518,7 @@ public class Player
     public FoodSystem Food;
     public int WellLevel;
     public WaterSystem Water;
+    public float currentChanceOfLB;
 }
 
 [System.Serializable]
@@ -678,6 +679,28 @@ public class LevelSystem
 }
 
 #endregion
+
+[System.Serializable]
+public class AStorageLevel
+{
+    public int LevelNumber;
+    public int ItemCount;
+
+    public int ToolSet;
+
+    public int Capacity;
+
+    public AStorageLevel Clone()
+    {
+        return new AStorageLevel()
+        {
+            LevelNumber = this.LevelNumber,
+            ItemCount = this.ItemCount,
+            ToolSet = this.ToolSet,
+            Capacity = this.Capacity,
+        };
+    }
+}
 
 [System.Serializable]
 public class StorageSprites
@@ -875,7 +898,7 @@ public class PlayerDatas
     public List<MachineStats> MachineStats;
 
     public StorageItems Storage;
-    public int StorageCapacity;
+    public int StorageLevel;
 
     public int ShopSlotCount;
 
@@ -892,7 +915,7 @@ public class PlayerDatas
             AnimalSpots = this.AnimalSpots,
             MachineStats = this.MachineStats,
             Storage = this.Storage,
-            StorageCapacity = this.StorageCapacity,
+            StorageLevel = this.StorageLevel,
             ShopSlotCount = this.ShopSlotCount
         };
 

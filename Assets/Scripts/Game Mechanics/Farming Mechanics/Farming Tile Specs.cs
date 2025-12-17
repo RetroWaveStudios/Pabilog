@@ -32,7 +32,7 @@ public class FarmingTS : MonoBehaviour
     public Sprite noWater;
     public Sprite WCan;
 
-    private bool is_watering = false, is_plowing = false;
+    public bool is_watering = false, is_plowing = false;
 
     private void Awake()
     {
@@ -45,7 +45,7 @@ public class FarmingTS : MonoBehaviour
     private void Update()
     {
         LoadUI();
-        if (ThePlant.state == PlantState.Growing) { if (ThePlant.hasWater) { CheckWaterTimer(); CheckforGrowth(); } UpdateTimer(); }
+        if (ThePlant.state == PlantState.Growing) { if (ThePlant.hasWater) { CheckWaterTimer(); CheckforGrowth(); UpdateTimer(); } }
         else if (ThePlant.state == PlantState.ReadyToHarvest) rtharvest();
     }
 
@@ -133,8 +133,6 @@ public class FarmingTS : MonoBehaviour
     {
         anim.SetTrigger("Water Land");
         is_watering = true;
-        if (StaticDatas.PlayerData.PlayerInfos.Water.amount > 2) WaterSL.instance.TriggerAmount(-2);
-        else MoneySystem.instance.UpdateCyrstal(-1);
     }
 
     public void ChoosePlant(Plants plant)
@@ -264,6 +262,7 @@ public class FarmingTS : MonoBehaviour
             Debug.Log("Saving details");
             StaticDatas.PlayerData.FarmSlots[SlotNumber].PlantDetails = ThePlant;
             StaticDatas.SaveDatas();
+            LuckyBox.instance.TryToFindBox();
         }
     }
 
@@ -287,7 +286,7 @@ public class FarmingTS : MonoBehaviour
             FarmingTS fts = FarmLogic.instance.Slots[i].GetComponent<FarmingTS>();
             if (i != SlotNumber)
             {
-                fts.anim.SetBool("ShowTimer", false);
+                fts.anim.SetBool("Show Timer", false);
                 fts.showtimer = false;
             }
             else showtimer = !showtimer;
@@ -296,13 +295,13 @@ public class FarmingTS : MonoBehaviour
         if (showtimer)
         {
             Debug.Log("expanting showtimer items");
-            anim.SetBool("ShowTimer", true);
+            anim.SetBool("Show Timer", true);
 
         }
         else if (!showtimer)
         {
             Debug.Log("shrinking showtimer items");
-            anim.SetBool("ShowTimer", false);
+            anim.SetBool("Show Timer", false);
         }
     }
 
@@ -339,132 +338,44 @@ public class FarmingTS : MonoBehaviour
             StaticDatas.PlayerData.FarmSlots[SlotNumber].state = landstate;
             PlantsHolder.instance.PopulatePlantsHolder();
             StaticDatas.SaveDatas();
+            LuckyBox.instance.TryToFindBox();
         }
     }
 
     private void CheckUsage()
     {
         if (StaticDatas.PlayerData.FarmSlots[SlotNumber].usage == 10)
-        {
             landstate = LandState.Plow;
-        }
         else if (StaticDatas.PlayerData.FarmSlots[SlotNumber].usage == 5)
-        {
             landstate = LandState.Dry;
-        }
     }
 
     #region Animation Events
-    public void A_Plow()
-    {
-        landstate = LandState.Dry;
-        StaticDatas.PlayerData.FarmSlots[SlotNumber].state = landstate;
-        StaticDatas.PlayerData.FarmSlots[SlotNumber].usage = 0;
-        btn.onClick.RemoveAllListeners();
-        if(Storage.instance.hasEnought(Items.Rake, 1, false))
-            Storage.instance.UpdateItemCount(Items.Rake, -1);
-        is_plowing = false;
-        StaticDatas.SaveDatas();
-    }
+        public void A_Plow()
+        {
+            landstate = LandState.Dry;
+            StaticDatas.PlayerData.FarmSlots[SlotNumber].state = landstate;
+            StaticDatas.PlayerData.FarmSlots[SlotNumber].usage = 0;
+            btn.onClick.RemoveAllListeners();
+            if(Storage.instance.hasEnought(Items.Rake, 1, false))
+                Storage.instance.UpdateItemCount(Items.Rake, -1);
+            is_plowing = false;
+            StaticDatas.SaveDatas();
+            LuckyBox.instance.TryToFindBox();
+        }
 
-    public void A_Water()
-    {
-        landstate = LandState.Empty;
-        StaticDatas.PlayerData.FarmSlots[SlotNumber].state = landstate;
-        btn.onClick.RemoveAllListeners();
-        is_watering = false;
-        StaticDatas.SaveDatas();
-    }
+        public void A_Water()
+        {
+            landstate = LandState.Empty;
+            StaticDatas.PlayerData.FarmSlots[SlotNumber].state = landstate;
+            btn.onClick.RemoveAllListeners();
+
+            if (StaticDatas.PlayerData.PlayerInfos.Water.amount > 2) WaterSL.instance.TriggerAmount(-2);
+            else MoneySystem.instance.UpdateCyrstal(-1);
+
+            is_watering = false;
+            StaticDatas.SaveDatas();
+            LuckyBox.instance.TryToFindBox();
+        }
     #endregion
-
-    /*public void StatsofLand()
-    {
-        if (landstate == LandState.Empty)
-        {
-            Debug.Log("Land is empty.");
-            if (!popedUp){
-                Debug.Log("Choose plant to plant");
-                PlantsHolder.gameObject.SetActive(true);
-                Debug.Log("PH set active");
-                StartCoroutine(PopUpHolder());
-                Debug.Log("PH located");
-            }
-            else
-            {
-                Debug.Log("Closing Holder");
-                StartCoroutine(PopDownHolder());
-                Debug.Log("PH delocated");
-                PlantsHolder.gameObject.SetActive(false);
-                Debug.Log("PH set inActive");
-            }
-            popedUp = !popedUp;
-        }
-    }
-
-    IEnumerator PopUpHolder()
-    {
-        RectTransform PHRT = PlantsHolder.GetComponent<RectTransform>();
-        GridLayoutGroup gr = PlantsHolder.GetComponent<GridLayoutGroup>();
-        bool s_done = false;
-        bool p_done = false;
-        int row;
-        if (ownedCount <= 5)
-            row = 1;
-        else
-            row = ownedCount / 5;
-        Vector2 l_size = new Vector2((ownedCount * 45) + ((ownedCount - 1) * 20) + gr.padding.left + gr.padding.right, (row * 45) + ((row - 1) * 20) + gr.padding.top + gr.padding.bottom);
-        Vector3 l_pos = new Vector3(0, 140 + (l_size.y / 2), 0);
-
-        while (!(s_done && p_done))
-        {
-            if (!s_done)
-            {
-                if (PHRT.sizeDelta.x < l_size.x)
-                    PHRT.sizeDelta = Vector2.MoveTowards(PHRT.sizeDelta, l_size, AnimationSpeed);
-                else
-                    s_done = true;
-            }
-
-            if (!p_done)
-            {
-                if (PHRT.localPosition.y < l_pos.y)
-                    PHRT.localPosition = Vector2.MoveTowards(PHRT.localPosition, l_pos, AnimationSpeed);
-                else
-                    p_done = true;
-            }
-
-            yield return null; // wait for next frame
-        }
-    }
-
-    IEnumerator PopDownHolder()
-    {
-        RectTransform PHRT = PlantsHolder.GetComponent<RectTransform>();
-        GridLayoutGroup gr = PlantsHolder.GetComponent<GridLayoutGroup>();
-        bool s_done = false;
-        bool p_done = false;
-        Vector2 l_size = new Vector2(0, 0);
-        Vector3 l_pos = new Vector3(0, 0, 0);
-
-        while (!(s_done && p_done))
-        {
-            if (!s_done)
-            {
-                if (PHRT.sizeDelta.x > l_size.x)
-                    PHRT.sizeDelta = Vector2.MoveTowards(PHRT.sizeDelta, l_size, AnimationSpeed);
-                else
-                    s_done = true;
-            }
-
-            if (!p_done)
-            {
-                if (PHRT.localPosition.y > l_pos.y)
-                    PHRT.localPosition = Vector2.MoveTowards(PHRT.localPosition, l_pos, AnimationSpeed);
-                else
-                    p_done = true;
-            }
-
-            yield return null; // wait for next frame
-        }
-    }*/
 }

@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Diagnostics;
 
 public class ForestLogic : MonoBehaviour
 {
     public static ForestLogic instance;
+    private CanvasGroup canvasGroup;
     public List<TreeD> TreeDetails;
     public int maxSlotCount = 32;
 
@@ -68,5 +70,18 @@ public class ForestLogic : MonoBehaviour
             ts.UpdateFruitImages();
             Slots.Add(dublicate);
         }
+    }
+
+    public void ResetSituation()
+    {
+        for (int i = 0; i < Slots.Count; i++)
+        {
+            TreeSlot tl = Slots[i].GetComponent<TreeSlot>();
+            if (tl.landstate == LandState.Empty)
+                tl.btn.onClick.RemoveAllListeners();
+            else if (tl.landstate == LandState.Stumped)
+                tl.isAxing = false;
+        }
+        if (canvasGroup != null) StaticDatas.AdjustCanvasGroup(canvasGroup, false);
     }
 }

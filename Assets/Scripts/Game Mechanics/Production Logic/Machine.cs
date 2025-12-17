@@ -10,7 +10,7 @@ public class Machine : MonoBehaviour
     public string machineName;
     public int mNumber { get; private set; }
     public PrD TheProduct;
-    private bool prChoosed = false;
+    public bool prChoosed = false;
 
     public TextMeshProUGUI mName;
 
@@ -223,6 +223,7 @@ public class Machine : MonoBehaviour
             if (child != null) Destroy(child.gameObject);
             PopulateQueue();
             StaticDatas.SaveDatas();
+            LuckyBox.instance.TryToFindBox();
         }
     }
 
@@ -501,6 +502,7 @@ public class Machine : MonoBehaviour
             LoadUI();
 
             StaticDatas.SaveDatas();
+            LuckyBox.instance.TryToFindBox();
         }
     }
 }

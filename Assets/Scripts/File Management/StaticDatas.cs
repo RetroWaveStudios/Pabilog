@@ -102,4 +102,11 @@ public class StaticDatas : MonoBehaviour
 
         return true; // success
     }
+
+    public static void AdjustCanvasGroup(CanvasGroup cg, bool onoff)
+    {
+        cg.alpha = onoff ? 1f : 0f;
+        cg.interactable = onoff;
+        cg.blocksRaycasts = onoff;
+    }
 }

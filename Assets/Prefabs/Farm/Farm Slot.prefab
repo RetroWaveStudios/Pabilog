@@ -1558,6 +1558,8 @@ MonoBehaviour:
   PauseBG: {fileID: 3813280927590971370}
   noWater: {fileID: 21300000, guid: f96cda8c349241346ba9e3fc45d05145, type: 3}
   WCan: {fileID: 21300000, guid: d4fde33d893eb474bbfd481b9ab537f2, type: 3}
+  is_watering: 0
+  is_plowing: 0
 --- !u!114 &1949441198224855312
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1612,7 +1614,7 @@ Animator:
   m_GameObject: {fileID: 6563745837954630568}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 8039ea803e1b8a74db60b755707cc027, type: 2}
+  m_Controller: {fileID: 9100000, guid: 58f73264ffdf35d419539ff09ffda7c7, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

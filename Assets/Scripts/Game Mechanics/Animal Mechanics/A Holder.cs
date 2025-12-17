@@ -27,7 +27,6 @@ public class AHolder : MonoBehaviour
         instance = this;
     }
 
-
     public void SpotClicked(ASpotState spotstate, Animals animal)
     {
         if (spotstate == ASpotState.Empty) AHolder.instance.ChooseAnimal();

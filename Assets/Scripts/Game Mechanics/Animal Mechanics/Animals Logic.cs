@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class AnimalsLogic : MonoBehaviour
 {
     public static AnimalsLogic instance;
+    private CanvasGroup canvasGroup;
     public List<APD> AnimalsDetails;
 
     public List<int> SlotPrices = new();
@@ -41,13 +42,11 @@ public class AnimalsLogic : MonoBehaviour
     public void Awake()
     {
         instance = this;
-        anim = GetComponent<Animator>();
+        canvasGroup = GetComponent<CanvasGroup>();
         anim = GetComponent<Animator>();
         animParam_FoodChooserT = Animator.StringToHash("FoodChooser_T");
 
         StaticDatas.LoadDatas();
-
-        PopulateFoodChooser();
         int price = 200, axp = 10;
         for (int i = 0; i < 18; i++)
         {
@@ -76,11 +75,10 @@ public class AnimalsLogic : MonoBehaviour
             StaticDatas.SaveDatas();
         }
         for (int i = 0; i < StaticDatas.PlayerData.AnimalSpots.Count; i++)
-        {
             PopulateSpots(i);
-        }
-        StaticDatas.SaveDatas();
+        PopulateFoodChooser();
         AddBuySpot();
+        StaticDatas.SaveDatas();
     }
 
     private void Update()
@@ -143,12 +141,8 @@ public class AnimalsLogic : MonoBehaviour
             AnimalSpot ans = dublicate.GetComponent<AnimalSpot>();
             ans.TheAnimal.theProduct = AProducts.None;
             AddBuySpot();
+            LuckyBox.instance.TryToFindBox();
         }
-    }
-
-    public void ResetSituation()
-    {
-        foreach (Transform item in AHolder.instance.Holder) Destroy(item.gameObject);
     }
 
     private void AnimateFoodChooserPanel()
@@ -160,17 +154,24 @@ public class AnimalsLogic : MonoBehaviour
         FoodsHolder.GetComponent<RectTransform>().anchoredPosition = pos;
     }
 
-    public void OpenFoodChooser()
+    public void OpenFoodChooser(bool preset)
     {
-        bool isOpen = anim.GetBool("Food Chooser");
-
-        if (!isOpen)
+        if (preset)
         {
-            // recalc before opening
-            PopulateFoodChooser();
-            anim.SetBool("Food Chooser", true);
+            anim.SetBool("Food Chooser", false);
         }
-        else anim.SetBool("Food Chooser", false);
+        else
+        {
+            bool isOpen = anim.GetBool("Food Chooser");
+
+            if (!isOpen)
+            {
+                // recalc before opening
+                PopulateFoodChooser();
+                anim.SetBool("Food Chooser", true);
+            }
+            else anim.SetBool("Food Chooser", false);
+        }
     }
 
     private void RecalculateFoodChooserTarget()
@@ -227,7 +228,14 @@ public class AnimalsLogic : MonoBehaviour
         {
             TheFood = food;
             TheFoodImage.sprite = Sprites.instance.sprites.AnimalFoodSprites.Find(e => e.food == TheFood).sprite;
-            OpenFoodChooser();
+            OpenFoodChooser(false);
         }
+    }
+
+    public void ResetSituation()
+    {
+        foreach (Transform item in AHolder.instance.Holder) Destroy(item.gameObject);
+        OpenFoodChooser(true);
+        if (canvasGroup != null) StaticDatas.AdjustCanvasGroup(canvasGroup, false);
     }
 }

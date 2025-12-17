@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class FarmLogic : MonoBehaviour
 {
     public static FarmLogic instance;
+    private CanvasGroup canvasGroup;
     public List<PD> PlantDetails;
     public List<int> SlotPrices = new();
     public List<int> BuyXP = new();
@@ -20,6 +21,7 @@ public class FarmLogic : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        canvasGroup = GetComponent<CanvasGroup>();
         PlayerProfile.instance.Awake();
         StaticDatas.LoadDatas();
         int price = 100;
@@ -97,6 +99,7 @@ public class FarmLogic : MonoBehaviour
 
             PopulateSlots(Slots.Count);
             AddBuySlot();
+            LuckyBox.instance.TryToFindBox();
         }
     }
 
@@ -106,9 +109,12 @@ public class FarmLogic : MonoBehaviour
         {
             FarmingTS fts = Slots[i].GetComponent<FarmingTS>();
             if (fts.landstate == LandState.Empty)
-            {
                 fts.btn.onClick.RemoveAllListeners();
-            }
+            else if (fts.landstate == LandState.Plow)
+                fts.is_plowing = false;
+            else if (fts.landstate == LandState.Dry)
+                fts.is_watering = false;
         }
+        if (canvasGroup != null) StaticDatas.AdjustCanvasGroup(canvasGroup, false);
     }
 }

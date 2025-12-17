@@ -4,6 +4,7 @@ using UnityEngine;
 public class ProductionLogic : MonoBehaviour
 {
     public static ProductionLogic instance;
+    private CanvasGroup canvasGroup;
     public List<MachineProduct> MachineDetails;
 
     public GameObject machPrefab;
@@ -14,6 +15,7 @@ public class ProductionLogic : MonoBehaviour
     {
         StaticDatas.LoadDatas();
         instance = this;
+        canvasGroup = GetComponent<CanvasGroup>();
         PopulateMachines();
     }
 
@@ -59,5 +61,7 @@ public class ProductionLogic : MonoBehaviour
     public void ResetSituation()
     {
         foreach (Transform item in MachinePH.instance.Holder) Destroy(item.gameObject);
+        for (int i = 0; i < Machines.Count; i++) Machines[i].GetComponent<Machine>().prChoosed = false;
+        if (canvasGroup != null) StaticDatas.AdjustCanvasGroup(canvasGroup, false);
     }
 }

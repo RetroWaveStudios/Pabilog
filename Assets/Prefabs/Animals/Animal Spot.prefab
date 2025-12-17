@@ -106,9 +106,8 @@ MonoBehaviour:
     animal: 0
     state: 0
     a_price: 0
-    m_xp: 0
-    meat_amount: 0
-    p_xp: 0
+    a_Xp: 0
+    xp: 0
     amount: 0
     prTimes: []
     productTime: 0
@@ -117,6 +116,8 @@ MonoBehaviour:
     feedTime: 
     hasFood: 0
     products: 
+    prAmounts: 
+    prXp: 
     theProduct: 0
   spotState: 0
   infoText: {fileID: 2460377286060147038}
@@ -1870,7 +1871,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4507636375702946638
 RectTransform:
   m_ObjectHideFlags: 0

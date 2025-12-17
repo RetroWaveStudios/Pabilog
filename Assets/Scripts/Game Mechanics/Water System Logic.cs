@@ -117,6 +117,7 @@ public class WaterSL : MonoBehaviour
                     priceText.text = WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel].price.ToString();
                 }
                 else FinishLevel();
+                LuckyBox.instance.TryToFindBox();
             }
             else return;
 

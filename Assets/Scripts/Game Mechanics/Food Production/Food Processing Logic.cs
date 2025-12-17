@@ -114,64 +114,63 @@ public class FoodPL : MonoBehaviour
     }
 
     #region Animations
-
-    public void OpenDetails()
-    {
-        if (isAnTrue("Open Upgrade"))
-            CloseUpgrade();
-        else if (isAnTrue("Open MH"))
-            OpenMH(false);
-        if(StaticDatas.PlayerData.PlayerInfos.FoodLevel >= MachineImages.Count)
-            transform.Find("Food Producer/Holder Colored/Details/Upgrade Button").gameObject.SetActive(false);
-
-        int id = Animator.StringToHash("Open Details");
-        Debug.Log($"Open Details is {anim.GetBool(id)}");
-        Debug.Log($"Setting to {!anim.GetBool(id)}");
-
-        anim.SetBool(id, !anim.GetBool(id));
-    }
-
-    public void OpenMH(bool tf)
-    {
-        if (!isAnTrue("Open Upgrade"))
+        public void OpenDetails()
         {
-            Debug.Log($"Setting to {tf}");
-            anim.SetBool("Open MH", tf);
-            mBtn.onClick.RemoveAllListeners();
-            mBtn.onClick.AddListener(() => PopulateMatHolder());
-        }
-    }
+            if (isAnTrue("Open Upgrade"))
+                CloseUpgrade();
+            else if (isAnTrue("Open MH"))
+                OpenMH(false);
+            if(StaticDatas.PlayerData.PlayerInfos.FoodLevel >= MachineImages.Count)
+                transform.Find("Food Producer/Holder Colored/Details/Upgrade Button").gameObject.SetActive(false);
 
-    public void OpenUpgrade()
-    {
-        if (!isAnTrue("Open MH"))
+            int id = Animator.StringToHash("Open Details");
+            Debug.Log($"Open Details is {anim.GetBool(id)}");
+            Debug.Log($"Setting to {!anim.GetBool(id)}");
+
+            anim.SetBool(id, !anim.GetBool(id));
+        }
+
+        public void OpenMH(bool tf)
         {
             if (!isAnTrue("Open Upgrade"))
             {
-                Debug.Log($"Setting to {!isAnTrue("Open Upgrade")}");
-                anim.SetBool("Open Upgrade", true);
+                Debug.Log($"Setting to {tf}");
+                anim.SetBool("Open MH", tf);
                 mBtn.onClick.RemoveAllListeners();
-                priceImage.sprite = Sprites.instance.sprites.currencies.
-                    Find(e => e.Currency == lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].currency).sprite;
-                priceText.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].price.ToString();
+                mBtn.onClick.AddListener(() => PopulateMatHolder());
             }
-            else
-                UpgradeWellLevel();
         }
-    }
 
-    public void CloseUpgrade()
-    {
-        if (isAnTrue("Open Upgrade"))
+        public void OpenUpgrade()
         {
-            Debug.Log($"Setting to {!isAnTrue("Open Upgrade")}");
-            anim.SetBool("Open Upgrade", false);
-            mBtn.onClick.RemoveAllListeners();
-            mBtn.onClick.AddListener(() => PopulateMatHolder());
+            if (!isAnTrue("Open MH"))
+            {
+                if (!isAnTrue("Open Upgrade"))
+                {
+                    Debug.Log($"Setting to {!isAnTrue("Open Upgrade")}");
+                    anim.SetBool("Open Upgrade", true);
+                    mBtn.onClick.RemoveAllListeners();
+                    priceImage.sprite = Sprites.instance.sprites.currencies.
+                        Find(e => e.Currency == lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].currency).sprite;
+                    priceText.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].price.ToString();
+                }
+                else
+                    UpgradeWellLevel();
+            }
         }
-    }
 
-    private bool isAnTrue(string name)
+        public void CloseUpgrade()
+        {
+            if (isAnTrue("Open Upgrade"))
+            {
+                Debug.Log($"Setting to {!isAnTrue("Open Upgrade")}");
+                anim.SetBool("Open Upgrade", false);
+                mBtn.onClick.RemoveAllListeners();
+                mBtn.onClick.AddListener(() => PopulateMatHolder());
+            }
+        }
+
+        private bool isAnTrue(string name)
     {
         int index = Animator.StringToHash(name);
         if(anim.GetBool(index))
@@ -179,213 +178,212 @@ public class FoodPL : MonoBehaviour
         else
             return false;
     }
-
     #endregion
 
     #region Production Section
-
-    private void ChooseProduct(TheFood tf)
-    {
-        if (Storage.instance.hasEnought(tf.material, tf.reqAmount, true) && StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count < StaticDatas.PlayerData.PlayerInfos.Food.qLimit)
+        private void ChooseProduct(TheFood tf)
         {
-            Storage.instance.UpdatePlantCount(tf.material, -tf.reqAmount);
-
-            TheFood newItem = tf.Clone();
-            newItem.PrState = PlantState.Growing;
-
-            List<TheFood> inqueue = StaticDatas.PlayerData.PlayerInfos.Food.InQueue;
-
-            if (inqueue.Count == 0)
+            if (Storage.instance.hasEnought(tf.material, tf.reqAmount, true) && StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count < StaticDatas.PlayerData.PlayerInfos.Food.qLimit)
             {
-                newItem.fillTime = DateTime.UtcNow.ToString("o");
-            }
-            else
-            {
-                DateTime lastFinish = DateTime.Parse(inqueue[inqueue.Count - 1].fillTime, null, System.Globalization.DateTimeStyles.RoundtripKind);
-                newItem.fillTime = lastFinish.AddMinutes(inqueue[inqueue.Count - 1].pTimer).ToString("o");
-            }
+                Storage.instance.UpdatePlantCount(tf.material, -tf.reqAmount);
 
-            inqueue.Add(newItem);
-            StaticDatas.PlayerData.PlayerInfos.Food.InQueue = inqueue;
-            StaticDatas.PlayerData.PlayerInfos.Food.MachState = LandState.Planted;
-            StaticDatas.SaveDatas();
+                TheFood newItem = tf.Clone();
+                newItem.PrState = PlantState.Growing;
 
-            queue[StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count - 1].transform.Find("Item").GetComponent<Image>().sprite =
-                Sprites.instance.sprites.AnimalFoodSprites.Find(e => e.food == tf.Food).sprite;
-            queue[StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count - 1].transform.Find("Item").GetComponent<Image>().enabled = true;
-            if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count >= StaticDatas.PlayerData.PlayerInfos.Food.qLimit){
-                PopulateMatHolder();
-            }
-            PopulateSchedule();
-        }
-    }
+                List<TheFood> inqueue = StaticDatas.PlayerData.PlayerInfos.Food.InQueue;
 
-    private void CheckGrowth()
-    {
-        DateTime startTime;
-        if (!StaticDatas.TryGetStartTime(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].fillTime, "Food Timer", out startTime)) return;
-
-        TimeSpan elapsed = DateTime.UtcNow - startTime;
-        double elapsedMinutes = elapsed.TotalMinutes;
-        if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].PrState == PlantState.Growing && elapsedMinutes > StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].pTimer)
-        {
-            StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].PrState = PlantState.ReadyToHarvest;
-            Debug.Log("Plant state set to ready");
-            StaticDatas.SaveDatas();
-        }
-    }
-
-    private void UpdateTimer()
-    {
-        DateTime startTime;
-        if (!StaticDatas.TryGetStartTime(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].fillTime, "Food Timer", out startTime)) return;
-        float time = 0;
-        for (int i = 0; i < StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count; i++)
-        {
-            if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue[i].PrState != PlantState.ReadyToHarvest)
-                { time = StaticDatas.PlayerData.PlayerInfos.Food.InQueue[i].pTimer; break; }
-        }
-        double totalSecondsRequired = time * 60;
-        double elapsedSeconds = (DateTime.UtcNow - startTime).TotalSeconds;
-
-        string timeString = StaticDatas.convertToTimer(totalSecondsRequired, elapsedSeconds);
-        timer.text = timeString;
-    }
-
-    private void PopulateMatHolder()
-    {
-        if(!isAnTrue("Open Upgrade"))
-        {
-            foreach (Transform item in mholder) Destroy(item.gameObject);
-            if (StaticDatas.PlayerData.PlayerInfos.Food.qLimit > StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count)
-            {
-                for (int i = 0; i < StaticDatas.PlayerData.PlayerInfos.Food.materials.Count; i++)
+                if (inqueue.Count == 0)
                 {
-                    var proto = materials.Find(e => e.material == StaticDatas.PlayerData.PlayerInfos.Food.materials[i].material);
-                    TheFood tf = proto.Clone();
-                    Debug.Log($"in popmatholder: Food {tf.Food} \n material {tf.material}");
-                    if (StaticDatas.PlayerData.unlocked_items.u_plants.Find(e => e.plant == tf.material).owned)
-                    {
-                        GameObject dublicate = Instantiate(materialPrefab, mholder);
-                        dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant == tf.material).sprite;
-                        dublicate.GetComponent<RectTransform>().sizeDelta = new Vector2(65, 65);
-                        dublicate.transform.Find("Price").gameObject.SetActive(false);
-
-                        Button button = dublicate.GetComponent<Button>();
-                        button.onClick.RemoveAllListeners();
-                        button.onClick.AddListener(() => ChooseProduct(tf));
-                    }
+                    newItem.fillTime = DateTime.UtcNow.ToString("o");
                 }
-                OpenMH(true);
+                else
+                {
+                    DateTime lastFinish = DateTime.Parse(inqueue[inqueue.Count - 1].fillTime, null, System.Globalization.DateTimeStyles.RoundtripKind);
+                    newItem.fillTime = lastFinish.AddMinutes(inqueue[inqueue.Count - 1].pTimer).ToString("o");
+                }
+
+                inqueue.Add(newItem);
+                StaticDatas.PlayerData.PlayerInfos.Food.InQueue = inqueue;
+                StaticDatas.PlayerData.PlayerInfos.Food.MachState = LandState.Planted;
+                StaticDatas.SaveDatas();
+
+                queue[StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count - 1].transform.Find("Item").GetComponent<Image>().sprite =
+                    Sprites.instance.sprites.AnimalFoodSprites.Find(e => e.food == tf.Food).sprite;
+                queue[StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count - 1].transform.Find("Item").GetComponent<Image>().enabled = true;
+                if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count >= StaticDatas.PlayerData.PlayerInfos.Food.qLimit){
+                    PopulateMatHolder();
+                }
+                PopulateSchedule();
             }
-            else
+        }
+
+        private void CheckGrowth()
+        {
+            DateTime startTime;
+            if (!StaticDatas.TryGetStartTime(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].fillTime, "Food Timer", out startTime)) return;
+
+            TimeSpan elapsed = DateTime.UtcNow - startTime;
+            double elapsedMinutes = elapsed.TotalMinutes;
+            if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].PrState == PlantState.Growing && elapsedMinutes > StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].pTimer)
             {
-                OpenMH(false);
-                mBtn.onClick.RemoveAllListeners();
+                StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].PrState = PlantState.ReadyToHarvest;
+                Debug.Log("Plant state set to ready");
+                StaticDatas.SaveDatas();
             }
         }
-    }
 
-    private void PopulateSchedule()
-    {
-        foreach (Transform item in qholder) Destroy(item.gameObject);
-        queue.Clear();
-        for (int i = queue.Count; i < StaticDatas.PlayerData.PlayerInfos.Food.qLimit; i++)
+        private void UpdateTimer()
         {
-            Debug.Log($"qLimit is {StaticDatas.PlayerData.PlayerInfos.Food.qLimit}");
-            GameObject dublicate = Instantiate(qPrefab, qholder);
-            if (i < StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count)
+            DateTime startTime;
+            if (!StaticDatas.TryGetStartTime(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].fillTime, "Food Timer", out startTime)) return;
+            float time = 0;
+            for (int i = 0; i < StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count; i++)
             {
-                dublicate.transform.name = "Animal Food";
-                dublicate.transform.Find("Item").GetComponent<Image>().enabled = true;
-                dublicate.transform.Find("Item").GetComponent<Image>().sprite = Sprites.instance.sprites.AnimalFoodSprites.Find(e => e.food ==
-                    StaticDatas.PlayerData.PlayerInfos.Food.InQueue[i].Food).sprite;
-                dublicate.transform.Find("Price").gameObject.SetActive(false);
+                if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue[i].PrState != PlantState.ReadyToHarvest)
+                    { time = StaticDatas.PlayerData.PlayerInfos.Food.InQueue[i].pTimer; break; }
             }
-            else
+            double totalSecondsRequired = time * 60;
+            double elapsedSeconds = (DateTime.UtcNow - startTime).TotalSeconds;
+
+            string timeString = StaticDatas.convertToTimer(totalSecondsRequired, elapsedSeconds);
+            timer.text = timeString;
+        }
+
+        private void PopulateMatHolder()
+        {
+            if(!isAnTrue("Open Upgrade"))
             {
-                dublicate.transform.name = "Empty Slot";
-                dublicate.transform.Find("Item").GetComponent<Image>().enabled = false;
-                dublicate.transform.Find("Price").gameObject.SetActive(false);
+                foreach (Transform item in mholder) Destroy(item.gameObject);
+                if (StaticDatas.PlayerData.PlayerInfos.Food.qLimit > StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count)
+                {
+                    for (int i = 0; i < StaticDatas.PlayerData.PlayerInfos.Food.materials.Count; i++)
+                    {
+                        var proto = materials.Find(e => e.material == StaticDatas.PlayerData.PlayerInfos.Food.materials[i].material);
+                        TheFood tf = proto.Clone();
+                        Debug.Log($"in popmatholder: Food {tf.Food} \n material {tf.material}");
+                        if (StaticDatas.PlayerData.unlocked_items.u_plants.Find(e => e.plant == tf.material).owned)
+                        {
+                            GameObject dublicate = Instantiate(materialPrefab, mholder);
+                            dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant == tf.material).sprite;
+                            dublicate.GetComponent<RectTransform>().sizeDelta = new Vector2(65, 65);
+                            dublicate.transform.Find("Price").gameObject.SetActive(false);
+
+                            Button button = dublicate.GetComponent<Button>();
+                            button.onClick.RemoveAllListeners();
+                            button.onClick.AddListener(() => ChooseProduct(tf));
+                        }
+                    }
+                    OpenMH(true);
+                }
+                else
+                {
+                    OpenMH(false);
+                    mBtn.onClick.RemoveAllListeners();
+                }
             }
-            dublicate.transform.Find("BG").GetComponent<Image>().color = Color.darkBlue;
-            dublicate.GetComponent<RectTransform>().localScale = new Vector3(1 - (float)(i * 0.08), 1 - (float)(i * 0.08), 1 - (float)(i * 0.08));
-            Debug.Log($"slot added to queue");
-            queue.Add(dublicate);
         }
-        int add = 0;
-        if (StaticDatas.PlayerData.PlayerInfos.Food.qLimit < 4)
+
+        private void PopulateSchedule()
         {
-            Debug.Log($"adding addbuyslot");
-            AddBuySlot(); add = 1;
-        }
-        RectTransform rts = qholder.GetComponent<RectTransform>();
-        HorizontalLayoutGroup hlg = qholder.GetComponent<HorizontalLayoutGroup>();
-        rts.sizeDelta = new Vector2(((StaticDatas.PlayerData.PlayerInfos.Food.qLimit + add) * 80) + (hlg.padding.left * 2) + (StaticDatas.PlayerData.PlayerInfos.Food.qLimit * hlg.spacing), 100);
-    }
-
-    private void AddBuySlot()
-    {
-        if(StaticDatas.PlayerData.PlayerInfos.Food.qLimit < 5)
-        {
-            int i = StaticDatas.PlayerData.PlayerInfos.Food.qLimit + 1;
-            GameObject buy = Instantiate(qPrefab, qholder);
-            buy.transform.name = "Buy Slot";
-            buy.transform.Find("Item").GetComponent<Image>().sprite = buyButton;
-            buy.transform.Find("Price").gameObject.SetActive(true);
-            buy.transform.Find("Price/Price Text").GetComponent<TextMeshProUGUI>().text = sPrices[StaticDatas.PlayerData.PlayerInfos.Food.qLimit - 1].ToString();
-            buy.GetComponent<RectTransform>().localScale = new Vector3(1 - (float)(i * 0.08), 1 - (float)(i * 0.08), 1 - (float)(i * 0.08));
-
-            Button btn = buy.GetComponent<Button>();
-            btn.onClick.RemoveAllListeners();
-            btn.onClick.AddListener(() => BuySlot());
-        }
-    }
-
-    private void BuySlot()
-    {
-        if(MoneySystem.instance.hasEnough(Currency.Coin, sPrices[StaticDatas.PlayerData.PlayerInfos.Food.qLimit - 1]))
-        {
-            StaticDatas.PlayerData.PlayerInfos.Food.qLimit++;
-            MoneySystem.instance.UpdateCoin(-sPrices[StaticDatas.PlayerData.PlayerInfos.Food.qLimit - 2]);
-            Transform child = qholder.Find("Buy Slot");
-            StaticDatas.SaveDatas();
-            if (child != null)
-                Destroy(child.gameObject);
-            PopulateSchedule();
-        }
-    }
-
-    private void rtCollect()
-    {
-        mBtn.onClick.RemoveAllListeners();
-        mBtn.onClick.AddListener(() => Collect());
-    }
-
-    private void Collect()
-    {
-        if (!isAnTrue("Open Upgrade") && StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].PrState == PlantState.ReadyToHarvest &&
-            Storage.instance.hasEnStorage(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].collectAmount))
-        {
-            UpdateAnimalFood(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].Food, StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].collectAmount);
-            MoneySystem.instance.UpdateXp(StaticDatas.PlayerData.PlayerInfos.Food.xp);
-            queue[StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count - 1].transform.Find("Item").GetComponent<Image>().enabled = false;
-            StaticDatas.PlayerData.PlayerInfos.Food.InQueue.RemoveAt(0);
-            if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count <= 0)
+            foreach (Transform item in qholder) Destroy(item.gameObject);
+            queue.Clear();
+            for (int i = queue.Count; i < StaticDatas.PlayerData.PlayerInfos.Food.qLimit; i++)
             {
-                StaticDatas.PlayerData.PlayerInfos.Food.MachState = LandState.Empty;
+                Debug.Log($"qLimit is {StaticDatas.PlayerData.PlayerInfos.Food.qLimit}");
+                GameObject dublicate = Instantiate(qPrefab, qholder);
+                if (i < StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count)
+                {
+                    dublicate.transform.name = "Animal Food";
+                    dublicate.transform.Find("Item").GetComponent<Image>().enabled = true;
+                    dublicate.transform.Find("Item").GetComponent<Image>().sprite = Sprites.instance.sprites.AnimalFoodSprites.Find(e => e.food ==
+                        StaticDatas.PlayerData.PlayerInfos.Food.InQueue[i].Food).sprite;
+                    dublicate.transform.Find("Price").gameObject.SetActive(false);
+                }
+                else
+                {
+                    dublicate.transform.name = "Empty Slot";
+                    dublicate.transform.Find("Item").GetComponent<Image>().enabled = false;
+                    dublicate.transform.Find("Price").gameObject.SetActive(false);
+                }
+                dublicate.transform.Find("BG").GetComponent<Image>().color = Color.darkBlue;
+                dublicate.GetComponent<RectTransform>().localScale = new Vector3(1 - (float)(i * 0.08), 1 - (float)(i * 0.08), 1 - (float)(i * 0.08));
+                Debug.Log($"slot added to queue");
+                queue.Add(dublicate);
             }
-            if (AnimalsLogic.instance != null)
-                AnimalsLogic.instance.PopulateFoodChooser();
-            PopulateSchedule();
-            StaticDatas.SaveDatas();
+            int add = 0;
+            if (StaticDatas.PlayerData.PlayerInfos.Food.qLimit < 4)
+            {
+                Debug.Log($"adding addbuyslot");
+                AddBuySlot(); add = 1;
+            }
+            RectTransform rts = qholder.GetComponent<RectTransform>();
+            HorizontalLayoutGroup hlg = qholder.GetComponent<HorizontalLayoutGroup>();
+            rts.sizeDelta = new Vector2(((StaticDatas.PlayerData.PlayerInfos.Food.qLimit + add) * 80) + (hlg.padding.left * 2) + (StaticDatas.PlayerData.PlayerInfos.Food.qLimit * hlg.spacing), 100);
+        }
+
+        private void AddBuySlot()
+        {
+            if(StaticDatas.PlayerData.PlayerInfos.Food.qLimit < 5)
+            {
+                int i = StaticDatas.PlayerData.PlayerInfos.Food.qLimit + 1;
+                GameObject buy = Instantiate(qPrefab, qholder);
+                buy.transform.name = "Buy Slot";
+                buy.transform.Find("Item").GetComponent<Image>().sprite = buyButton;
+                buy.transform.Find("Price").gameObject.SetActive(true);
+                buy.transform.Find("Price/Price Text").GetComponent<TextMeshProUGUI>().text = sPrices[StaticDatas.PlayerData.PlayerInfos.Food.qLimit - 1].ToString();
+                buy.GetComponent<RectTransform>().localScale = new Vector3(1 - (float)(i * 0.08), 1 - (float)(i * 0.08), 1 - (float)(i * 0.08));
+
+                Button btn = buy.GetComponent<Button>();
+                btn.onClick.RemoveAllListeners();
+                btn.onClick.AddListener(() => BuySlot());
+            }
+        }
+
+        private void BuySlot()
+        {
+            if(MoneySystem.instance.hasEnough(Currency.Coin, sPrices[StaticDatas.PlayerData.PlayerInfos.Food.qLimit - 1]))
+            {
+                StaticDatas.PlayerData.PlayerInfos.Food.qLimit++;
+                MoneySystem.instance.UpdateCoin(-sPrices[StaticDatas.PlayerData.PlayerInfos.Food.qLimit - 2]);
+                Transform child = qholder.Find("Buy Slot");
+                StaticDatas.SaveDatas();
+                if (child != null) Destroy(child.gameObject);
+                PopulateSchedule();
+                LuckyBox.instance.TryToFindBox();
+            }
+        }
+
+        private void rtCollect()
+        {
             mBtn.onClick.RemoveAllListeners();
-            mBtn.onClick.AddListener(() => PopulateMatHolder());
+            mBtn.onClick.AddListener(() => Collect());
         }
-        //else if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count < StaticDatas.PlayerData.PlayerInfos.Food.qLimit) PopulateMatHolder();
-    }
 
-    public bool hasEnoughFood(a_f_types type, int amount, bool push)
+        private void Collect()
+        {
+            if (!isAnTrue("Open Upgrade") && StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].PrState == PlantState.ReadyToHarvest &&
+                Storage.instance.hasEnStorage(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].collectAmount))
+            {
+                UpdateAnimalFood(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].Food, StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].collectAmount);
+                MoneySystem.instance.UpdateXp(StaticDatas.PlayerData.PlayerInfos.Food.xp);
+                queue[StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count - 1].transform.Find("Item").GetComponent<Image>().enabled = false;
+                StaticDatas.PlayerData.PlayerInfos.Food.InQueue.RemoveAt(0);
+                if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count <= 0)
+                {
+                    StaticDatas.PlayerData.PlayerInfos.Food.MachState = LandState.Empty;
+                }
+                if (AnimalsLogic.instance != null)
+                    AnimalsLogic.instance.PopulateFoodChooser();
+                PopulateSchedule();
+                StaticDatas.SaveDatas();
+                mBtn.onClick.RemoveAllListeners();
+                mBtn.onClick.AddListener(() => PopulateMatHolder());
+                LuckyBox.instance.TryToFindBox();
+            }
+            //else if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count < StaticDatas.PlayerData.PlayerInfos.Food.qLimit) PopulateMatHolder();
+        }
+
+        public bool hasEnoughFood(a_f_types type, int amount, bool push)
     {
         if (StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == type) != null &&
             StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == type).amount >= amount)
@@ -395,65 +393,63 @@ public class FoodPL : MonoBehaviour
             return false;
         }
     }
-
     #endregion
 
     #region Upgrage System
-
-    public void UpgradeWellLevel()
-    {
-        if (MoneySystem.instance.hasEnough(lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].currency, lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].price))
+        public void UpgradeWellLevel()
         {
-            if (StaticDatas.PlayerData.PlayerInfos.FoodLevel < MachineImages.Count)
+            if (MoneySystem.instance.hasEnough(lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].currency, lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].price))
             {
-                StaticDatas.PlayerData.PlayerInfos.FoodLevel++;
                 if (StaticDatas.PlayerData.PlayerInfos.FoodLevel < MachineImages.Count)
                 {
-                    //CheckLevel();
-                    changeFood();
-                    SetImages();
-                    StaticDatas.SaveDatas();
-                    priceImage.sprite = Sprites.instance.sprites.currencies.
-                        Find(e => e.Currency == lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].currency).sprite;
-                    priceText.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].price.ToString();
+                    StaticDatas.PlayerData.PlayerInfos.FoodLevel++;
+                    if (StaticDatas.PlayerData.PlayerInfos.FoodLevel < MachineImages.Count)
+                    {
+                        //CheckLevel();
+                        changeFood();
+                        SetImages();
+                        StaticDatas.SaveDatas();
+                        priceImage.sprite = Sprites.instance.sprites.currencies.
+                            Find(e => e.Currency == lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].currency).sprite;
+                        priceText.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].price.ToString();
+                    }
+                    else FinishLevel();
+                    LuckyBox.instance.TryToFindBox();
                 }
-                else FinishLevel();
+                else return;
+
+                if (lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].currency == Currency.Coin)
+                    MoneySystem.instance.UpdateCoin(-lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].price);
+                else if (lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].currency == Currency.Crystal)
+                    MoneySystem.instance.UpdateCyrstal(-lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].price);
             }
-            else return;
-
-            if (lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].currency == Currency.Coin)
-                MoneySystem.instance.UpdateCoin(-lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].price);
-            else if (lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].currency == Currency.Crystal)
-                MoneySystem.instance.UpdateCyrstal(-lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].price);
         }
-    }
 
-    private void SetImages()
-    {
-        Icon.sprite = MachineImages[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1];
-        TheWell.sprite = MachineImages[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1];
-
-        if(StaticDatas.PlayerData.PlayerInfos.FoodLevel < MachineImages.Count)
+        private void SetImages()
         {
-            cPTD.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].progTimerDec.ToString() + "%";
-            cFTI.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].foodTimerInc.ToString() + "%";
+            Icon.sprite = MachineImages[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1];
+            TheWell.sprite = MachineImages[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1];
 
-            nPTD.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].progTimerDec.ToString() + "%";
-            nFTI.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].foodTimerInc.ToString() + "%";
+            if(StaticDatas.PlayerData.PlayerInfos.FoodLevel < MachineImages.Count)
+            {
+                cPTD.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].progTimerDec.ToString() + "%";
+                cFTI.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].foodTimerInc.ToString() + "%";
 
-            NextWell.sprite = MachineImages[StaticDatas.PlayerData.PlayerInfos.FoodLevel];
+                nPTD.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].progTimerDec.ToString() + "%";
+                nFTI.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].foodTimerInc.ToString() + "%";
+
+                NextWell.sprite = MachineImages[StaticDatas.PlayerData.PlayerInfos.FoodLevel];
+            }
         }
-    }
 
-    private void FinishLevel()
-    {
-        Icon.sprite = MachineImages[StaticDatas.PlayerData.PlayerInfos.FoodLevel -1];
-        TheWell.sprite = MachineImages[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1];
-        changeFood();
-        CloseUpgrade();
-        transform.Find("Food Producer/Holder Colored/Details/Upgrade Button").gameObject.SetActive(false);
-    }
-
+        private void FinishLevel()
+        {
+            Icon.sprite = MachineImages[StaticDatas.PlayerData.PlayerInfos.FoodLevel -1];
+            TheWell.sprite = MachineImages[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1];
+            changeFood();
+            CloseUpgrade();
+            transform.Find("Food Producer/Holder Colored/Details/Upgrade Button").gameObject.SetActive(false);
+        }
     #endregion
 
     private void PopulateFoodList()

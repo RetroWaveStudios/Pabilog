@@ -48,7 +48,7 @@ public class TreeSlot : MonoBehaviour
     [Header("Stumped")]
     public Sprite noWater;
     public Sprite StumpSpr;
-    private bool isAxing = false;
+    public bool isAxing = false;
     private void Awake()
     {
         anim = GetComponent<Animator>();
@@ -283,6 +283,7 @@ public class TreeSlot : MonoBehaviour
             WaterSL.instance.TriggerAmount(-wateramount);
             StaticDatas.PlayerData.TreeSpots[SlotNumber].TreeDetails = TheTree;
             StaticDatas.SaveDatas();
+            LuckyBox.instance.TryToFindBox();
         }
     }
 
@@ -336,7 +337,7 @@ public class TreeSlot : MonoBehaviour
             TreeSlot ts = ForestLogic.instance.Slots[i].GetComponent<TreeSlot>();
             if (i != SlotNumber)
             {
-                ts.anim.SetBool("ShowTimer", false);
+                ts.anim.SetBool("Show Timer", false);
                 ts.showtimer = false;
             }
             else showtimer = !showtimer;
@@ -344,7 +345,7 @@ public class TreeSlot : MonoBehaviour
         if (showtimer)
         {
             Debug.Log("expanting showtimer items");
-            anim.SetBool("ShowTimer", true);
+            anim.SetBool("Show Timer", true);
 
             if (SlotNumber < ForestLogic.instance.maxSlotCount - 4){
                 TreeSlot ts = ForestLogic.instance.Slots[SlotNumber + 4].GetComponent<TreeSlot>();
@@ -354,7 +355,7 @@ public class TreeSlot : MonoBehaviour
         else if (!showtimer)
         {
             Debug.Log("shrinking showtimer items");
-            anim.SetBool("ShowTimer", false);
+            anim.SetBool("Show Timer", false);
             if (SlotNumber < ForestLogic.instance.maxSlotCount - 4)
             {
                 TreeSlot ts = ForestLogic.instance.Slots[SlotNumber + 4].GetComponent<TreeSlot>();
@@ -375,7 +376,7 @@ public class TreeSlot : MonoBehaviour
         Debug.Log("expanting showWatering items");
         RectTransform tp_rts = timerPot.GetComponent<RectTransform>();
         RectTransform pp_rts = ProgressPot.GetComponent<RectTransform>();
-        anim.SetBool("ShowWatering", true);
+        anim.SetBool("Show Watering", true);
 
         if (SlotNumber < ForestLogic.instance.maxSlotCount - 4)
         {
@@ -432,6 +433,7 @@ public class TreeSlot : MonoBehaviour
             StaticDatas.PlayerData.TreeSpots[SlotNumber].TreeDetails = TheTree;
             StaticDatas.PlayerData.TreeSpots[SlotNumber].state = landstate;
             StaticDatas.SaveDatas();
+            LuckyBox.instance.TryToFindBox();
         }
         else PushNotice.instance.Push("No Space in Storage", PushType.Alert);
     }
@@ -503,6 +505,7 @@ public class TreeSlot : MonoBehaviour
             Storage.instance.UpdateItemCount(Items.Axe, -1);
         isAxing = false;
         StaticDatas.SaveDatas();
+        LuckyBox.instance.TryToFindBox();
     }
     #endregion
 }

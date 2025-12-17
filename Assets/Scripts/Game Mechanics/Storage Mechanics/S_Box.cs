@@ -94,30 +94,15 @@ public class S_Box : MonoBehaviour
     public void UpdateCount()
     {
         if (category == Category.Plants)
-        {
             count = StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == plant).count;
-            Debug.Log(plant + " count changed to " + count);
-        }
         else if (category == Category.AProducts)
-        {
             count = StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == animal_product).count;
-            Debug.Log(animal_product + " count changed to " + count);
-        }
         else if (category == Category.Products)
-        {
             count = StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == product).count;
-            Debug.Log(product + " count changed to " + count);
-        }
         else if (category == Category.Items)
-        {
             count = StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == item).count;
-            Debug.Log(item + " count changed to " + count);
-        }
         else if (category == Category.AnimalFood)
-        {
-            count = StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == Food).amount;
-            Debug.Log(Food + " count changed to " + count);
-        }
+            count = StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == Food).amount; 
         countText.text = count.ToString();
     }
 }

@@ -15,12 +15,21 @@ public class Storage : MonoBehaviour
     public TextMeshProUGUI currentCount;
     public TextMeshProUGUI capacityCount;
 
+    [Header("Expand Details")]
+    public List<AStorageLevel> LevelReqs;
+    public Transform TheHolder;
+    public GameObject itemPrefab;
+
+    public List<Sprite> ExOnOffSprite;
+    public Image ExOnOff;
+
     private void Awake()
     {
         if (instance == null)
         {
             instance = this;
         }
+        PopulateLevelReqs(30);
         StaticDatas.LoadDatas();
         UpdateBoxItems();
     }
@@ -118,7 +127,7 @@ public class Storage : MonoBehaviour
 
     public bool hasEnStorage(int reqAmount)
     {
-        if (StaticDatas.PlayerData.StorageCapacity - SumCount() >= reqAmount) return true;
+        if (LevelReqs[StaticDatas.PlayerData.StorageLevel - 1].Capacity - SumCount() >= reqAmount) return true;
         else PushNotice.instance.Push("No Space in Storage", PushType.Alert); return false;
     }
 
@@ -146,6 +155,39 @@ public class Storage : MonoBehaviour
             }
         }
         return count;
+    }
+
+    public int GetCountOf(object item)
+    {
+        for (int i = 0; i < Boxes.Count; i++)
+        {
+            S_Box s = Boxes[i].GetComponent<S_Box>();
+            if (s.category == Category.Plants && item is Plants)
+            {
+                if (s.plant == (Plants)item) { Debug.Log($"item found: {(Plants)item} count: {s.count}"); return s.count; }
+            }
+
+            else if (s.category == Category.Fruits && item is Fruits)
+            {
+                if (s.fruit == (Fruits)item) { Debug.Log($"item found: {(Fruits)item} count: {s.count}"); return s.count; }
+            }
+
+            else if (s.category == Category.AProducts && item is AProducts)
+            {
+                if (s.animal_product == (AProducts)item) { Debug.Log($"item found: {(AProducts)item} count: {s.count}"); return s.count; }
+            }
+
+            else if (s.category == Category.Products && item is Products)
+            {
+                if (s.product == (Products)item) { Debug.Log($"item found: {(Products)item} count: {s.count}"); return s.count; }
+            }
+
+            else if (s.category == Category.Items && item is Items)
+            {
+                if (s.item == (Items)item) { Debug.Log($"item found: {(Items)item} count: {s.count}"); return s.count; }
+            }
+        }
+        return 0;
     }
 
     public void UpdatePlantCount(Plants plant, int count)
@@ -242,13 +284,11 @@ public class Storage : MonoBehaviour
 
     private void UpdateCountInBox()
     {
-        int ct = 0;
         Debug.Log("updating item's count");
         for (int i = 0; i < Boxes.Count; i++)
         {
             S_Box s = Boxes[i].GetComponent<S_Box>();
             s.UpdateCount();
-            ct += s.count;
             if (s.count <= 0)
             {
                 if (s.category == Category.Plants)StaticDatas.PlayerData.Storage.PlantsInStorage.
@@ -266,9 +306,8 @@ public class Storage : MonoBehaviour
             }
         }
         StaticDatas.SaveDatas();
-
-        currentCount.text = ct.ToString();
-        capacityCount.text = StaticDatas.PlayerData.StorageCapacity.ToString();
+        currentCount.text = SumCount().ToString();
+        capacityCount.text = LevelReqs[StaticDatas.PlayerData.StorageLevel - 1].Capacity.ToString();
     }
 
     public bool hasEnought(object item, int count, bool push)
@@ -278,22 +317,149 @@ public class Storage : MonoBehaviour
             if (Boxes[i] == null) { Debug.Log("Boxes[i] == null for " + item); return false; }
             S_Box s = Boxes[i].GetComponent<S_Box>();
             if (s == null) { Debug.Log("s is null"); return false; }
-            if (s.category == Category.Plants && item is Plants) {
-                if (s.plant == (Plants)item && s.count >= count) { Debug.Log($"item found: {(Plants)item} count: {s.count}"); return true; }}
-
-            else if (s.category == Category.Fruits && item is Fruits) {
-                if (s.fruit == (Fruits)item && s.count >= count) { Debug.Log($"item found: {(Fruits)item} count: {s.count}"); return true; }}
-
-            else if (s.category == Category.AProducts && item is AProducts){
-                if (s.animal_product == (AProducts)item && s.count >= count) { Debug.Log($"item found: {(AProducts)item} count: {s.count}"); return true; }}
-
-            else if (s.category == Category.Products && item is Products){
-                if (s.product == (Products)item && s.count >= count) { Debug.Log($"item found: {(Products)item} count: {s.count}"); return true; }}
-
-            else if (s.category == Category.Items && item is Items){
-                if(s.item == (Items)item && s.count >= count) { Debug.Log($"item found: {(Items)item} count: {s.count}"); return true; }}
+            if (s.category == Category.Plants && item is Plants) { if (s.plant == (Plants)item && s.count >= count) return true; }
+            else if (s.category == Category.Fruits && item is Fruits) { if (s.fruit == (Fruits)item && s.count >= count) return true; }
+            else if (s.category == Category.AProducts && item is AProducts){ if (s.animal_product == (AProducts)item && s.count >= count) return true; }
+            else if (s.category == Category.Products && item is Products){ if (s.product == (Products)item && s.count >= count)  return true; }
+            else if (s.category == Category.Items && item is Items){ if(s.item == (Items)item && s.count >= count) return true; }
         }
         if(push) PushNotice.instance.Push("No Enough Resources", PushType.Alert);
         return false;
     }
+
+    #region Storage Expand
+    private void PopulateLevelReqs(int maxSLevel)
+    {
+        var proto = new AStorageLevel();
+        for (int i = 0; i < maxSLevel; i++)
+        {
+            AStorageLevel nlevel = proto.Clone();
+            int tbr = 1;
+            if (i > 0) tbr = (i / 10) + 1;
+            nlevel = new AStorageLevel()
+            {
+                LevelNumber = i,
+                ItemCount = i + 3,
+
+                ToolSet = tbr,
+                Capacity = 150 + (i * 25)
+            };
+            LevelReqs.Add(nlevel);
+        }
+    }
+
+    public void ExpandOnOff()
+    {
+        PopulateExpand();
+        TheHolder.transform.Find("Storage Items").gameObject.SetActive(!TheHolder.transform.Find("Storage Items").gameObject.activeInHierarchy);
+        TheHolder.transform.Find("Expand Screen").gameObject.SetActive(!TheHolder.transform.Find("Expand Screen").gameObject.activeInHierarchy);
+
+        ExOnOff.sprite = ExOnOffSprite[TheHolder.transform.Find("Storage Items").gameObject.activeInHierarchy ? 0 : 1];
+    }
+
+    private void PopulateExpand()
+    {
+        // settting Items Option details
+        Transform itemOption = TheHolder.transform.Find("Expand Screen/Items Option");
+        foreach(Transform item in itemOption.transform.Find("Reqs Holder")) Destroy(item.gameObject);
+        itemOption.transform.Find("From To/Current Capacity").GetComponent<TextMeshProUGUI>().text = LevelReqs[StaticDatas.PlayerData.StorageLevel - 1].Capacity.ToString();
+        itemOption.transform.Find("From To/Next Capacity").GetComponent<TextMeshProUGUI>().text = LevelReqs[StaticDatas.PlayerData.StorageLevel].Capacity.ToString();
+
+        List<Items> rItems = new List<Items>() { Items.Tape, Items.Pliers, Items.Drill };
+        for (int i = 0; i < 3; i++)
+        {
+            GameObject dublicate = Instantiate(itemPrefab, itemOption.transform.Find("Reqs Holder"));
+            Destroy(dublicate.GetComponent<Button>());
+            dublicate.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 120);
+            dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.items.Find(e => e.item == rItems[i]).sprite;
+            dublicate.transform.Find("Details").GetComponent<Image>().color = new Color32(0, 0, 0, 150);
+            dublicate.transform.Find("Details").GetComponent<RectTransform>().sizeDelta = new Vector2(140, 40);
+            dublicate.transform.Find("Details").GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -30, 0);
+
+            dublicate.transform.Find("Details/Count").gameObject.SetActive(true);
+            if (hasEnought(rItems[i], LevelReqs[StaticDatas.PlayerData.StorageLevel].ItemCount, false))
+                dublicate.transform.Find("Details/Count").GetComponent<TextMeshProUGUI>().color = new Color32(50, 255, 0, 255);
+            else
+                dublicate.transform.Find("Details/Count").GetComponent<TextMeshProUGUI>().color = new Color32(255, 0, 0, 255);
+
+            dublicate.transform.Find("Details/Count").GetComponent<TextMeshProUGUI>().text = GetCountOf(rItems[i]) + " / " + LevelReqs[StaticDatas.PlayerData.StorageLevel].ItemCount.ToString();
+            dublicate.transform.Find("Details/Count").GetComponent<TextMeshProUGUI>().fontSizeMax = 40f;
+        }
+
+        // settting Tool Set Option details
+        Transform tbOption = TheHolder.transform.Find("Expand Screen/Tool Set Option");
+        foreach (Transform item in tbOption.transform.Find("Reqs Holder")) Destroy(item.gameObject);
+        tbOption.transform.Find("From To/Current Capacity").GetComponent<TextMeshProUGUI>().text = LevelReqs[StaticDatas.PlayerData.StorageLevel - 1].Capacity.ToString();
+        tbOption.transform.Find("From To/Next Capacity").GetComponent<TextMeshProUGUI>().text = LevelReqs[StaticDatas.PlayerData.StorageLevel + 1].Capacity.ToString();
+
+        GameObject tbdublicate = Instantiate(itemPrefab, tbOption.transform.Find("Reqs Holder"));
+        Destroy(tbdublicate.GetComponent<Button>());
+        tbdublicate.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 120);
+        tbdublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.items.Find(e => e.item == Items.ToolSet).sprite;
+        tbdublicate.transform.Find("Details").GetComponent<Image>().color = new Color32(0, 0, 0, 150);
+        tbdublicate.transform.Find("Details").GetComponent<RectTransform>().sizeDelta = new Vector2(140, 40);
+        tbdublicate.transform.Find("Details").GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -30, 0);
+
+        tbdublicate.transform.Find("Details/Count").gameObject.SetActive(true);
+        if (hasEnought(Items.ToolSet, LevelReqs[StaticDatas.PlayerData.StorageLevel].ToolSet, false))
+            tbdublicate.transform.Find("Details/Count").GetComponent<TextMeshProUGUI>().color = new Color32(50, 255, 0, 255);
+        else
+            tbdublicate.transform.Find("Details/Count").GetComponent<TextMeshProUGUI>().color = new Color32(255, 0, 0, 255);
+
+        tbdublicate.transform.Find("Details/Count").GetComponent<TextMeshProUGUI>().text = GetCountOf(Items.ToolSet) + " / " + LevelReqs[StaticDatas.PlayerData.StorageLevel].ToolSet.ToString();
+        tbdublicate.transform.Find("Details/Count").GetComponent<TextMeshProUGUI>().fontSizeMax = 40f;
+
+        // set up update buttons
+        bool[] has = new bool[3] { true, true, true };
+        bool hasAll = true;
+        for (int i = 0; i < rItems.Count; i++)
+            if (GetCountOf(rItems[i]) < LevelReqs[StaticDatas.PlayerData.StorageLevel].ItemCount) has[i] = false;
+
+        for (int i = 0; i < has.Length; i++) if (!has[i]) { Debug.Log("has " + i + has[i]); hasAll = false; }
+
+        Transform update = itemOption.transform.Find("Update");
+        update.GetComponent<Button>().onClick.RemoveAllListeners();
+        if (hasAll){
+            Debug.Log($"All reqs met");
+            update.GetComponent<Button>().onClick.AddListener(() => ExpandStorage(0));
+            update.transform.Find("Update").GetComponent<TextMeshProUGUI>().color = new Color32(0, 0, 0, 255);
+        }
+        else
+        {
+            Debug.Log($"Not all reqs met");
+            update.transform.Find("Update").GetComponent<TextMeshProUGUI>().color = new Color32(0, 0, 0, 100);
+        }
+
+        Transform tbupdate = tbOption.transform.Find("Update");
+        tbupdate.GetComponent<Button>().onClick.RemoveAllListeners();
+        if (GetCountOf(Items.ToolSet) >= LevelReqs[StaticDatas.PlayerData.StorageLevel].ToolSet)
+        {
+            Debug.Log($"All reqs met");
+            tbupdate.GetComponent<Button>().onClick.AddListener(() => ExpandStorage(1));
+            tbupdate.transform.Find("Update").GetComponent<TextMeshProUGUI>().color = new Color32(0, 0, 0, 255);
+        }
+        else
+        {
+            Debug.Log($"Not all reqs met");
+            tbupdate.transform.Find("Update").GetComponent<TextMeshProUGUI>().color = new Color32(0, 0, 0, 100);
+        }
+    }
+
+    private void ExpandStorage(int index)
+    {
+        List<Items> rItems = new List<Items>() { Items.Tape, Items.Pliers, Items.Drill };
+        if (index == 0){
+            for (int i = 0; i < rItems.Count; i++)
+                UpdateItemCount(rItems[i], -LevelReqs[StaticDatas.PlayerData.StorageLevel].ItemCount);
+            StaticDatas.PlayerData.StorageLevel++;
+        }
+        else if (index == 1){
+            UpdateItemCount(Items.ToolSet, -LevelReqs[StaticDatas.PlayerData.StorageLevel].ToolSet);
+            StaticDatas.PlayerData.StorageLevel += 2;
+        }
+        StaticDatas.SaveDatas();
+        PopulateExpand();
+        UpdateBoxItems();
+    }
+    #endregion
 }

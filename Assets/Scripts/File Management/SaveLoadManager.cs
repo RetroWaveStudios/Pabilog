@@ -16,8 +16,8 @@ public class SaveLoadManager : MonoBehaviour
             ppIndex = 0,
 
             XP = 0,
-            Coin = 300,
-            Crystal = 5,
+            Coin = 300000,
+            Crystal = 500,
             FoodLevel = 1,
             Food = new FoodSystem()
             {
@@ -64,7 +64,8 @@ public class SaveLoadManager : MonoBehaviour
 
                 currency = Currency.Coin,
                 price = 350
-            }
+            },
+            currentChanceOfLB = 5f
         },
         unlocked_items = new u_items()
         {
@@ -219,7 +220,8 @@ public class SaveLoadManager : MonoBehaviour
                 }
             }
         },
-        StorageCapacity = 150,
+
+        StorageLevel = 1,
         ShopSlotCount = 3
     };
     private const int CURRENT_VERSION = 1;

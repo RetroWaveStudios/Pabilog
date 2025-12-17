@@ -5,8 +5,10 @@ using UnityEngine.UI;
 
 public class LuckyBox : MonoBehaviour
 {
-    public float baseChance = 5f;       // Starting chance
-    public float chanceIncrease = 0.3f; // Per fail
+    public static LuckyBox instance;
+
+    public float baseChance = 0f;       // Starting chance
+    public float chanceIncrease = 0.2f; // Per fail
     public float maxChance = 65f;       // Hard cap
     public float currentChance = 0f;
 
@@ -17,13 +19,18 @@ public class LuckyBox : MonoBehaviour
 
     public List<ItemCount> repeatedTimes;
 
-    public Items TheItem;
+    public Items TheItem = Items.None;
     public Image itemImage;
 
     public int openedBoxs = 0;
 
+    private Animator anim;
+
     private void Awake()
     {
+        instance = this;
+        anim = GetComponent<Animator>();
+        currentChance = StaticDatas.PlayerData.PlayerInfos.currentChanceOfLB;
         BuildItemPool();
     }
 
@@ -38,6 +45,7 @@ public class LuckyBox : MonoBehaviour
         Shuffle(itemPool);
     }
 
+    /*
     public void RepeatIntTimes()
     {
         openedNumbers.Clear();
@@ -69,19 +77,20 @@ public class LuckyBox : MonoBehaviour
         {
             TryToFindBox();
         }
-    }
-    public bool TryToFindBox()
+    }*/
+
+    public void TryToFindBox()
     {
         if (Random.value < currentChance * 0.01f)
         {
             openedNumbers.Add(currentChance);
             Debug.Log($"opened at {currentChance} try");
             SetBox();
-            return true;
         }
 
         currentChance = Mathf.Min(currentChance + chanceIncrease, maxChance);
-        return false;
+        StaticDatas.PlayerData.PlayerInfos.currentChanceOfLB = currentChance;
+        StaticDatas.SaveDatas();
     }
 
     public static void Shuffle<T>(List<T> list)
@@ -98,12 +107,27 @@ public class LuckyBox : MonoBehaviour
         PickAItem();
         Debug.Log("Box Opened");
         currentChance = baseChance;
+        StaticDatas.PlayerData.PlayerInfos.currentChanceOfLB = currentChance;
+        StaticDatas.SaveDatas();
     }
 
     private void PickAItem()
     {
         TheItem = itemPool[Random.Range(0, itemPool.Count)];
-        itemImage.sprite = Sprites.instance.sprites.items.Find(e => e.item == TheItem).sprite;
         openedItems.Add(TheItem);
+        anim.SetTrigger("Drop Box");
+    }
+
+    public void OpenTheBox()
+    {
+        itemImage.sprite = Sprites.instance.sprites.items.Find(e => e.item == TheItem).sprite;
+        anim.SetTrigger("Open Box");
+    }
+
+    public void TakeItem()
+    {
+        anim.SetTrigger("Close Screen");
+        Storage.instance.UpdateItemCount(TheItem, 1);
+        StaticDatas.SaveDatas();
     }
 }
