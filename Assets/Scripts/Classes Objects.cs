@@ -86,7 +86,8 @@ public enum AProducts
 public enum ASpotState
 {
     Empty,
-    HasAnimal
+    HasAnimal,
+    Broken
 }
 
 public enum Currency
@@ -571,6 +572,8 @@ public class FoodLevelSystem
 
     public int progTimerDec; // by %
     public int foodTimerInc; // by %
+
+    public int productionX;
 
     public int xp;
 }

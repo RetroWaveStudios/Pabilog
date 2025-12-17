@@ -42,6 +42,8 @@ public class FoodPL : MonoBehaviour
     public TextMeshProUGUI nPTD;
     public TextMeshProUGUI cFTI;
     public TextMeshProUGUI nFTI;
+    public TextMeshProUGUI cPrX;
+    public TextMeshProUGUI nPrX;
 
     public List<int> sPrices = new List<int>() { 300, 500, 750 };
 
@@ -434,9 +436,11 @@ public class FoodPL : MonoBehaviour
             {
                 cPTD.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].progTimerDec.ToString() + "%";
                 cFTI.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].foodTimerInc.ToString() + "%";
+                cPrX.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].productionX.ToString() + "X";
 
                 nPTD.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].progTimerDec.ToString() + "%";
                 nFTI.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].foodTimerInc.ToString() + "%";
+                nPrX.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].productionX.ToString() + "X";
 
                 NextWell.sprite = MachineImages[StaticDatas.PlayerData.PlayerInfos.FoodLevel];
             }
@@ -473,7 +477,8 @@ public class FoodPL : MonoBehaviour
             TheFood f = new TheFood()
             {
                 pTimer = materials[i].pTimer - (((materials[i].pTimer) / 100) * lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].progTimerDec),
-                foodTimer = materials[i].foodTimer += ((materials[i].foodTimer) / 100) * lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].foodTimerInc
+                foodTimer = materials[i].foodTimer += ((materials[i].foodTimer) / 100) * lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].foodTimerInc,
+                collectAmount = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].productionX
             };
             materials[i].pTimer = f.pTimer;
         }

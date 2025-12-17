@@ -126,7 +126,7 @@ public class Machine : MonoBehaviour
 
     private void MachineClicked()
     {
-        ProductionLogic.instance.ResetSituation(); 
+        ProductionLogic.instance.DeSelectProductAtAllMachines(); 
         MachinePH.instance.mp = mProducts; 
         MachinePH.instance.PopulateHolder(); 
         Debug.Log("sent to populateHolder");
@@ -389,8 +389,6 @@ public class Machine : MonoBehaviour
                 Storage.instance.UpdateAPCount(c_product.ap_Used[i].animal_products, -c_product.ap_Used[i].count);
             for (int i = 0; i < c_product.pr_Used.Count; i++)
                 Storage.instance.UpdateProductCount(c_product.pr_Used[i].product, -c_product.pr_Used[i].count);
-            foreach (Transform item in MachinePH.instance.Holder) Destroy(item.gameObject);
-            if (PlantsHolder.instance != null) PlantsHolder.instance.PopulatePlantsHolder();
 
             // new tf processed item
             PrD newItem = c_product.Clone();
@@ -399,9 +397,7 @@ public class Machine : MonoBehaviour
             List<PrD> inqueue = mStats.queue;
 
             if (inqueue.Count == 0)
-            {
                 newItem.Time = DateTime.UtcNow.ToString("o");
-            }
             else
             {
                 DateTime lastFinish = DateTime.Parse(inqueue[inqueue.Count - 1].Time, null, System.Globalization.DateTimeStyles.RoundtripKind);
@@ -421,6 +417,9 @@ public class Machine : MonoBehaviour
             PopulateQueue();
             PopulateShelf();
             StaticDatas.SaveDatas();
+            if(mStats.queue.Count == mStats.qLimit)
+                foreach (Transform item in MachinePH.instance.Holder) Destroy(item.gameObject);
+            if (PlantsHolder.instance != null) PlantsHolder.instance.PopulatePlantsHolder();
             ShelfHolder.gameObject.SetActive(true);
             prChoosed = false;
         }

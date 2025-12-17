@@ -126,13 +126,18 @@ public class FarmingTS : MonoBehaviour
     {
         anim.SetTrigger("Plow Land");
         is_plowing = true;
-        if (!Storage.instance.hasEnought(Items.Rake, 1, false)) MoneySystem.instance.UpdateCyrstal(-1);
+        if (Storage.instance.hasEnought(Items.Rake, 1, false))
+            Storage.instance.UpdateItemCount(Items.Rake, -1);
+        else MoneySystem.instance.UpdateCyrstal(-1);
     }
 
     private void WaterLand()
     {
         anim.SetTrigger("Water Land");
         is_watering = true;
+
+        if (StaticDatas.PlayerData.PlayerInfos.Water.amount > 2) WaterSL.instance.TriggerAmount(-2);
+        else MoneySystem.instance.UpdateCyrstal(-1);
     }
 
     public void ChoosePlant(Plants plant)
@@ -243,7 +248,7 @@ public class FarmingTS : MonoBehaviour
     private void PauseGrowth()
     {
         ThePlant.hasWater = false;
-        anim.SetBool("ShowTimer", false);
+        anim.SetBool("Show Timer", false);
         Debug.Log("Time deleted");
         ThePlant.pauseTime += ThePlant.wTimer;
         ThePlant.waterTime = "";
@@ -357,8 +362,6 @@ public class FarmingTS : MonoBehaviour
             StaticDatas.PlayerData.FarmSlots[SlotNumber].state = landstate;
             StaticDatas.PlayerData.FarmSlots[SlotNumber].usage = 0;
             btn.onClick.RemoveAllListeners();
-            if(Storage.instance.hasEnought(Items.Rake, 1, false))
-                Storage.instance.UpdateItemCount(Items.Rake, -1);
             is_plowing = false;
             StaticDatas.SaveDatas();
             LuckyBox.instance.TryToFindBox();
@@ -369,9 +372,6 @@ public class FarmingTS : MonoBehaviour
             landstate = LandState.Empty;
             StaticDatas.PlayerData.FarmSlots[SlotNumber].state = landstate;
             btn.onClick.RemoveAllListeners();
-
-            if (StaticDatas.PlayerData.PlayerInfos.Water.amount > 2) WaterSL.instance.TriggerAmount(-2);
-            else MoneySystem.instance.UpdateCyrstal(-1);
 
             is_watering = false;
             StaticDatas.SaveDatas();

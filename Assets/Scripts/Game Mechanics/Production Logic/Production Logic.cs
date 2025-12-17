@@ -61,7 +61,12 @@ public class ProductionLogic : MonoBehaviour
     public void ResetSituation()
     {
         foreach (Transform item in MachinePH.instance.Holder) Destroy(item.gameObject);
-        for (int i = 0; i < Machines.Count; i++) Machines[i].GetComponent<Machine>().prChoosed = false;
+        DeSelectProductAtAllMachines();
         if (canvasGroup != null) StaticDatas.AdjustCanvasGroup(canvasGroup, false);
+    }
+
+    public void DeSelectProductAtAllMachines()
+    {
+        for (int i = 0; i < Machines.Count; i++) Machines[i].GetComponent<Machine>().prChoosed = false;
     }
 }

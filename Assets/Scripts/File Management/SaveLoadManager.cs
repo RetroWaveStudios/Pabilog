@@ -16,8 +16,8 @@ public class SaveLoadManager : MonoBehaviour
             ppIndex = 0,
 
             XP = 0,
-            Coin = 300000,
-            Crystal = 500,
+            Coin = 1000,
+            Crystal = 10,
             FoodLevel = 1,
             Food = new FoodSystem()
             {
@@ -60,7 +60,7 @@ public class SaveLoadManager : MonoBehaviour
                 fTimer = 0.5, // by minutes
                 WateringTimer = 3,
                 MaxAmount = 20,
-                amount = 5,
+                amount = 20,
 
                 currency = Currency.Coin,
                 price = 350

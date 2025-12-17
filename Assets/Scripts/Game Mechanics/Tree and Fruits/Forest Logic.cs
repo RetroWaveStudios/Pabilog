@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Diagnostics;
-
 public class ForestLogic : MonoBehaviour
 {
     public static ForestLogic instance;
