@@ -335,11 +335,12 @@ public class Storage : MonoBehaviour
         {
             AStorageLevel nlevel = proto.Clone();
             int tbr = 1;
+            
             if (i > 0) tbr = (i / 10) + 1;
             nlevel = new AStorageLevel()
             {
                 LevelNumber = i,
-                ItemCount = i + 3,
+                ItemCount = (i - 1) + 3,
 
                 ToolSet = tbr,
                 Capacity = 150 + (i * 25)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -8,7 +9,7 @@ public class PlantsHolder : MonoBehaviour
     public static PlantsHolder instance;
     public Transform ph;
     public GameObject PlantPrefab;
-    public List<GameObject> Plants = new();
+    public List<GameObject> PlantsInPH = new();
 
     public Transform Farm;
     private void Awake()
@@ -20,7 +21,7 @@ public class PlantsHolder : MonoBehaviour
 
     public void PopulatePlantsHolder()
     {
-        Plants = new();
+        PlantsInPH = new();
         int hindex = 0;
         foreach (Transform item in ph) Destroy(item.gameObject);
         for (int i = 0; i < StaticDatas.PlayerData.unlocked_items.u_plants.Count; i++)
@@ -39,23 +40,6 @@ public class PlantsHolder : MonoBehaviour
 
                 dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant == p).sprite;
 
-                dublicate.transform.Find("Details").gameObject.SetActive(true);
-                dublicate.transform.Find("Details").gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 30);
-                dublicate.transform.Find("Details").GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -20, 0);
-
-                if (Storage.instance.hasEnought(p, 1, false))
-                {
-                    dublicate.transform.Find("Details/Count").gameObject.SetActive(true);
-                    dublicate.transform.Find("Details/Count").GetComponent<TextMeshProUGUI>().text = Storage.instance.Boxes.Find(e => e.GetComponent<S_Box>().plant == p).GetComponent<S_Box>().count.ToString();
-                }
-                else
-                {
-                    dublicate.transform.Find("Details/Price").gameObject.SetActive(true);
-                    dublicate.transform.Find("Details/Icon").gameObject.SetActive(true);
-                    dublicate.transform.Find("Details/Icon").GetComponent<Image>().sprite = Sprites.instance.sprites.currencies.Find(e => e.Currency == Currency.Crystal).sprite;
-                    dublicate.transform.Find("Details/Price").GetComponent<TextMeshProUGUI>().text = "1";
-                }
-
                 #region Info Button detailing
                     GameObject ib = Instantiate(Sprites.instance.InfoButtonPrefab, dublicate.transform);
                     RectTransform ibrts = ib.GetComponent<RectTransform>();
@@ -66,23 +50,24 @@ public class PlantsHolder : MonoBehaviour
                     ib.GetComponent<InfoDetails>().index = hindex;
                 #endregion
 
-                Plants.Add(dublicate);
+                PlantsInPH.Add(dublicate);
+                UpdateCountOfPlants();
                 hindex++;
             }
         }
 
         GridLayoutGroup glg = ph.GetComponent<GridLayoutGroup>();
         RectTransform rts = ph.GetComponent<RectTransform>();
-        rts.sizeDelta = new Vector2((Plants.Count * glg.cellSize.x) + ((Plants.Count - 1) * glg.spacing.x) + glg.padding.left + glg.padding.right + 115, 160);
+        rts.sizeDelta = new Vector2((PlantsInPH.Count * glg.cellSize.x) + ((PlantsInPH.Count - 1) * glg.spacing.x) + glg.padding.left + glg.padding.right + 115, 160);
         if (rts.sizeDelta.x < 1000) rts.sizeDelta = new Vector2(1000, rts.sizeDelta.y);
     }
 
     private void PHChoosePlant(int chosen, Plants plant)
     {
-        for (int s = 0; s < Plants.Count; s++)
+        for (int s = 0; s < PlantsInPH.Count; s++)
         {
-            if (s == chosen) Plants[s].GetComponent<Image>().color = new Color32(255, 255, 255, 255);
-            else Plants[s].GetComponent<Image>().color = new Color32(100, 100, 100, 255);
+            if (s == chosen) PlantsInPH[s].GetComponent<Image>().color = new Color32(255, 255, 255, 255);
+            else PlantsInPH[s].GetComponent<Image>().color = new Color32(100, 100, 100, 255);
         }
         for (int i = 0; i < FarmLogic.instance.Slots.Count; i++)
         {
@@ -91,6 +76,35 @@ public class PlantsHolder : MonoBehaviour
             {
                 script.btn.onClick.RemoveAllListeners();
                 script.btn.onClick.AddListener(() => script.ChoosePlant(plant));
+            }
+        }
+    }
+
+    public void UpdateCountOfPlants()
+    {
+        for (int s = 0; s < PlantsInPH.Count; s++)
+        {
+            GameObject plant = PlantsInPH[s];
+
+            if(Enum.TryParse(plant.name, out Plants p))
+
+            plant.transform.Find("Details").gameObject.SetActive(true);
+            foreach (Transform item in plant.transform.Find("Details")) item.gameObject.SetActive(false);
+
+            plant.transform.Find("Details").gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 30);
+            plant.transform.Find("Details").GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -20, 0);
+
+            if (Storage.instance.hasEnought(p, 1, false))
+            {
+                plant.transform.Find("Details/Count").gameObject.SetActive(true);
+                plant.transform.Find("Details/Count").GetComponent<TextMeshProUGUI>().text = Storage.instance.Boxes.Find(e => e.GetComponent<S_Box>().plant == p).GetComponent<S_Box>().count.ToString();
+            }
+            else
+            {
+                plant.transform.Find("Details/Price").gameObject.SetActive(true);
+                plant.transform.Find("Details/Icon").gameObject.SetActive(true);
+                plant.transform.Find("Details/Icon").GetComponent<Image>().sprite = Sprites.instance.sprites.currencies.Find(e => e.Currency == Currency.Crystal).sprite;
+                plant.transform.Find("Details/Price").GetComponent<TextMeshProUGUI>().text = "1";
             }
         }
     }

@@ -37,6 +37,14 @@ public class WaterSL : MonoBehaviour
 
     private Animator anim;
 
+    [Header("Tap Tap Parameters")]
+    public float cooldown;
+    public bool tcd;
+    public float increasement = 0.12f;
+
+    public float finalReturn = 0;
+    public int tapCount;
+
     private void Awake()
     {
         anim = GetComponent<Animator>();
@@ -55,6 +63,14 @@ public class WaterSL : MonoBehaviour
             StaticDatas.PlayerData.PlayerInfos.Water.fillTime = "";
 
         if (StaticDatas.PlayerData.PlayerInfos.WellLevel >= WaterLevels.Count) UpgradeButton.SetActive(false);
+        if(tcd)
+            cooldown -= Time.deltaTime;
+        if (cooldown <= 0)
+        {
+            tapCount = 0;
+            finalReturn = 0;
+            tcd = false;
+        }
     }
 
     public void OpenDetails()
@@ -249,6 +265,7 @@ public class WaterSL : MonoBehaviour
             anim.SetTrigger("Add Water");
         else if (amount < 0)
             anim.SetTrigger("Remove Water");
+        UpdateWaterAmount();
     }
 
     public void UpdateWaterAmount()
@@ -261,5 +278,24 @@ public class WaterSL : MonoBehaviour
     {
         if (StaticDatas.PlayerData.PlayerInfos.Water.amount >= amount) return true;
         else { PushNotice.instance.Push("No Enough Water", PushType.Alert); return false; }
+    }
+
+    public void TapTapWell()
+    {
+        if(StaticDatas.PlayerData.PlayerInfos.Water.amount < StaticDatas.PlayerData.PlayerInfos.Water.MaxAmount)
+        {
+            tapCount++;
+            tcd = true;
+
+            finalReturn += increasement; // each tap contributes
+            transform.Find("Water Well/Holder Colored/Details/Tap Value").GetComponent<TextMeshProUGUI>().text = finalReturn.ToString();
+            if (finalReturn >= 1f)
+            {
+                int waterGained = Mathf.FloorToInt(finalReturn);
+                TriggerAmount(waterGained);
+                finalReturn -= waterGained;
+            }
+            cooldown = 1f;
+        }
     }
 }

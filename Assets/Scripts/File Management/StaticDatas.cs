@@ -109,4 +109,13 @@ public class StaticDatas : MonoBehaviour
         cg.interactable = onoff;
         cg.blocksRaycasts = onoff;
     }
+
+    public static void Shuffle<T>(List<T> list)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            int rand = UnityEngine.Random.Range(i, list.Count);
+            (list[i], list[rand]) = (list[rand], list[i]);
+        }
+    }
 }

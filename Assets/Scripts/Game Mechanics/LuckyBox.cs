@@ -1,16 +1,19 @@
 ﻿using System.Collections.Generic;
-using System.IO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class LuckyBox : MonoBehaviour
 {
     public static LuckyBox instance;
 
     public float baseChance = 0f;       // Starting chance
-    public float chanceIncrease = 0.2f; // Per fail
+    public float chanceIncrease = 0.25f; // Per fail
     public float maxChance = 65f;       // Hard cap
     public float currentChance = 0f;
+
+    public TextMeshProUGUI chanceText;
 
     public List<ItemCount> ItProPers; // Item Probability Persentage
     public List<Items> itemPool;
@@ -29,6 +32,9 @@ public class LuckyBox : MonoBehaviour
     private void Awake()
     {
         instance = this;
+
+        chanceText.text = Math.Round(currentChance, 2).ToString();
+        chanceText.color = Color.white;
         anim = GetComponent<Animator>();
         currentChance = StaticDatas.PlayerData.PlayerInfos.currentChanceOfLB;
         BuildItemPool();
@@ -38,11 +44,9 @@ public class LuckyBox : MonoBehaviour
     {
         itemPool = new List<Items>();
         foreach (var it in ItProPers)
-        {
             for (int i = 0; i < it.count; i++)
                 itemPool.Add(it.item);
-        }
-        Shuffle(itemPool);
+        StaticDatas.Shuffle(itemPool);
     }
 
     /*
@@ -81,7 +85,8 @@ public class LuckyBox : MonoBehaviour
 
     public void TryToFindBox()
     {
-        if (Random.value < currentChance * 0.01f)
+        float chance = UnityEngine.Random.value * 100;
+        if (chance > 20f && chance < currentChance)
         {
             openedNumbers.Add(currentChance);
             Debug.Log($"opened at {currentChance} try");
@@ -89,23 +94,19 @@ public class LuckyBox : MonoBehaviour
         }
 
         currentChance = Mathf.Min(currentChance + chanceIncrease, maxChance);
+        chanceText.text = Math.Round(currentChance, 2).ToString();
+        chanceText.color = Color.white;
         StaticDatas.PlayerData.PlayerInfos.currentChanceOfLB = currentChance;
         StaticDatas.SaveDatas();
     }
 
-    public static void Shuffle<T>(List<T> list)
-    {
-        for (int i = 0; i < list.Count; i++)
-        {
-            int rand = Random.Range(i, list.Count);
-            (list[i], list[rand]) = (list[rand], list[i]);
-        }
-    }
     private void SetBox()
     {
-        Shuffle(itemPool);
+        StaticDatas.Shuffle(itemPool);
         PickAItem();
         Debug.Log("Box Opened");
+        chanceText.text = currentChance.ToString();
+        chanceText.color = Color.green;
         currentChance = baseChance;
         StaticDatas.PlayerData.PlayerInfos.currentChanceOfLB = currentChance;
         StaticDatas.SaveDatas();
@@ -113,7 +114,7 @@ public class LuckyBox : MonoBehaviour
 
     private void PickAItem()
     {
-        TheItem = itemPool[Random.Range(0, itemPool.Count)];
+        TheItem = itemPool[UnityEngine.Random.Range(0, itemPool.Count)];
         openedItems.Add(TheItem);
         anim.SetTrigger("Drop Box");
     }

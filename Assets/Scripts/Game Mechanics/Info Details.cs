@@ -99,7 +99,7 @@ public class InfoDetails : MonoBehaviour
     {
         if (item is Plants)
         {
-            List<GameObject> plants = PlantsHolder.instance.Plants;
+            List<GameObject> plants = PlantsHolder.instance.PlantsInPH;
             for (int i = 0; i < plants.Count; i++)
             {
                 if(i != index && plants[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool("Details"))

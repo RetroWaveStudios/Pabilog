@@ -180,6 +180,7 @@ public enum Items
 {
     Rake,   // for plow farm land
     Axe,    // for remove stump
+
     Bolt,   // to fix broken machine
     Screw,  // to fix broken machine
     Hammer, // to fix broken machine
@@ -190,6 +191,17 @@ public enum Items
 
     ToolSet,    // to upgrade Storage
     None
+}
+
+public enum BoxTypes
+{
+    ProductBox,
+    Wooden,
+    Copper,
+    Iron,
+    Golden,
+    Master,
+    Ancient
 }
 
 public enum Machines
@@ -503,6 +515,10 @@ public class MachineSprites
 
 #endregion
 
+#region Boxes
+
+#endregion
+
 #region PlayerInfos
 
 [System.Serializable]
@@ -532,7 +548,7 @@ public class TheFood
     public float pTimer;
 
     public int collectAmount;
-    public int foodTimer;
+    public float foodTimer;
     public string fillTime;
     public TheFood Clone()
     {
@@ -683,69 +699,6 @@ public class LevelSystem
 
 #endregion
 
-[System.Serializable]
-public class AStorageLevel
-{
-    public int LevelNumber;
-    public int ItemCount;
-
-    public int ToolSet;
-
-    public int Capacity;
-
-    public AStorageLevel Clone()
-    {
-        return new AStorageLevel()
-        {
-            LevelNumber = this.LevelNumber,
-            ItemCount = this.ItemCount,
-            ToolSet = this.ToolSet,
-            Capacity = this.Capacity,
-        };
-    }
-}
-
-[System.Serializable]
-public class StorageSprites
-{
-    public List<PlantSprites> plants;
-    public List<PGStages> StageSprites;
-    public List<PlantSprites> readySprites;
-
-    public List<TreeSprites> trees;
-    public List<TreeStages> TreeStageSprites;
-    public List<FruitSprites> fruits;
-
-    public List<AnimalSprites> animals;
-    public List<afSprites> AnimalFoodSprites;
-
-    public List<APSprites> a_products;
-
-    public List<PrSprites> products;
-
-    public List<MachineSprites> machines;
-
-    public List<ItemSprites> items;
-
-    public List<Curr_Sprites> currencies;
-}
-
-[System.Serializable]
-public class Curr_Sprites
-{
-    public string name;
-    public Currency Currency;
-    public Sprite sprite;
-}
-
-[System.Serializable]
-public class ItemSprites
-{
-    public string name;
-    public Items item;
-    public Sprite sprite;
-}
-
 #region PlayerDatas
     #region stats details
     [System.Serializable]
@@ -775,6 +728,7 @@ public class ItemSprites
     {
         public string MachineName;
         public ASpotState state;
+        public int usage;
         public int qLimit;
         public List<PrD> queue;
     }
@@ -925,3 +879,66 @@ public class PlayerDatas
     }
 }
 #endregion
+
+[System.Serializable]
+public class AStorageLevel
+{
+    public int LevelNumber;
+    public int ItemCount;
+
+    public int ToolSet;
+
+    public int Capacity;
+
+    public AStorageLevel Clone()
+    {
+        return new AStorageLevel()
+        {
+            LevelNumber = this.LevelNumber,
+            ItemCount = this.ItemCount,
+            ToolSet = this.ToolSet,
+            Capacity = this.Capacity,
+        };
+    }
+}
+
+[System.Serializable]
+public class StorageSprites
+{
+    public List<PlantSprites> plants;
+    public List<PGStages> StageSprites;
+    public List<PlantSprites> readySprites;
+
+    public List<TreeSprites> trees;
+    public List<TreeStages> TreeStageSprites;
+    public List<FruitSprites> fruits;
+
+    public List<AnimalSprites> animals;
+    public List<afSprites> AnimalFoodSprites;
+
+    public List<APSprites> a_products;
+
+    public List<PrSprites> products;
+
+    public List<MachineSprites> machines;
+
+    public List<ItemSprites> items;
+
+    public List<Curr_Sprites> currencies;
+}
+
+[System.Serializable]
+public class Curr_Sprites
+{
+    public string name;
+    public Currency Currency;
+    public Sprite sprite;
+}
+
+[System.Serializable]
+public class ItemSprites
+{
+    public string name;
+    public Items item;
+    public Sprite sprite;
+}

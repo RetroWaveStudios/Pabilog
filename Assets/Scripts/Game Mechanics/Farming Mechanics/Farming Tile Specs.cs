@@ -155,7 +155,7 @@ public class FarmingTS : MonoBehaviour
             if (Storage.instance.hasEnought(plant, 1, false))
                 Storage.instance.UpdatePlantCount(ThePlant.plant, -ThePlant.price);
             else MoneySystem.instance.UpdateCyrstal(-1);
-            PlantsHolder.instance.PopulatePlantsHolder();
+            PlantsHolder.instance.UpdateCountOfPlants();
             Plant();
         }
     }
@@ -262,6 +262,7 @@ public class FarmingTS : MonoBehaviour
         if (WaterSL.instance.hasEnoughWater(1))
         {
             ThePlant.hasWater = true;
+            ThePlant.wTimer = StaticDatas.PlayerData.PlayerInfos.Water.WateringTimer;
             ThePlant.waterTime = DateTime.UtcNow.ToString("o");
             WaterSL.instance.TriggerAmount(-1);
             Debug.Log("Saving details");
@@ -324,7 +325,7 @@ public class FarmingTS : MonoBehaviour
     {
         if (ThePlant.state == PlantState.ReadyToHarvest && Storage.instance.hasEnStorage(ThePlant.harvestAmount))
         {
-            anim.SetBool("ShowTimer", false);
+            anim.SetBool("Show Timer", false);
             Storage.instance.UpdatePlantCount(ThePlant.plant, ThePlant.harvestAmount);
             Storage.instance.UpdateBoxItems();
 
@@ -341,7 +342,7 @@ public class FarmingTS : MonoBehaviour
             CheckUsage();
 
             StaticDatas.PlayerData.FarmSlots[SlotNumber].state = landstate;
-            PlantsHolder.instance.PopulatePlantsHolder();
+            PlantsHolder.instance.UpdateCountOfPlants();
             StaticDatas.SaveDatas();
             LuckyBox.instance.TryToFindBox();
         }

@@ -273,7 +273,7 @@ public class TreeSlot : MonoBehaviour
             w = TheTree.WaterAmoutByStage[TheTree.stage] - (int)pieceforMinute;
             if (wateramount == w) TheTree.wTimer = TheTree.wTimerByStages[TheTree.stage] - TheTree.pauseTime;
             else TheTree.wTimer = TheTree.wTimerByStages[TheTree.stage] / TheTree.WaterAmoutByStage[TheTree.stage];
-            anim.SetBool("ShowWatering", false);
+            anim.SetBool("Show Watering", false);
 
             if (SlotNumber < ForestLogic.instance.maxSlotCount - 4)
             {

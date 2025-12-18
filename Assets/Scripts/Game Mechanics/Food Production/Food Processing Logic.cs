@@ -216,6 +216,7 @@ public class FoodPL : MonoBehaviour
                     PopulateMatHolder();
                 }
                 PopulateSchedule();
+                PlantsHolder.instance.UpdateCountOfPlants();
             }
         }
 
@@ -420,10 +421,10 @@ public class FoodPL : MonoBehaviour
                 }
                 else return;
 
-                if (lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].currency == Currency.Coin)
-                    MoneySystem.instance.UpdateCoin(-lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].price);
-                else if (lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].currency == Currency.Crystal)
-                    MoneySystem.instance.UpdateCyrstal(-lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].price);
+                if (lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].currency == Currency.Coin)
+                    MoneySystem.instance.UpdateCoin(-lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].price);
+                else if (lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].currency == Currency.Crystal)
+                    MoneySystem.instance.UpdateCyrstal(-lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].price);
             }
         }
 
@@ -436,11 +437,11 @@ public class FoodPL : MonoBehaviour
             {
                 cPTD.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].progTimerDec.ToString() + "%";
                 cFTI.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].foodTimerInc.ToString() + "%";
-                cPrX.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].productionX.ToString() + "X";
+                cPrX.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].productionX.ToString() + "x";
 
                 nPTD.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].progTimerDec.ToString() + "%";
                 nFTI.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].foodTimerInc.ToString() + "%";
-                nPrX.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].productionX.ToString() + "X";
+                nPrX.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].productionX.ToString() + "x";
 
                 NextWell.sprite = MachineImages[StaticDatas.PlayerData.PlayerInfos.FoodLevel];
             }
@@ -471,16 +472,17 @@ public class FoodPL : MonoBehaviour
 
     private void changeFood()
     {
-        List<TheFood> m = new List<TheFood>();
         for (int i = 0; i < materials.Count; i++)
         {
             TheFood f = new TheFood()
             {
                 pTimer = materials[i].pTimer - (((materials[i].pTimer) / 100) * lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].progTimerDec),
-                foodTimer = materials[i].foodTimer += ((materials[i].foodTimer) / 100) * lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].foodTimerInc,
+                foodTimer = materials[i].foodTimer + (((materials[i].foodTimer) / 100) * lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].foodTimerInc),
                 collectAmount = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].productionX
             };
             materials[i].pTimer = f.pTimer;
+            materials[i].foodTimer = f.foodTimer;
+            materials[i].collectAmount = f.collectAmount;
         }
         CalSumAmount();
         StaticDatas.PlayerData.PlayerInfos.Food.materials = materials;
