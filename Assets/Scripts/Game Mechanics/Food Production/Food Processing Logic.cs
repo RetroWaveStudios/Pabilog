@@ -9,7 +9,7 @@ public class FoodPL : MonoBehaviour
     public static FoodPL instance;
     public List<TheFood> materials;
     public List<FoodLevelSystem> lSystem;
-    private Animator anim;
+    public Animator anim;
 
     public TextMeshProUGUI AnimalFoodText;
 
@@ -118,6 +118,8 @@ public class FoodPL : MonoBehaviour
     #region Animations
         public void OpenDetails()
         {
+            if (WaterSL.instance.anim.GetBool("Open Water Details"))
+                WaterSL.instance.anim.SetBool("Open Water Details", false);
             if (isAnTrue("Open Upgrade"))
                 CloseUpgrade();
             else if (isAnTrue("Open MH"))
@@ -347,7 +349,7 @@ public class FoodPL : MonoBehaviour
             if(MoneySystem.instance.hasEnough(Currency.Coin, sPrices[StaticDatas.PlayerData.PlayerInfos.Food.qLimit - 1]))
             {
                 StaticDatas.PlayerData.PlayerInfos.Food.qLimit++;
-                MoneySystem.instance.UpdateCoin(-sPrices[StaticDatas.PlayerData.PlayerInfos.Food.qLimit - 2]);
+                MoneySystem.instance.UpdateCoin(-sPrices[StaticDatas.PlayerData.PlayerInfos.Food.qLimit - 2], out bool s);
                 Transform child = qholder.Find("Buy Slot");
                 StaticDatas.SaveDatas();
                 if (child != null) Destroy(child.gameObject);
@@ -392,7 +394,7 @@ public class FoodPL : MonoBehaviour
             StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == type).amount >= amount)
             return true;
         else{
-            if(push) PushNotice.instance.Push($"No Enought {type.ToString()} Animal Food", PushType.Alert);
+            if(push) PushNotice.instance.Push($"No Enough {type.ToString()} Animal Food", PushType.Alert);
             return false;
         }
     }
@@ -422,9 +424,9 @@ public class FoodPL : MonoBehaviour
                 else return;
 
                 if (lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].currency == Currency.Coin)
-                    MoneySystem.instance.UpdateCoin(-lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].price);
+                    MoneySystem.instance.UpdateCoin(-lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].price, out bool s);
                 else if (lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].currency == Currency.Crystal)
-                    MoneySystem.instance.UpdateCyrstal(-lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].price);
+                    MoneySystem.instance.UpdateCyrstal(-lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].price, out bool s);
             }
         }
 

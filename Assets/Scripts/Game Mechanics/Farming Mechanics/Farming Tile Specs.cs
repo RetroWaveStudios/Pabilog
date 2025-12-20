@@ -63,6 +63,7 @@ public class FarmingTS : MonoBehaviour
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(() => WaterLand());
             PauseBG.SetActive(true);
+            PauseBG.transform.Find("Count").gameObject.SetActive(true);
             if (StaticDatas.PlayerData.PlayerInfos.Water.amount >= 2 || is_watering)
             {
                 PauseBG.transform.Find("Count").GetComponent<TextMeshProUGUI>().text = "2";
@@ -84,6 +85,7 @@ public class FarmingTS : MonoBehaviour
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(() => PlowLand());
             PauseBG.SetActive(true);
+            PauseBG.transform.Find("Count").gameObject.SetActive(true);
             if (Storage.instance.hasEnought(Items.Rake, 1, false) || is_plowing)
             {
                 PauseBG.transform.Find("Count").GetComponent<TextMeshProUGUI>().text = "1";
@@ -104,6 +106,7 @@ public class FarmingTS : MonoBehaviour
         {
             ThePlantImage.SetActive(true);
             ThePlantImage.transform.Find("The Plant").GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant == ThePlant.plant).sprite;
+            PauseBG.transform.Find("Count").gameObject.SetActive(false);
             infoText.gameObject.SetActive(false); waterTimerPot.SetActive(true);
             if (ThePlant.state == PlantState.Growing)
             {
@@ -124,39 +127,56 @@ public class FarmingTS : MonoBehaviour
 
     private void PlowLand()
     {
-        anim.SetTrigger("Plow Land");
-        is_plowing = true;
+        bool enought = false;
         if (Storage.instance.hasEnought(Items.Rake, 1, false))
             Storage.instance.UpdateItemCount(Items.Rake, -1);
-        else MoneySystem.instance.UpdateCyrstal(-1);
+        else MoneySystem.instance.UpdateCyrstal(-1, out enought);
+
+        if(enought)
+        {
+            anim.SetTrigger("Plow Land");
+            is_plowing = true;
+
+            StaticDatas.PlayerData.FarmSlots[SlotNumber].plowed++;
+        }
     }
 
     private void WaterLand()
     {
-        anim.SetTrigger("Water Land");
-        is_watering = true;
-
+        bool enought = false;
         if (StaticDatas.PlayerData.PlayerInfos.Water.amount > 2) WaterSL.instance.TriggerAmount(-2);
-        else MoneySystem.instance.UpdateCyrstal(-1);
+        else MoneySystem.instance.UpdateCyrstal(-1, out enought);
+
+        if (enought)
+        {
+            anim.SetTrigger("Water Land");
+            is_watering = true;
+
+            StaticDatas.PlayerData.FarmSlots[SlotNumber].dried++;
+        }
     }
 
     public void ChoosePlant(Plants plant)
     {
         if (ThePlant.plant == Plants.None && WaterSL.instance.hasEnoughWater(1))
         {
-            Debug.Log("slotNumber: " + SlotNumber);
-            var proto = FarmLogic.instance.PlantDetails.Find(e => e.plant == plant);
-            ThePlant = proto.Clone(); // each slot gets its own copy
-            ThePlant.wTimer = StaticDatas.PlayerData.PlayerInfos.Water.WateringTimer;
-            Debug.Log($"The.Plant.plant = {ThePlant.plant}");
-            Debug.Log($"The.Plant.plant.ToString() = {ThePlant.plant.ToString()}");
-            ThePlant.name = ThePlant.plant.ToString();
-            transform.name = ThePlant.name;
+            bool enought = true;
             if (Storage.instance.hasEnought(plant, 1, false))
                 Storage.instance.UpdatePlantCount(ThePlant.plant, -ThePlant.price);
-            else MoneySystem.instance.UpdateCyrstal(-1);
-            PlantsHolder.instance.UpdateCountOfPlants();
-            Plant();
+            else MoneySystem.instance.UpdateCyrstal(-1, out enought);
+            if (enought)
+            {
+                Debug.Log("slotNumber: " + SlotNumber);
+                var proto = FarmLogic.instance.PlantDetails.Find(e => e.plant == plant);
+                ThePlant = proto.Clone(); // each slot gets its own copy
+                ThePlant.wTimer = StaticDatas.PlayerData.PlayerInfos.Water.WateringTimer;
+                Debug.Log($"The.Plant.plant = {ThePlant.plant}");
+                Debug.Log($"The.Plant.plant.ToString() = {ThePlant.plant.ToString()}");
+                ThePlant.name = ThePlant.plant.ToString();
+                transform.name = ThePlant.name;
+                PlantsHolder.instance.UpdateCountOfPlants();
+                Plant();
+            }
         }
     }
 

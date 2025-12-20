@@ -86,7 +86,7 @@ public class Machine : MonoBehaviour
         else
         {
             BrokenScreen.SetActive(false);
-            if (mStats.queue.Count < mStats.qLimit)
+            if (mStats.queue != null && mStats.queue.Count < mStats.qLimit)
             {
                 btn.onClick.AddListener(() => MachineClicked());
             }
@@ -220,7 +220,7 @@ public class Machine : MonoBehaviour
         if (MoneySystem.instance.hasEnough(Currency.Coin, FoodPL.instance.sPrices[mStats.qLimit - 1]))
         {
             mStats.qLimit++;
-            MoneySystem.instance.UpdateCoin(-FoodPL.instance.sPrices[mStats.qLimit - 2]);
+            MoneySystem.instance.UpdateCoin(-FoodPL.instance.sPrices[mStats.qLimit - 2], out bool s);
             Transform child = qHolder.Find("Buy Slot");
             if (child != null) Destroy(child.gameObject);
             PopulateQueue();
@@ -247,7 +247,7 @@ public class Machine : MonoBehaviour
         foreach (Transform item in prHolder) Destroy(item.gameObject);
         prs = new();
 
-        if (mStats.queue.Count == 0 && mStats.queue == null)
+        if (mStats.queue == null || mStats.queue.Count == 0)
             foreach (Transform item in ShelfHolder) Destroy(item.gameObject); ShelfHolder.gameObject.SetActive(false);
         //  Highlighting by count
         for (int i = 0; i < c_product.p_Used.Count; i++)

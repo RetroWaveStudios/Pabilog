@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class WaterSL : MonoBehaviour
 {
     public static WaterSL instance;
+    public Animator anim;
 
     public List<WaterSystem> WaterLevels;
 
@@ -35,12 +36,12 @@ public class WaterSL : MonoBehaviour
     public TextMeshProUGUI WaterText;
     public TextMeshProUGUI u_waterAmount;
 
-    private Animator anim;
 
     [Header("Tap Tap Parameters")]
     public float cooldown;
     public bool tcd;
     public float increasement = 0.12f;
+    public float baseInc = 0.12f;
 
     public float finalReturn = 0;
     public int tapCount;
@@ -69,6 +70,7 @@ public class WaterSL : MonoBehaviour
         {
             tapCount = 0;
             finalReturn = 0;
+            increasement = baseInc;
             tcd = false;
         }
     }
@@ -76,6 +78,8 @@ public class WaterSL : MonoBehaviour
     public void OpenDetails()
     {
         int id = Animator.StringToHash("Open Water Details");
+        if (FoodPL.instance.anim.GetBool("Open Details"))
+            FoodPL.instance.anim.SetBool("Open Details", false);
         if (isAnTrue("Open Water Details"))
             CloseUpgrade();
         anim.SetBool(id, !anim.GetBool(id));
@@ -137,10 +141,10 @@ public class WaterSL : MonoBehaviour
             }
             else return;
 
-            if (WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel].currency == Currency.Coin)
-                MoneySystem.instance.UpdateCoin(-WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel].price);
-            else if (WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel].currency == Currency.Crystal)
-                MoneySystem.instance.UpdateCyrstal(-WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel].price);
+            if (WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel - 1].currency == Currency.Coin)
+                MoneySystem.instance.UpdateCoin(-WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel - 1].price, out bool s);
+            else if (WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel - 1].currency == Currency.Crystal)
+                MoneySystem.instance.UpdateCyrstal(-WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel - 1].price, out bool s);
         }
     }
 
@@ -288,14 +292,16 @@ public class WaterSL : MonoBehaviour
             tcd = true;
 
             finalReturn += increasement; // each tap contributes
-            transform.Find("Water Well/Holder Colored/Details/Tap Value").GetComponent<TextMeshProUGUI>().text = finalReturn.ToString();
+            increasement += 0.03f;
+            float showFR = MathF.Round(finalReturn, 2);
+            transform.Find("Water Well/Holder Colored/Details/Tap Value").GetComponent<TextMeshProUGUI>().text = showFR.ToString();
             if (finalReturn >= 1f)
             {
                 int waterGained = Mathf.FloorToInt(finalReturn);
                 TriggerAmount(waterGained);
                 finalReturn -= waterGained;
             }
-            cooldown = 1f;
+            cooldown = 0.5f;
         }
     }
 }

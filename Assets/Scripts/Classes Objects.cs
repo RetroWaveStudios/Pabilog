@@ -706,6 +706,8 @@ public class LevelSystem
     {
         public LandState state;
         public int usage;
+        public int plowed;
+        public int dried;
         public PD PlantDetails;
     }
 

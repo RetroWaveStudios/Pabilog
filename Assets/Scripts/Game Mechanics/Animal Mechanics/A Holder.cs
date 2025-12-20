@@ -107,12 +107,11 @@ public class AHolder : MonoBehaviour
                             GameObject ib = Instantiate(Sprites.instance.InfoButtonPrefab, dublicate.transform);
                             RectTransform ibrts = ib.GetComponent<RectTransform>();
                             ibrts.anchoredPosition = new Vector2(0, 10);
-                            ibrts.anchorMax = new Vector2((float)0.5, 1);
-                            ibrts.anchorMin = new Vector2((float)0.5, 1);
+                            ibrts.anchorMax = new Vector2(0.5f, 1);
+                            ibrts.anchorMin = new Vector2(0.5f, 1);
 
-                            ib.GetComponent<InfoDetails>().item = ap;
-                            ib.GetComponent<InfoDetails>().sourceInfos = animal;
-                            ib.GetComponent<InfoDetails>().index = index;
+                            ib.GetComponent<InfoDetails>().btn.onClick.RemoveAllListeners();
+                            ib.GetComponent<InfoDetails>().btn.onClick.AddListener(() => ib.GetComponent<InfoDetails>().DetailsOnOff("Item", ap, animal, index));
                         #endregion
 
                         Button button = dublicate.GetComponent<Button>();

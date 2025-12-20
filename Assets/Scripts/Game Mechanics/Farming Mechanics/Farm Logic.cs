@@ -58,6 +58,17 @@ public class FarmLogic : MonoBehaviour
         GameObject dublicate = Instantiate(SlotPrefab, SlotsHolder);
         FarmingTS fts = dublicate.GetComponent<FarmingTS>();
         dublicate.name = StaticDatas.PlayerData.FarmSlots[i].PlantDetails.plant.ToString();
+
+        #region Info Button detailing
+            GameObject ib = Instantiate(Sprites.instance.InfoButtonPrefab, dublicate.transform);
+            RectTransform ibrts = ib.GetComponent<RectTransform>();
+            ibrts.anchoredPosition = new Vector2(0, 0);
+            ibrts.anchorMax = new Vector2(1, 1);
+            ibrts.anchorMin = new Vector2(1, 1);
+            ib.GetComponent<InfoDetails>().btn.onClick.RemoveAllListeners();
+            ib.GetComponent<InfoDetails>().btn.onClick.AddListener(() => ib.GetComponent<InfoDetails>().DetailsOnOff("Land", null, null, i));
+        #endregion
+
         fts.SlotNumber = i;
         fts.ThePlant = StaticDatas.PlayerData.FarmSlots[i].PlantDetails;
         fts.landstate = StaticDatas.PlayerData.FarmSlots[i].state;
@@ -87,7 +98,7 @@ public class FarmLogic : MonoBehaviour
         {
             StaticDatas.PlayerData.land_slot_count++;
             StaticDatas.UpdateFarmSlotDatas();
-            MoneySystem.instance.UpdateCoin(-p);
+            MoneySystem.instance.UpdateCoin(-p, out bool s);
             MoneySystem.instance.UpdateXp(xp);
             p = SlotPrices[StaticDatas.PlayerData.land_slot_count - 1];
             xp = BuyXP[StaticDatas.PlayerData.land_slot_count - 1];

@@ -44,10 +44,10 @@ public class PlantsHolder : MonoBehaviour
                     GameObject ib = Instantiate(Sprites.instance.InfoButtonPrefab, dublicate.transform);
                     RectTransform ibrts = ib.GetComponent<RectTransform>();
                     ibrts.anchoredPosition = new Vector2(0, 10);
-                    ibrts.anchorMax = new Vector2((float)0.5, 1);
-                    ibrts.anchorMin = new Vector2((float)0.5, 1);
-                    ib.GetComponent<InfoDetails>().item = p;
-                    ib.GetComponent<InfoDetails>().index = hindex;
+                    ibrts.anchorMax = new Vector2(0.5f, 1);
+                    ibrts.anchorMin = new Vector2(0.5f, 1);
+                    ib.GetComponent<InfoDetails>().btn.onClick.RemoveAllListeners();
+                    ib.GetComponent<InfoDetails>().btn.onClick.AddListener(() => ib.GetComponent<InfoDetails>().DetailsOnOff("Item", p, null, hindex));
                 #endregion
 
                 PlantsInPH.Add(dublicate);

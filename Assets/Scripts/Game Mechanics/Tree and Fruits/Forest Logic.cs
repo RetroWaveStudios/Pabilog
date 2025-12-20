@@ -75,8 +75,10 @@ public class ForestLogic : MonoBehaviour
         for (int i = 0; i < Slots.Count; i++)
         {
             TreeSlot tl = Slots[i].GetComponent<TreeSlot>();
-            if (tl.landstate == LandState.Empty)
+            if (tl.landstate == LandState.Empty){
                 tl.btn.onClick.RemoveAllListeners();
+                tl.btn.onClick.AddListener(() => tl.SlotClicked());
+            }
             else if (tl.landstate == LandState.Stumped)
                 tl.isAxing = false;
         }

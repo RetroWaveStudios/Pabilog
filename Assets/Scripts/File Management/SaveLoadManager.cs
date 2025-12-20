@@ -16,8 +16,8 @@ public class SaveLoadManager : MonoBehaviour
             ppIndex = 0,
 
             XP = 0,
-            Coin = 1000,
-            Crystal = 10,
+            Coin = 1500,
+            Crystal = 15,
             FoodLevel = 1,
             Food = new FoodSystem()
             {

@@ -13,6 +13,7 @@ public class MenuHovering : MonoBehaviour
 
     public void OpenMenu(int index)
     {
+        ResetStates();
         for (int i = 0; i < Menus.Count; i++)
         {
             if (i == index) StaticDatas.AdjustCanvasGroup(Menus[i].GetComponent<CanvasGroup>(), true);
@@ -59,6 +60,10 @@ public class MenuHovering : MonoBehaviour
 
         if (MyShop.instance != null)
             MyShop.instance.ResetSituation();
+
+        if (ForestLogic.instance != null)
+            ForestLogic.instance.ResetSituation();
+
         PlayerProfile.instance.infoWindow.SetActive(false);
     }
 }

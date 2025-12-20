@@ -2,33 +2,51 @@ using System.Collections.Generic;
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InfoDetails : MonoBehaviour
 {
     private Animator anim;
-    public int index;
-    public object item, sourceInfos;
+    private int index;
+    private object item, sourceInfos;
+
+    public Button btn;
 
     private void Awake()
     {
         anim = GetComponent<Animator>();
+        btn = GetComponent<Button>();
     }
 
-    public void DetailsOnOff()
+    public void DetailsOnOff(string type, object i, object sinfo, int fsIndex)
     {
         anim.SetBool("Details", !anim.GetBool("Details"));
-        OnOffOthers();
-        SetInfos();
+        if(type == "Item")
+        {
+            item = i;
+            sourceInfos = sinfo;
+            index = fsIndex;
+            OnOffOthers("Item");
+            SetItemInfos();
+            foreach (Transform item in transform.Find("Info Panel")) if (item.name != "Product Infos") item.gameObject.SetActive(false); else item.gameObject.SetActive(true);
+        }
+        else if (type == "Land")
+        {
+            index = fsIndex;
+            OnOffOthers("Land");
+            GetLandDetails();
+            foreach (Transform item in transform.Find("Info Panel")) if (item.name != "Land Infos") item.gameObject.SetActive(false); else item.gameObject.SetActive(true);
+        }
     }
 
     public void TimerAnim()
     {
-        transform.Find("Info Panel/Timer Holder/Timer Prefab").GetComponent<Animator>().SetTrigger("Spin it");
+        if(item != null)
+            transform.Find("Info Panel/Timer Holder/Timer Prefab").GetComponent<Animator>().SetTrigger("Spin it");
     }
-
-    private void SetInfos()
+    private void SetItemInfos()
     {
-        Transform details = transform.Find("Info Panel");
+        Transform details = transform.Find("Info Panel/Product Infos");
         string name = "";
         double timeInfo = 0;
         double countInfo = 0;
@@ -94,44 +112,67 @@ public class InfoDetails : MonoBehaviour
         details.Find("Timer Holder/Time").GetComponent<TextMeshProUGUI>().text = timeString;
         details.Find("Storage Count/Count").GetComponent<TextMeshProUGUI>().text = countInfo.ToString();
     }
-
-    private void OnOffOthers()
+    private void OnOffOthers(string type)
     {
-        if (item is Plants)
+        if (type == "Item")
         {
-            List<GameObject> plants = PlantsHolder.instance.PlantsInPH;
-            for (int i = 0; i < plants.Count; i++)
+            if (item is Plants)
             {
-                if(i != index && plants[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool("Details"))
-                    plants[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().SetBool("Details", false);
+                List<GameObject> plants = PlantsHolder.instance.PlantsInPH;
+                for (int i = 0; i < plants.Count; i++)
+                {
+                    if (i != index && plants[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool("Details"))
+                        plants[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().SetBool("Details", false);
+                }
+            }
+            else if (item is Fruits)
+            {
+                List<GameObject> trees = TreeHolder.instance.Trees;
+                for (int i = 0; i < trees.Count; i++)
+                {
+                    if (i != index && trees[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool("Details"))
+                        trees[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().SetBool("Details", false);
+                }
+            }
+            else if (item is AProducts)
+            {
+                List<GameObject> aprs = AHolder.instance.allProducts;
+                for (int i = 0; i < aprs.Count; i++)
+                {
+                    if (i != index && aprs[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool("Details"))
+                        aprs[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().SetBool("Details", false);
+                }
+            }
+            else if (item is Products)
+            {
+                List<GameObject> products = MachinePH.instance.prs;
+                for (int i = 0; i < products.Count; i++)
+                {
+                    if (i != index && products[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool("Details"))
+                        products[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().SetBool("Details", false);
+                }
             }
         }
-        else if (item is Fruits)
-        {
-            List<GameObject> trees = TreeHolder.instance.Trees;
-            for (int i = 0; i < trees.Count; i++)
-            {
-                if (i != index && trees[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool("Details"))
-                    trees[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().SetBool("Details", false);
-            }
-        }
-        else if (item is AProducts)
-        {
-            List<GameObject> aprs = AHolder.instance.allProducts;
-            for (int i = 0; i < aprs.Count; i++)
-            {
-                if (i != index && aprs[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool("Details"))
-                    aprs[i].transform.Find( "Info Button(Clone)").GetComponent<Animator>().SetBool("Details", false);
-            }
-        }
-        else if (item is Products)
-        {
-            List<GameObject> products = MachinePH.instance.prs;
-            for (int i = 0; i < products.Count; i++)
-            {
-                if (i != index && products[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool("Details"))
-                    products[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().SetBool("Details", false);
-            }
-        }
+        else if (type == "Land")
+            for (int i = 0; i < FarmLogic.instance.Slots.Count; i++)
+                if (i != index && FarmLogic.instance.Slots[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool("Details"))
+                    FarmLogic.instance.Slots[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().SetBool("Details", false);
+    }
+
+    private void GetLandDetails()
+    {
+        int usage = 0;
+        int plowed = 0;
+        int dried = 0;
+
+        usage = StaticDatas.PlayerData.FarmSlots[index].usage;
+        plowed = StaticDatas.PlayerData.FarmSlots[index].plowed;
+        dried = StaticDatas.PlayerData.FarmSlots[index].dried;
+
+        Transform LandInfos = transform.Find("Info Panel/Land Infos");
+
+        LandInfos.transform.Find("Usage/Count").GetComponent<TextMeshProUGUI>().text = usage.ToString();
+        LandInfos.transform.Find("Plowed/Count").GetComponent<TextMeshProUGUI>().text = plowed.ToString();
+        LandInfos.transform.Find("Dried/Count").GetComponent<TextMeshProUGUI>().text = dried.ToString();
     }
 }

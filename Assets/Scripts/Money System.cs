@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
 
 public class MoneySystem : MonoBehaviour
@@ -14,15 +15,21 @@ public class MoneySystem : MonoBehaviour
         crystalText.text = StaticDatas.PlayerData.PlayerInfos.Crystal.ToString();
     }
 
-    public void UpdateCoin(int amount)
+    public void UpdateCoin(int amount, out bool enought)
     {
+        int c_amount = Math.Abs(amount);
+        enought = hasEnough(Currency.Coin, c_amount);
+        if(!enought) return;
         StaticDatas.PlayerData.PlayerInfos.Coin += amount;
         moneyText.text = StaticDatas.PlayerData.PlayerInfos.Coin.ToString();
         StaticDatas.SaveDatas();
     }
 
-    public void UpdateCyrstal(int amount)
+    public void UpdateCyrstal(int amount, out bool enought)
     {
+        int c_amount = Math.Abs(amount);
+        enought = hasEnough(Currency.Crystal, c_amount);
+        if (!enought) return;
         StaticDatas.PlayerData.PlayerInfos.Crystal += amount;
         crystalText.text = StaticDatas.PlayerData.PlayerInfos.Crystal.ToString();
         StaticDatas.SaveDatas();

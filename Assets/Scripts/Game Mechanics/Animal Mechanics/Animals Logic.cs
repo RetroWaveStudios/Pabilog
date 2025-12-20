@@ -126,7 +126,7 @@ public class AnimalsLogic : MonoBehaviour
         {
             StaticDatas.PlayerData.animal_slot_count++;
             StaticDatas.UpdateAnimalSpotDatas();
-            MoneySystem.instance.UpdateCoin(-p);
+            MoneySystem.instance.UpdateCoin(-p, out bool s);
             MoneySystem.instance.UpdateXp(xp);
             p = SlotPrices[StaticDatas.PlayerData.animal_slot_count - 1];
             xp = BuyXP[StaticDatas.PlayerData.animal_slot_count - 1];
@@ -157,9 +157,7 @@ public class AnimalsLogic : MonoBehaviour
     public void OpenFoodChooser(bool preset)
     {
         if (preset)
-        {
             anim.SetBool("Food Chooser", false);
-        }
         else
         {
             bool isOpen = anim.GetBool("Food Chooser");

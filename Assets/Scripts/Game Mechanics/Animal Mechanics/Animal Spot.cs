@@ -147,7 +147,7 @@ public class AnimalSpot : MonoBehaviour
 
             var proto = AnimalsLogic.instance.AnimalsDetails.Find(e => e.animal == animal);
             TheAnimal = proto.Clone(); // each slot gets its own copy
-            MoneySystem.instance.UpdateCoin(-TheAnimal.a_price);
+            MoneySystem.instance.UpdateCoin(-TheAnimal.a_price, out bool s);
             MoneySystem.instance.UpdateXp(TheAnimal.a_Xp);
             spotState = ASpotState.HasAnimal;
 

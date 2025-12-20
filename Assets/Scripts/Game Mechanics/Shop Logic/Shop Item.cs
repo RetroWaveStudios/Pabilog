@@ -79,7 +79,7 @@ public class ShopItem : MonoBehaviour
 
     public void SellItem()
     {
-        MoneySystem.instance.UpdateCoin(price);
+        MoneySystem.instance.UpdateCoin(price, out bool s);
         sell = false;
         countdown = 0;
         btn.onClick.RemoveAllListeners();

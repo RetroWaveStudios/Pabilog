@@ -143,9 +143,14 @@ public class TreeSlot : MonoBehaviour
 
     private void AxingStump()
     {
-        anim.SetTrigger("Axe Stump");
-        isAxing = true;
-        if (!Storage.instance.hasEnought(Items.Axe, 1, false)) MoneySystem.instance.UpdateCyrstal(-2);
+        bool enought = false;
+        if (!Storage.instance.hasEnought(Items.Axe, 1, false)) MoneySystem.instance.UpdateCyrstal(-2, out enought);
+
+        if (enought)
+        {
+            anim.SetTrigger("Axe Stump");
+            isAxing = true;
+        }
     }
 
     public void SlotClicked()
@@ -186,7 +191,7 @@ public class TreeSlot : MonoBehaviour
         landstate = LandState.Planted;
         StaticDatas.PlayerData.TreeSpots[SlotNumber].state = landstate;
         StaticDatas.PlayerData.TreeSpots[SlotNumber].TreeDetails = TheTree;
-        MoneySystem.instance.UpdateCoin(-TheTree.price);
+        MoneySystem.instance.UpdateCoin(-TheTree.price, out bool s);
         StaticDatas.SaveDatas();
         wamount.text = TheTree.WaterAmoutByStage[TheTree.stage].ToString();
         reqWaterButton.onClick.RemoveAllListeners();

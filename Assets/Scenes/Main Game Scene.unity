@@ -572,6 +572,7 @@ MonoBehaviour:
     foodTimerInc: 100
     productionX: 2
     xp: 100
+  anim: {fileID: 0}
   AnimalFoodText: {fileID: 1981280827}
   foodImage: {fileID: 21300000, guid: 35abaf8c5a6b5e744a59dfc748bf1146, type: 3}
   timer: {fileID: 1841453199}
@@ -5346,7 +5347,7 @@ MonoBehaviour:
       - m_Target: {fileID: 1704789742}
         m_TargetAssemblyTypeName: AnimalsLogic, Assembly-CSharp
         m_MethodName: OpenFoodChooser
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -14620,6 +14621,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e8e7d74fb1082648a44425d0bdace76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaterSystemLogic
+  anim: {fileID: 0}
   WaterLevels:
   - fillTime: 
     fTimer: 10
@@ -17464,7 +17466,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -332, y: 813549.7}
+  m_AnchoredPosition: {x: -332, y: 976623}
   m_SizeDelta: {x: 664, y: 800}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1501697308
