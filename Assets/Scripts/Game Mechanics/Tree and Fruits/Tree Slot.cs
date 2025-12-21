@@ -406,7 +406,7 @@ public class TreeSlot : MonoBehaviour
             TheTree.waterTime = "";
             Storage.instance.UpdateFruitCount(TheTree.fruit, 1);
             MoneySystem.instance.UpdateXp(TheTree.xp);
-            Storage.instance.UpdateBoxItems();
+            
             btn.onClick.RemoveAllListeners();
             TheTree.stage = 2;
             CollectAFruit();

@@ -470,7 +470,7 @@ public class Machine : MonoBehaviour
             foreach (Transform item in ShelfHolder) Destroy(item.gameObject); ShelfHolder.gameObject.SetActive(false);
 
             Storage.instance.UpdateProductCount(TheProduct.product, TheProduct.amount);
-            Storage.instance.UpdateBoxItems();
+            
             Debug.Log($"The Product Xp: {TheProduct.xp}");
             MoneySystem.instance.UpdateXp(TheProduct.xp);
 

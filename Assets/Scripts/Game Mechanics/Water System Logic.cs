@@ -292,7 +292,7 @@ public class WaterSL : MonoBehaviour
             tcd = true;
 
             finalReturn += increasement; // each tap contributes
-            increasement += 0.03f;
+            increasement += 0.01f;
             float showFR = MathF.Round(finalReturn, 2);
             transform.Find("Water Well/Holder Colored/Details/Tap Value").GetComponent<TextMeshProUGUI>().text = showFR.ToString();
             if (finalReturn >= 1f)

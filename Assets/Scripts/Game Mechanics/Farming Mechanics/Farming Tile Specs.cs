@@ -61,7 +61,8 @@ public class FarmingTS : MonoBehaviour
         else if (landstate == LandState.Dry)
         {
             btn.onClick.RemoveAllListeners();
-            btn.onClick.AddListener(() => WaterLand());
+            if(!is_watering)
+                btn.onClick.AddListener(() => WaterLand());
             PauseBG.SetActive(true);
             PauseBG.transform.Find("Count").gameObject.SetActive(true);
             if (StaticDatas.PlayerData.PlayerInfos.Water.amount >= 2 || is_watering)
@@ -83,7 +84,8 @@ public class FarmingTS : MonoBehaviour
         else if (landstate == LandState.Plow)
         {
             btn.onClick.RemoveAllListeners();
-            btn.onClick.AddListener(() => PlowLand());
+            if(!is_plowing)
+                btn.onClick.AddListener(() => PlowLand());
             PauseBG.SetActive(true);
             PauseBG.transform.Find("Count").gameObject.SetActive(true);
             if (Storage.instance.hasEnought(Items.Rake, 1, false) || is_plowing)
@@ -127,13 +129,14 @@ public class FarmingTS : MonoBehaviour
 
     private void PlowLand()
     {
-        bool enought = false;
+        bool enought = true;
         if (Storage.instance.hasEnought(Items.Rake, 1, false))
             Storage.instance.UpdateItemCount(Items.Rake, -1);
         else MoneySystem.instance.UpdateCyrstal(-1, out enought);
 
         if(enought)
         {
+            btn.onClick.RemoveAllListeners();
             anim.SetTrigger("Plow Land");
             is_plowing = true;
 
@@ -143,12 +146,13 @@ public class FarmingTS : MonoBehaviour
 
     private void WaterLand()
     {
-        bool enought = false;
-        if (StaticDatas.PlayerData.PlayerInfos.Water.amount > 2) WaterSL.instance.TriggerAmount(-2);
+        bool enought = true;
+        if (StaticDatas.PlayerData.PlayerInfos.Water.amount >= 2) WaterSL.instance.TriggerAmount(-2);
         else MoneySystem.instance.UpdateCyrstal(-1, out enought);
 
         if (enought)
         {
+            btn.onClick.RemoveAllListeners();
             anim.SetTrigger("Water Land");
             is_watering = true;
 
@@ -162,7 +166,7 @@ public class FarmingTS : MonoBehaviour
         {
             bool enought = true;
             if (Storage.instance.hasEnought(plant, 1, false))
-                Storage.instance.UpdatePlantCount(ThePlant.plant, -ThePlant.price);
+                Storage.instance.UpdatePlantCount(plant, -FarmLogic.instance.PlantDetails.Find(e => e.plant == plant).price);
             else MoneySystem.instance.UpdateCyrstal(-1, out enought);
             if (enought)
             {
@@ -347,8 +351,6 @@ public class FarmingTS : MonoBehaviour
         {
             anim.SetBool("Show Timer", false);
             Storage.instance.UpdatePlantCount(ThePlant.plant, ThePlant.harvestAmount);
-            Storage.instance.UpdateBoxItems();
-
             MoneySystem.instance.UpdateXp(ThePlant.xp);
 
             btn.onClick.RemoveAllListeners();

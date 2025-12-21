@@ -72,7 +72,7 @@ public class FoodPL : MonoBehaviour
         AnimalFoodText.text = StaticDatas.PlayerData.PlayerInfos.Food.sumAmount.ToString();
         if(AnimalsLogic.instance != null)
             AnimalsLogic.instance.PopulateFoodChooser();
-        Storage.instance.UpdateBoxItems();
+        
         StaticDatas.SaveDatas();
     }
 

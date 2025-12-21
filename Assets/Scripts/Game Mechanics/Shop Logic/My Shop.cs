@@ -414,7 +414,7 @@ public class MyShop : MonoBehaviour
         else if (TheItem is Items) StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == (Items)TheItem).count -= count;
         else if (TheItem is a_f_types) StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == (a_f_types)TheItem).amount -= count;
         
-        Storage.instance.UpdateBoxItems(); 
+         
         if(PlantsHolder.instance != null) PlantsHolder.instance.UpdateCountOfPlants();
         StaticDatas.SaveDatas();
     }

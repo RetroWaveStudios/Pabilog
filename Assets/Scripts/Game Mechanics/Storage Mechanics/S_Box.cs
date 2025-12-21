@@ -18,13 +18,6 @@ public class S_Box : MonoBehaviour
     public GameObject theItem;
     public TextMeshProUGUI countText;
 
-    private Plants[] plantnames = (Plants[])System.Enum.GetValues(typeof(Plants));
-    private Fruits[] fruitnames = (Fruits[])System.Enum.GetValues(typeof(Fruits));
-    private AProducts[] APnames = (AProducts[])System.Enum.GetValues(typeof(AProducts));
-    private Products[] ProductNames = (Products[])System.Enum.GetValues(typeof(Products));
-    private Items[] itemNames = (Items[])System.Enum.GetValues(typeof(Items));
-    private a_f_types[] FoodNames = (a_f_types[])System.Enum.GetValues(typeof(a_f_types));
-
     private void Awake()
     {
         RectTransform irts = gameObject.transform.Find("Item Icon").GetComponent<RectTransform>();
@@ -44,48 +37,42 @@ public class S_Box : MonoBehaviour
         {
             plant = (Plants)a_item;
             this.count = c;
-            for (int i = 0; i < plantnames.Length; i++)
-                if(plant == plantnames[i]) image.sprite = Sprites.instance.sprites.plants.Find(e => e.plant == plantnames[i]).sprite;
+            image.sprite = Sprites.instance.sprites.plants.Find(e => e.plant == plant).sprite;
             category = Category.Plants;
         }
         else if (a_item is Fruits)
         {
             fruit = (Fruits)a_item;
             this.count = c;
-            for (int i = 0; i < fruitnames.Length; i++)
-                if(fruit == fruitnames[i]) image.sprite = Sprites.instance.sprites.fruits.Find(e => e.fruit == fruitnames[i]).sprite;
+            image.sprite = Sprites.instance.sprites.fruits.Find(e => e.fruit == fruit).sprite;
             category = Category.Fruits;
         }
         else if (a_item is AProducts)
         {
             animal_product = (AProducts)a_item;
             this.count = c;
-            for (int i = 0; i < APnames.Length; i++)
-                if (animal_product == APnames[i]) image.sprite = Sprites.instance.sprites.a_products.Find(e => e.a_product == APnames[i]).sprite;
+            image.sprite = Sprites.instance.sprites.a_products.Find(e => e.a_product == animal_product).sprite;
             category = Category.AProducts;
         }
-        else if(a_item is Products)
+        else if (a_item is Products)
         {
             product = (Products)a_item;
             this.count = c;
-            for (int i = 0; i < ProductNames.Length; i++)
-                if (product == ProductNames[i]) image.sprite = Sprites.instance.sprites.products.Find(e => e.product == ProductNames[i]).sprite;
+            image.sprite = Sprites.instance.sprites.products.Find(e => e.product == product).sprite;
             category = Category.Products;
         }
-        else if(a_item is Items)
+        else if (a_item is Items)
         {
             item = (Items)a_item;
             this.count = c;
-            for (int i = 0; i < itemNames.Length; i++)
-                if (item == itemNames[i]) image.sprite = Sprites.instance.sprites.items.Find(e => e.item == itemNames[i]).sprite;
+            image.sprite = Sprites.instance.sprites.items.Find(e => e.item == item).sprite;
             category = Category.Items;
         }
-        else if(a_item is a_f_types)
+        else if (a_item is a_f_types)
         {
             Food = (a_f_types)a_item;
             this.count = c;
-            for (int i = 0; i < FoodNames.Length; i++)
-                if (Food == FoodNames[i]) image.sprite = Sprites.instance.sprites.AnimalFoodSprites.Find(e => e.food == FoodNames[i]).sprite;
+            image.sprite = Sprites.instance.sprites.AnimalFoodSprites.Find(e => e.food == Food).sprite;
             category = Category.AnimalFood;
         }
         else Debug.LogWarning("Item not allowed in this box!");

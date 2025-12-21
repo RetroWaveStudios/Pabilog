@@ -332,7 +332,6 @@ public class AnimalSpot : MonoBehaviour
             TheAnimal.hasFood = false;
             TheAnimal.pauseTime = 0;
             tProBg.gameObject.SetActive(false);
-            Storage.instance.UpdateBoxItems();
             LoadUI();
 
             btn.onClick.RemoveAllListeners();

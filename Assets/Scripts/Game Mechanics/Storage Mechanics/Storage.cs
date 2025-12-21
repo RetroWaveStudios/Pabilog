@@ -25,13 +25,10 @@ public class Storage : MonoBehaviour
 
     private void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-        }
+        if (instance == null) instance = this;
         PopulateLevelReqs(30);
         StaticDatas.LoadDatas();
-        UpdateBoxItems();
+        PopulateBoxItems();
     }
 
     public void OpenStorage()
@@ -40,7 +37,7 @@ public class Storage : MonoBehaviour
         anim.SetBool("Open Storage", !anim.GetBool(id));
     }
 
-    public void UpdateBoxItems()
+    public void PopulateBoxItems()
     {
         Boxes.Clear();
         foreach (Transform item in BoxHolder) Destroy(item.gameObject);
@@ -195,17 +192,20 @@ public class Storage : MonoBehaviour
         // Find existing entry
         if (StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == plant) == null)
         {
-            // Add new if not found
             StaticDatas.PlayerData.Storage.PlantsInStorage.Add(new PlantCount { Plant = plant, count = count });
-            Debug.Log($"Added {plant} with amount: {count}");
+
+            GameObject item = Instantiate(BoxPrefab, BoxHolder);
+            item.transform.name = plant.ToString();
+            item.GetComponent<S_Box>().AddItem(plant, StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == plant).count);
+            reArrangeItem(item.transform);
+            Boxes.Add(item);
         }
         else
         {
-            // Update if exists
             StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == plant).count += count;
+            UpdateCountInBox();
             Debug.Log($"Updated {plant}, new amount: {StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == plant).count}");
         }
-        UpdateBoxItems();
         StaticDatas.SaveDatas();
     }
 
@@ -214,17 +214,21 @@ public class Storage : MonoBehaviour
         // Find existing entry
         if (StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == fruit) == null)
         {
-            // Add new if not found
             StaticDatas.PlayerData.Storage.FruitInStorage.Add(new FruitCount { Fruit = fruit, count = count });
+
+            GameObject item = Instantiate(BoxPrefab, BoxHolder);
+            item.transform.name = fruit.ToString();
+            item.GetComponent<S_Box>().AddItem(fruit, StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == fruit).count);
+            reArrangeItem(item.transform);
+            Boxes.Add(item);
             Debug.Log($"Added {fruit} with amount: {count}");
         }
         else
         {
-            // Update if exists
             StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == fruit).count += count;
+            UpdateCountInBox();
             Debug.Log($"Updated {fruit}, new amount: {StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == fruit).count}");
         }
-        UpdateBoxItems();
         StaticDatas.SaveDatas();
     }
 
@@ -235,14 +239,20 @@ public class Storage : MonoBehaviour
         {
             // Add new if not found
             StaticDatas.PlayerData.Storage.a_p_inStorage.Add(new APCount { animal_products = ap, count = count });
+
+            GameObject item = Instantiate(BoxPrefab, BoxHolder);
+            item.transform.name = ap.ToString();
+            item.GetComponent<S_Box>().AddItem(ap, StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == ap).count);
+            reArrangeItem(item.transform);
+            Boxes.Add(item);
             Debug.Log($"Added {ap} with amount: {count}");
         }
         else 
         {
             StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == ap).count += count;
+            UpdateCountInBox();
             Debug.Log($"Updated {ap}, new amount: {StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == ap).count}");
         }
-        UpdateBoxItems();
         StaticDatas.SaveDatas();
     }
 
@@ -253,14 +263,20 @@ public class Storage : MonoBehaviour
         {
             // Add new if not found
             StaticDatas.PlayerData.Storage.ProductsInStorage.Add(new ProductCount { product = pr, count = count });
+
+            GameObject item = Instantiate(BoxPrefab, BoxHolder);
+            item.transform.name = pr.ToString();
+            item.GetComponent<S_Box>().AddItem(pr, StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == pr).count);
+            reArrangeItem(item.transform);
+            Boxes.Add(item);
             Debug.Log($"Added {pr} with amount: {count}");
         }
         else
         {
             StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == pr).count += count;
+            UpdateCountInBox();
             Debug.Log($"Updated {pr}, new amount: {StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == pr).count}");
         }
-        UpdateBoxItems();
         StaticDatas.SaveDatas();
     }
 
@@ -271,14 +287,20 @@ public class Storage : MonoBehaviour
         {
             // Add new if not found
             StaticDatas.PlayerData.Storage.ItemsInStorage.Add(new ItemCount { item = item, count = count });
+
+            GameObject i = Instantiate(BoxPrefab, BoxHolder);
+            i.transform.name = item.ToString();
+            i.GetComponent<S_Box>().AddItem(item, StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == item).count);
+            reArrangeItem(i.transform);
+            Boxes.Add(i);
             Debug.Log($"Added {item} with amount: {count}");
         }
         else
         {
             StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == item).count += count;
+            UpdateCountInBox();
             Debug.Log($"Updated {item}, new amount: {StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == item).count}");
         }
-        UpdateBoxItems();
         StaticDatas.SaveDatas();
     }
 
@@ -460,7 +482,6 @@ public class Storage : MonoBehaviour
         }
         StaticDatas.SaveDatas();
         PopulateExpand();
-        UpdateBoxItems();
     }
     #endregion
 }
