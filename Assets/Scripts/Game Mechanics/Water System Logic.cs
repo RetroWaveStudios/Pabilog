@@ -80,6 +80,8 @@ public class WaterSL : MonoBehaviour
         int id = Animator.StringToHash("Open Water Details");
         if (FoodPL.instance.anim.GetBool("Open Details"))
             FoodPL.instance.anim.SetBool("Open Details", false);
+        if (Storage.instance.anim.GetBool("Open Storage"))
+            Storage.instance.anim.SetBool("Open Storage", false);
         if (isAnTrue("Open Water Details"))
             CloseUpgrade();
         anim.SetBool(id, !anim.GetBool(id));
@@ -300,6 +302,7 @@ public class WaterSL : MonoBehaviour
                 int waterGained = Mathf.FloorToInt(finalReturn);
                 TriggerAmount(waterGained);
                 finalReturn -= waterGained;
+                increasement -= 0.1f;
             }
             cooldown = 0.5f;
         }

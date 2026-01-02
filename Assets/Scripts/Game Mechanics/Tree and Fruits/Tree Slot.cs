@@ -27,7 +27,6 @@ public class TreeSlot : MonoBehaviour
     public int SlotNumber;
     public LandState landstate;
     public TreeD TheTree;
-    private bool showtimer;
     private int stimer = 0;
     private int w; // water amount to contuniue watering with full need of water
     private float pieceforMinute = 0; // how many used
@@ -55,9 +54,13 @@ public class TreeSlot : MonoBehaviour
         infoText.text = "Empty"; 
     }
 
-    private void Update()
+    private void Start()
     {
         LoadUI();
+    }
+
+    private void Update()
+    {
         if (landstate == LandState.Planted)
         {
             if (TheTree.pauseTime != 0)
@@ -96,7 +99,7 @@ public class TreeSlot : MonoBehaviour
             PauseBG.transform.Find("Count").gameObject.SetActive(true);
             PauseBG.SetActive(true);
             Stages.SetActive(true);
-
+                
             Stages.GetComponent<Image>().sprite = StumpSpr;
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(() => AxingStump());
@@ -143,14 +146,18 @@ public class TreeSlot : MonoBehaviour
 
     private void AxingStump()
     {
-        bool enought = false;
-        if (!Storage.instance.hasEnought(Items.Axe, 1, false)) MoneySystem.instance.UpdateCyrstal(-2, out enought);
+        bool enought = true;
+        if (Storage.instance.hasEnought(Items.Axe, 1, false))
+            Storage.instance.UpdateItemCount(Items.Axe, -1);
+        else
+            MoneySystem.instance.UpdateCyrstal(-2, out enought);
 
         if (enought)
         {
             anim.SetTrigger("Axe Stump");
             isAxing = true;
         }
+        LoadUI();
     }
 
     public void SlotClicked()
@@ -198,6 +205,7 @@ public class TreeSlot : MonoBehaviour
         reqWaterButton.onClick.AddListener(() => ResumeGrowth(TheTree.WaterAmoutByStage[TheTree.stage]));
         transform.name = TheTree.name;
         ShowTimer();
+        LoadUI();
     }
 
     private void CheckForGrowth()
@@ -248,6 +256,7 @@ public class TreeSlot : MonoBehaviour
         if (!next) { TheTree.pauseTime += TheTree.wTimer; }
         else { TheTree.stage++; TheTree.pauseTime = 0; }
         btn.onClick.AddListener(() => ShowWatering());
+
         if (TheTree.pauseTime != 0)
             pieceforMinute = (float)TheTree.pauseTime / (float)(TheTree.wTimerByStages[TheTree.stage] / TheTree.WaterAmoutByStage[TheTree.stage]);
         w = TheTree.WaterAmoutByStage[TheTree.stage] - (int)pieceforMinute;
@@ -263,6 +272,7 @@ public class TreeSlot : MonoBehaviour
         TheTree.waterTime = "";
         StaticDatas.PlayerData.TreeSpots[SlotNumber].TreeDetails = TheTree;
         StaticDatas.SaveDatas();
+        LoadUI();
     }
 
     public void ResumeGrowth(int wateramount)
@@ -289,6 +299,7 @@ public class TreeSlot : MonoBehaviour
             StaticDatas.PlayerData.TreeSpots[SlotNumber].TreeDetails = TheTree;
             StaticDatas.SaveDatas();
             LuckyBox.instance.TryToFindBox();
+            LoadUI();
         }
     }
 
@@ -332,41 +343,19 @@ public class TreeSlot : MonoBehaviour
             PauseGrowth(false);
         }
         StaticDatas.SaveDatas();
+        LoadUI();
     }
 
     private void ShowTimer()
     {
         Debug.Log("showtimer called");
         for (int i = 0; i < ForestLogic.instance.Slots.Count; i++)
-        {
-            TreeSlot ts = ForestLogic.instance.Slots[i].GetComponent<TreeSlot>();
-            if (i != SlotNumber)
-            {
-                ts.anim.SetBool("Show Timer", false);
-                ts.showtimer = false;
-            }
-            else showtimer = !showtimer;
-        }
-        if (showtimer)
-        {
-            Debug.Log("expanting showtimer items");
-            anim.SetBool("Show Timer", true);
+            if (i != SlotNumber) ForestLogic.instance.Slots[i].GetComponent<TreeSlot>().anim.SetBool("Show Timer", false);
 
-            if (SlotNumber < ForestLogic.instance.maxSlotCount - 4){
-                TreeSlot ts = ForestLogic.instance.Slots[SlotNumber + 4].GetComponent<TreeSlot>();
-                ts.stageMask.enabled = true;
-            }
-        }
-        else if (!showtimer)
-        {
-            Debug.Log("shrinking showtimer items");
-            anim.SetBool("Show Timer", false);
-            if (SlotNumber < ForestLogic.instance.maxSlotCount - 4)
-            {
-                TreeSlot ts = ForestLogic.instance.Slots[SlotNumber + 4].GetComponent<TreeSlot>();
-                ts.stageMask.enabled = false;
-            }
-        }
+        anim.SetBool("Show Timer", !anim.GetBool("Show Timer"));
+        if (SlotNumber < ForestLogic.instance.maxSlotCount - 4)
+            ForestLogic.instance.Slots[SlotNumber + 4].GetComponent<TreeSlot>().stageMask.enabled = anim.GetBool("Show Timer");
+        LoadUI();
     }
 
     public void SwitchTimer(int f)
@@ -376,18 +365,10 @@ public class TreeSlot : MonoBehaviour
 
     private void ShowWatering()
     {
-        showtimer = false;
-        Debug.Log("watering called");
-        Debug.Log("expanting showWatering items");
-        RectTransform tp_rts = timerPot.GetComponent<RectTransform>();
-        RectTransform pp_rts = ProgressPot.GetComponent<RectTransform>();
+        anim.SetBool("Show Timer", !anim.GetBool("Show Timer"));
         anim.SetBool("Show Watering", true);
-
-        if (SlotNumber < ForestLogic.instance.maxSlotCount - 4)
-        {
-            TreeSlot ts = ForestLogic.instance.Slots[SlotNumber + 4].GetComponent<TreeSlot>();
-            ts.stageMask.enabled = true;
-        }
+        if (SlotNumber < ForestLogic.instance.maxSlotCount - 4) ForestLogic.instance.Slots[SlotNumber + 4].GetComponent<TreeSlot>().stageMask.enabled = true;
+        LoadUI();
     }
 
     private void rtCollect()
@@ -439,6 +420,7 @@ public class TreeSlot : MonoBehaviour
             StaticDatas.PlayerData.TreeSpots[SlotNumber].state = landstate;
             StaticDatas.SaveDatas();
             LuckyBox.instance.TryToFindBox();
+            LoadUI();
         }
         else PushNotice.instance.Push("No Space in Storage", PushType.Alert);
     }
@@ -473,6 +455,7 @@ public class TreeSlot : MonoBehaviour
         }
         StaticDatas.PlayerData.TreeSpots[SlotNumber].TreeDetails = TheTree;
         StaticDatas.SaveDatas();
+        LoadUI();
     }
 
     public void UpdateFruitImages()
@@ -496,6 +479,7 @@ public class TreeSlot : MonoBehaviour
                 }
             }
         }
+        LoadUI();
     }
 
     #region Animation Done
@@ -506,11 +490,10 @@ public class TreeSlot : MonoBehaviour
         StaticDatas.PlayerData.TreeSpots[SlotNumber].state = landstate;
         btn.onClick.RemoveAllListeners();
         btn.onClick.AddListener(() => SlotClicked());
-        if (Storage.instance.hasEnought(Items.Axe, 1, false))
-            Storage.instance.UpdateItemCount(Items.Axe, -1);
         isAxing = false;
         StaticDatas.SaveDatas();
         LuckyBox.instance.TryToFindBox();
+        LoadUI();
     }
     #endregion
 }

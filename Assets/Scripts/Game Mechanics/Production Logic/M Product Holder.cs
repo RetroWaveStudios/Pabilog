@@ -54,7 +54,7 @@ public class MachinePH : MonoBehaviour
 
                     int index = i;
                     ib.GetComponent<InfoDetails>().btn.onClick.RemoveAllListeners();
-                    ib.GetComponent<InfoDetails>().btn.onClick.AddListener(() => ib.GetComponent<InfoDetails>().DetailsOnOff("Item", p, mp.MachineName, index));
+                    ib.GetComponent<InfoDetails>().btn.onClick.AddListener(() => ib.GetComponent<InfoDetails>().DetailsOnOff("CT", "Item", p, mp.MachineName, index));
                 #endregion
                 prs.Add(dublicate);
             }

@@ -56,14 +56,23 @@ public class Machine : MonoBehaviour
         gameObject.GetComponent<Image>().sprite = ProductionLogic.instance.MachinesSprites.Find(e => e.name == mProducts.MachineName);
         ShelfHolder = gameObject.transform.Find("Shelf Holder");
         ShelfHolder.gameObject.SetActive(false);
+
+        if (mStats.state == ASpotState.Broken) PopulateFixers();
         PopulateShelf();
         PopulateQueue();
-        if (mStats.state == ASpotState.Broken) PopulateFixers();
+        #region Info Button detailing
+        GameObject ib = transform.Find("Name/Info Button").gameObject;
+        RectTransform ibrts = ib.GetComponent<RectTransform>();
+        ibrts.anchoredPosition = new Vector2(20, -20);
+        ibrts.anchorMax = new Vector2(0, 1);
+        ibrts.anchorMin = new Vector2(0, 1);
+        ib.GetComponent<InfoDetails>().btn.onClick.RemoveAllListeners();
+        ib.GetComponent<InfoDetails>().btn.onClick.AddListener(() => ib.GetComponent<InfoDetails>().DetailsOnOff("RB", "Machine", null, mProducts.MachineName, 0));
+        #endregion
     }
 
     private void Update()
     {
-        LoadUI();
         if (mStats.state == ASpotState.HasAnimal)
         {
             if (TheProduct.state == AState.Fertilizing) { CheckTimer(); UpdateTimer(); }
@@ -133,6 +142,7 @@ public class Machine : MonoBehaviour
         ProductionLogic.instance.DeSelectProductAtAllMachines();
         MachinePH.instance.mp = mProducts;
         MachinePH.instance.PopulateHolder();
+        LoadUI();
         Debug.Log("sent to populateHolder");
     }
 
@@ -189,11 +199,12 @@ public class Machine : MonoBehaviour
         HorizontalLayoutGroup hlg = qHolder.GetComponent<HorizontalLayoutGroup>();
 
         rts.sizeDelta = new Vector2(
-            ((mStats.qLimit + add) * 80) + hlg.padding.left + ((mStats.qLimit - 1) * hlg.spacing),
+            ((mStats.qLimit + add) * 80) + hlg.padding.left + ((mStats.qLimit) * hlg.spacing),
             100
         );
 
         qEditing = false;
+        LoadUI();
     }
 
     private void AddBuySlot()
@@ -226,6 +237,7 @@ public class Machine : MonoBehaviour
             PopulateQueue();
             LuckyBox.instance.TryToFindBox();
             SaveStats();
+            LoadUI();
         }
     }
 
@@ -235,8 +247,9 @@ public class Machine : MonoBehaviour
         PopulateHolder(p);
         switchBtn.GetComponent<Image>().sprite = SwitchOnOff[0];
         switchBtn.GetComponent<Button>().onClick.RemoveAllListeners();
-        switchBtn.GetComponent<Button>().onClick.AddListener(() => SelectProduct(p));
+        switchBtn.GetComponent<Button>().onClick.AddListener(() => FinalizePicking(p));
         prChoosed = true;
+        LoadUI();
     }
 
     private void PopulateHolder(PrD product)
@@ -271,7 +284,6 @@ public class Machine : MonoBehaviour
         {
             GameObject dublicate = Instantiate(prPrefab, prHolder);
             dublicate.transform.name = c_product.f_used[i].Fruit.ToString();
-            Transform tpr = dublicate.transform.Find("The Product");
             dublicate.transform.Find("The Product").GetComponent<Image>().sprite =
                 Sprites.instance.sprites.fruits.Find(e => e.fruit == c_product.f_used[i].Fruit).sprite;
 
@@ -289,7 +301,6 @@ public class Machine : MonoBehaviour
         {
             GameObject dublicate = Instantiate(prPrefab, prHolder);
             dublicate.transform.name = c_product.ap_Used[i].animal_products.ToString();
-            Transform tpr = dublicate.transform.Find("The Product");
             dublicate.transform.Find("The Product").GetComponent<Image>().sprite =
                 Sprites.instance.sprites.a_products.Find(e => e.a_product == c_product.ap_Used[i].animal_products).sprite;
 
@@ -325,6 +336,7 @@ public class Machine : MonoBehaviour
         RectTransform rts = prHolder.GetComponent<RectTransform>();
         float tpCount = c_product.p_Used.Count + c_product.f_used.Count + c_product.ap_Used.Count + c_product.pr_Used.Count; // total product count
         rts.sizeDelta = new Vector2((tpCount * glg.cellSize.x) + ((tpCount - 1) * glg.spacing.x) + glg.padding.left + glg.padding.right, 100);
+        LoadUI();
     }
 
     private void PopulateShelf()
@@ -338,6 +350,7 @@ public class Machine : MonoBehaviour
                 pr.transform.name = TheProduct.p_Used[i].Plant.ToString();
                 pr.GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant == TheProduct.p_Used[i].Plant).sprite;
                 pr.transform.Find("Details").gameObject.SetActive(false);
+                Destroy(pr.GetComponent<Button>());
             }
             for (int i = 0; i < TheProduct.f_used.Count; i++)
             {
@@ -345,6 +358,7 @@ public class Machine : MonoBehaviour
                 pr.transform.name = TheProduct.f_used[i].Fruit.ToString();
                 pr.GetComponent<Image>().sprite = Sprites.instance.sprites.fruits.Find(e => e.fruit == TheProduct.f_used[i].Fruit).sprite;
                 pr.transform.Find("Details").gameObject.SetActive(false);
+                Destroy(pr.GetComponent<Button>());
             }
             for (int i = 0; i < TheProduct.ap_Used.Count; i++)
             {
@@ -352,6 +366,7 @@ public class Machine : MonoBehaviour
                 pr.transform.name = TheProduct.ap_Used[i].animal_products.ToString();
                 pr.GetComponent<Image>().sprite = Sprites.instance.sprites.a_products.Find(e => e.a_product == TheProduct.ap_Used[i].animal_products).sprite;
                 pr.transform.Find("Details").gameObject.SetActive(false);
+                Destroy(pr.GetComponent<Button>());
             }
             for (int i = 0; i < TheProduct.pr_Used.Count; i++)
             {
@@ -359,11 +374,13 @@ public class Machine : MonoBehaviour
                 pr.transform.name = TheProduct.pr_Used[i].product.ToString();
                 pr.GetComponent<Image>().sprite = Sprites.instance.sprites.products.Find(e => e.product == TheProduct.pr_Used[i].product).sprite;
                 pr.transform.Find("Details").gameObject.SetActive(false);
+                Destroy(pr.GetComponent<Button>());
             }
+            LoadUI();
         }
     }
 
-    private void SelectProduct(PrD product)
+    private void FinalizePicking(PrD product)
     {
         Debug.Log($"in SelectProduct: Product = {product}");
         PrD c_product = product.Clone();
@@ -421,6 +438,7 @@ public class Machine : MonoBehaviour
             if (PlantsHolder.instance != null) PlantsHolder.instance.UpdateCountOfPlants();
             ShelfHolder.gameObject.SetActive(true);
             prChoosed = false;
+            LoadUI();
         }
     }
 
@@ -442,6 +460,7 @@ public class Machine : MonoBehaviour
         if (elapsedMinutes >= TheProduct.prTimer)
         {
             rtCollect();
+            LoadUI();
             SaveStats();
         }
     }
@@ -495,10 +514,12 @@ public class Machine : MonoBehaviour
 
             foreach (Transform item in MachinePH.instance.Holder) Destroy(item.gameObject);
             PopulateShelf();
-            LoadUI();
             if (mStats.queue.Count > 0) CheckTimer();
+            mStats.usage++;
             CheckBroken();
             SaveStats();
+            PopulateQueue();
+            LoadUI();
             LuckyBox.instance.TryToFindBox();
         }
     }
@@ -516,6 +537,7 @@ public class Machine : MonoBehaviour
 
             bool rand = chance[UnityEngine.Random.Range(0, chance.Count)];
             if (rand) { mStats.state = ASpotState.Broken; BrokeMachine(); }
+            LoadUI();
         }
     }
 
@@ -547,10 +569,12 @@ public class Machine : MonoBehaviour
         }
         SaveStats();
         PopulateFixers();
+        LoadUI();
     }
 
-    private void PopulateFixers()
+    public void PopulateFixers()
     {
+        foreach (Transform item in transform.Find("Broken Screen/Fixers")) Destroy(item.gameObject);
         List<Items> fixers = new List<Items>() { Items.Screw, Items.Hammer, Items.Bolt };
         for (int i = 0; i < fixers.Count; i++)
         {
@@ -572,6 +596,7 @@ public class Machine : MonoBehaviour
             int index = i;
             if (Storage.instance.hasEnought(fixers[i], 1, false))
                 btn.onClick.AddListener(() => FixMachine(fixers[index]));
+            LoadUI();
         }
     }
 
@@ -585,8 +610,10 @@ public class Machine : MonoBehaviour
         else
             mStats.state = ASpotState.Empty;
 
+        mStats.Fixed += 1;
         Storage.instance.UpdateItemCount(item, -1);
         SaveStats();
+        LoadUI();
     }
     #endregion
 }

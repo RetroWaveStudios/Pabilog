@@ -47,7 +47,7 @@ public class PlantsHolder : MonoBehaviour
                     ibrts.anchorMax = new Vector2(0.5f, 1);
                     ibrts.anchorMin = new Vector2(0.5f, 1);
                     ib.GetComponent<InfoDetails>().btn.onClick.RemoveAllListeners();
-                    ib.GetComponent<InfoDetails>().btn.onClick.AddListener(() => ib.GetComponent<InfoDetails>().DetailsOnOff("Item", p, null, hindex));
+                    ib.GetComponent<InfoDetails>().btn.onClick.AddListener(() => ib.GetComponent<InfoDetails>().DetailsOnOff("CT", "Item", p, null, chosen));
                 #endregion
 
                 PlantsInPH.Add(dublicate);
@@ -76,6 +76,7 @@ public class PlantsHolder : MonoBehaviour
             {
                 script.btn.onClick.RemoveAllListeners();
                 script.btn.onClick.AddListener(() => script.ChoosePlant(plant));
+                script.HighlightToPlant(true);
             }
         }
     }

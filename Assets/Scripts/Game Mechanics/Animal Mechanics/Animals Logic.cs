@@ -188,12 +188,14 @@ public class AnimalsLogic : MonoBehaviour
             .Find(e => e.food == TheFood).sprite;
 
         foreach (Transform item in FoodsHolder) { Destroy(item.gameObject); Foods.Clear(); }
+        foreach (Transform fitem in FoodPL.instance.transform.Find("Food Producer/Foods in Storage/Holder")) Destroy(fitem.gameObject);
         for (int i = 0; i < foodnames.Count; i++)
         {
             if (StaticDatas.PlayerData.unlocked_items.u_plants
                 .Find(e => e.plant == StaticDatas.PlayerData.PlayerInfos.Food.materials[i].material).owned)
             {
                 GameObject dublicate = Instantiate(FoodPrefab, FoodsHolder);
+                dublicate.transform.name = StaticDatas.PlayerData.PlayerInfos.Food.materials[i].material.ToString() + " Animal Food";
                 dublicate.GetComponent<Image>().sprite =
                     Sprites.instance.sprites.AnimalFoodSprites.Find(e => e.food == foodnames[i]).sprite;
                 int index = i;
@@ -211,8 +213,10 @@ public class AnimalsLogic : MonoBehaviour
                     StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == foodnames[i]).amount.ToString();
 
                 Foods.Add(dublicate);
+                Instantiate(dublicate, FoodPL.instance.transform.Find("Food Producer/Foods in Storage/Holder"));
             }
         }
+        FoodPL.instance.reSizeFoodsHolder();
         VerticalLayoutGroup vlg = FoodsHolder.GetComponent<VerticalLayoutGroup>();
         RectTransform rts = FoodsHolder.GetComponent<RectTransform>();
         rts.sizeDelta = new Vector2(160, vlg.padding.top + (Foods.Count * 105) + ((Foods.Count - 1) * vlg.spacing));

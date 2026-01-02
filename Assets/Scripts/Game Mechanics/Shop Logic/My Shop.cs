@@ -407,14 +407,13 @@ public class MyShop : MonoBehaviour
     private void DeleteFromStorage()
     {
         Debug.Log("Deleting " + TheItem + " count: " + count);
-        if (TheItem is Plants) StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == (Plants)TheItem).count -= count;
-        else if (TheItem is Fruits) StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == (Fruits)TheItem).count -= count;
-        else if (TheItem is AProducts) StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == (AProducts)TheItem).count -= count;
-        else if (TheItem is Products) StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == (Products)TheItem).count -= count;
-        else if (TheItem is Items) StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == (Items)TheItem).count -= count;
-        else if (TheItem is a_f_types) StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == (a_f_types)TheItem).amount -= count;
-        
-         
+        if (TheItem is Plants) Storage.instance.UpdatePlantCount((Plants)TheItem, -count);
+        else if (TheItem is Fruits) Storage.instance.UpdateFruitCount((Fruits)TheItem, -count);
+        else if (TheItem is AProducts) Storage.instance.UpdateAPCount((AProducts)TheItem, -count);
+        else if (TheItem is Products) Storage.instance.UpdateProductCount((Products)TheItem, -count);
+        else if (TheItem is Items) Storage.instance.UpdateItemCount((Items)TheItem, -count);
+        else if (TheItem is a_f_types) Storage.instance.UpdateAnimalFood((a_f_types)TheItem, -count);
+
         if(PlantsHolder.instance != null) PlantsHolder.instance.UpdateCountOfPlants();
         StaticDatas.SaveDatas();
     }

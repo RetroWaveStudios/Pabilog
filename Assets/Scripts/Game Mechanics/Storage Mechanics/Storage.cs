@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,75 +34,62 @@ public class Storage : MonoBehaviour
 
     public void OpenStorage()
     {
+        if (WaterSL.instance.anim.GetBool("Open Water Details"))
+            WaterSL.instance.anim.SetBool("Open Water Details", false);
+        if (FoodPL.instance.anim.GetBool("Open Details"))
+            FoodPL.instance.anim.SetBool("Open Details", false);
         int id = Animator.StringToHash("Open Storage");
         anim.SetBool("Open Storage", !anim.GetBool(id));
     }
 
     public void PopulateBoxItems()
     {
+        int count = 0;
+        foreach (Transform holder in BoxHolder)
+        {
+            if (!holder.name.Contains("Text"))
+                foreach (Transform item in holder)
+                { 
+                    Debug.Log($"inside {holder.name}: destroying {item.name}");
+                    Destroy(item.gameObject);
+                }
+        }
         Boxes.Clear();
-        foreach (Transform item in BoxHolder) Destroy(item.gameObject);
-        for (int i = 0; i < StaticDatas.PlayerData.Storage.PlantsInStorage.Count; i++)
-        {
-            GameObject item = Instantiate(BoxPrefab, BoxHolder);
-            item.transform.name = StaticDatas.PlayerData.Storage.PlantsInStorage[i].Plant.ToString();
-            item.GetComponent<S_Box>().AddItem(StaticDatas.PlayerData.Storage.PlantsInStorage[i].Plant, StaticDatas.PlayerData.Storage.PlantsInStorage[i].count);
-            reArrangeItem(item.transform);
-            Boxes.Add(item);
-        }
-        for (int i = 0; i < StaticDatas.PlayerData.Storage.FruitInStorage.Count; i++)
-        {
-            GameObject item = Instantiate(BoxPrefab, BoxHolder);
-            item.transform.name = StaticDatas.PlayerData.Storage.FruitInStorage[i].Fruit.ToString();
-            item.GetComponent<S_Box>().AddItem(StaticDatas.PlayerData.Storage.FruitInStorage[i].Fruit, StaticDatas.PlayerData.Storage.FruitInStorage[i].count);
-            reArrangeItem(item.transform);
-            Boxes.Add(item);
-        }
-        for (int i = 0; i < StaticDatas.PlayerData.Storage.a_p_inStorage.Count; i++)
-        {
-            GameObject item = Instantiate(BoxPrefab, BoxHolder);
-            item.transform.name = StaticDatas.PlayerData.Storage.a_p_inStorage[i].animal_products.ToString();
-            item.GetComponent<S_Box>().AddItem(StaticDatas.PlayerData.Storage.a_p_inStorage[i].animal_products, StaticDatas.PlayerData.Storage.a_p_inStorage[i].count);
-            reArrangeItem(item.transform);
-            Boxes.Add(item);
-        }
-        for (int i = 0; i < StaticDatas.PlayerData.Storage.ProductsInStorage.Count; i++)
-        {
-            GameObject item = Instantiate(BoxPrefab, BoxHolder);
-            item.transform.name = StaticDatas.PlayerData.Storage.ProductsInStorage[i].product.ToString();
-            item.GetComponent<S_Box>().AddItem(StaticDatas.PlayerData.Storage.ProductsInStorage[i].product, StaticDatas.PlayerData.Storage.ProductsInStorage[i].count);
-            reArrangeItem(item.transform);
-            Boxes.Add(item);
-        }
-        for (int i = 0; i < StaticDatas.PlayerData.Storage.ItemsInStorage.Count; i++)
-        {
-            GameObject item = Instantiate(BoxPrefab, BoxHolder);
-            item.transform.name = StaticDatas.PlayerData.Storage.ItemsInStorage[i].item.ToString();
-            item.GetComponent<S_Box>().AddItem(StaticDatas.PlayerData.Storage.ItemsInStorage[i].item, StaticDatas.PlayerData.Storage.ItemsInStorage[i].count);
-            reArrangeItem(item.transform);
-            Boxes.Add(item);
-        }
-        for (int i = 0; i < StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Count; i++)
-        {
-            if (StaticDatas.PlayerData.PlayerInfos.Food.Amounts[i].amount > 0)
-            {
-                GameObject item = Instantiate(BoxPrefab, BoxHolder);
-                item.transform.name = StaticDatas.PlayerData.PlayerInfos.Food.Amounts[i].food.ToString();
-                item.GetComponent<S_Box>().AddItem(StaticDatas.PlayerData.PlayerInfos.Food.Amounts[i].food, StaticDatas.PlayerData.PlayerInfos.Food.Amounts[i].amount);
-                reArrangeItem(item.transform);
-                Boxes.Add(item);
-            }
-        }
 
-        RectTransform rts = BoxHolder.GetComponent<RectTransform>();
-        GridLayoutGroup glg = BoxHolder.GetComponent<GridLayoutGroup>();
-        int raw = 1;
-        if (Boxes.Count > 4)
-        {
-            raw = Boxes.Count / 4;
-            if (raw % 4 != 0) raw++;
-        }
-        rts.sizeDelta = new Vector2(660, (raw * glg.cellSize.y) + ((raw - 1) * glg.spacing.y) + glg.padding.top + glg.padding.bottom);
+        for (int i = 0; i < StaticDatas.PlayerData.Storage.PlantsInStorage.Count; i++)
+            AddBox(StaticDatas.PlayerData.Storage.PlantsInStorage[i].Plant, StaticDatas.PlayerData.Storage.PlantsInStorage[i].count, Category.Plants);
+        count = StaticDatas.PlayerData.Storage.PlantsInStorage?.Count ?? 0;
+        AdjustHolderSize(BoxHolder.Find("Plants"), count);
+
+        int f = 0;
+        for (int i = 0; i < StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Count; i++)
+            if (StaticDatas.PlayerData.PlayerInfos.Food.Amounts[i].amount > 0){
+                f++;
+                AddBox(StaticDatas.PlayerData.PlayerInfos.Food.Amounts[i].food, StaticDatas.PlayerData.PlayerInfos.Food.Amounts[i].amount, Category.AnimalFood);
+            }
+        AdjustHolderSize(BoxHolder.Find("Foods"), f);
+
+        for (int i = 0; i < StaticDatas.PlayerData.Storage.FruitInStorage.Count; i++)
+            AddBox(StaticDatas.PlayerData.Storage.FruitInStorage[i].Fruit, StaticDatas.PlayerData.Storage.FruitInStorage[i].count, Category.Fruits);
+        count = StaticDatas.PlayerData.Storage.FruitInStorage?.Count ?? 0;
+        AdjustHolderSize(BoxHolder.Find("Fruits"), count);
+
+        for (int i = 0; i < StaticDatas.PlayerData.Storage.a_p_inStorage.Count; i++)
+            AddBox(StaticDatas.PlayerData.Storage.a_p_inStorage[i].animal_products, StaticDatas.PlayerData.Storage.a_p_inStorage[i].count, Category.AProducts);
+        count = StaticDatas.PlayerData.Storage.a_p_inStorage?.Count ?? 0;
+        AdjustHolderSize(BoxHolder.Find("Animal Products"), count);
+
+        for (int i = 0; i < StaticDatas.PlayerData.Storage.ProductsInStorage.Count; i++)
+            AddBox(StaticDatas.PlayerData.Storage.ProductsInStorage[i].product, StaticDatas.PlayerData.Storage.ProductsInStorage[i].count, Category.Products);
+        count = StaticDatas.PlayerData.Storage.ProductsInStorage?.Count ?? 0;
+        AdjustHolderSize(BoxHolder.Find("Products"), count);
+
+        for (int i = 0; i < StaticDatas.PlayerData.Storage.ItemsInStorage.Count; i++)
+            AddBox(StaticDatas.PlayerData.Storage.ItemsInStorage[i].item, StaticDatas.PlayerData.Storage.ItemsInStorage[i].count, Category.Items);
+        count = StaticDatas.PlayerData.Storage.ItemsInStorage?.Count ?? 0;
+        AdjustHolderSize(BoxHolder.Find("Items"), count);
+
+        AdjustMainHolder();
         UpdateCountInBox();
     }
 
@@ -122,6 +110,60 @@ public class Storage : MonoBehaviour
         cRts.pivot = new Vector2((float)0.5, 0);
     }
 
+    private void AddBox(object item, int count, Category category)
+    {
+        Transform holder = BoxHolder;
+        if (category == Category.Plants) holder = BoxHolder.Find("Plants");
+        else if (category == Category.AnimalFood) holder = BoxHolder.Find("Foods");
+        else if (category == Category.AProducts) holder = BoxHolder.Find("Animal Products");
+        else if (category == Category.Products) holder = BoxHolder.Find("Products");
+        else if (category == Category.Items) holder = BoxHolder.Find("Items");
+        else if (category == Category.Fruits) holder = BoxHolder.Find("Fruits");
+
+        GameObject i = Instantiate(BoxPrefab, holder);
+        if (holder.name != "Foods")
+            i.transform.name = item.ToString();
+        else
+            i.transform.name = item.ToString() + " Animal Food";
+        i.GetComponent<S_Box>().AddItem(item, count);
+        reArrangeItem(i.transform);
+        Boxes.Add(i);
+    }
+    
+    private void AdjustHolderSize(Transform holder, int childCount)
+    {
+        Debug.Log($"in {holder.name} there are {childCount} different things");
+        BoxHolder.Find(holder.name + " Text").gameObject.SetActive(true);
+        holder.gameObject.SetActive(true);
+        int rows = 0;
+        Debug.Log($"childCount = {childCount}");
+        if(childCount > 0)
+        {
+            if (childCount > 4) rows = (int)Math.Ceiling((double)childCount / 4);
+            else rows = 1;
+        }
+        else
+        {
+            BoxHolder.Find(holder.name + " Text").gameObject.SetActive(false);
+            holder.gameObject.SetActive(false);
+            rows = 0;
+        }
+        Debug.Log($"rows = {rows}");
+
+        GridLayoutGroup vlg = holder.GetComponent<GridLayoutGroup>();
+        holder.GetComponent<RectTransform>().sizeDelta = new Vector2(660, (rows * vlg.cellSize.y) + ((rows - 1) * vlg.spacing.y) + + vlg.padding.top + 65);
+    }
+
+    private void AdjustMainHolder()
+    {
+        RectTransform rts = BoxHolder.GetComponent<RectTransform>();
+        float size = 0;
+        for (int i = 0; i < BoxHolder.childCount; i++)
+            if(BoxHolder.transform.GetChild(i).gameObject.activeInHierarchy)
+                size += BoxHolder.transform.GetChild(i).GetComponent<RectTransform>().sizeDelta.y;
+        rts.sizeDelta = new Vector2(660, size);
+    }
+
     public bool hasEnStorage(int reqAmount)
     {
         if (LevelReqs[StaticDatas.PlayerData.StorageLevel - 1].Capacity - SumCount() >= reqAmount) return true;
@@ -139,9 +181,7 @@ public class Storage : MonoBehaviour
         if (cat == Category.AnimalFood)
         {
             for (int i = 0; i < StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Count; i++)
-            {
                 count += StaticDatas.PlayerData.PlayerInfos.Food.Amounts[i].amount;
-            }
         }
         else
         {
@@ -193,20 +233,12 @@ public class Storage : MonoBehaviour
         if (StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == plant) == null)
         {
             StaticDatas.PlayerData.Storage.PlantsInStorage.Add(new PlantCount { Plant = plant, count = count });
-
-            GameObject item = Instantiate(BoxPrefab, BoxHolder);
-            item.transform.name = plant.ToString();
-            item.GetComponent<S_Box>().AddItem(plant, StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == plant).count);
-            reArrangeItem(item.transform);
-            Boxes.Add(item);
+            AddBox(plant, StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == plant).count, Category.Plants);
         }
         else
-        {
             StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == plant).count += count;
-            UpdateCountInBox();
-            Debug.Log($"Updated {plant}, new amount: {StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == plant).count}");
-        }
         StaticDatas.SaveDatas();
+        PopulateBoxItems();
     }
 
     public void UpdateFruitCount(Fruits fruit, int count)
@@ -215,21 +247,12 @@ public class Storage : MonoBehaviour
         if (StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == fruit) == null)
         {
             StaticDatas.PlayerData.Storage.FruitInStorage.Add(new FruitCount { Fruit = fruit, count = count });
-
-            GameObject item = Instantiate(BoxPrefab, BoxHolder);
-            item.transform.name = fruit.ToString();
-            item.GetComponent<S_Box>().AddItem(fruit, StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == fruit).count);
-            reArrangeItem(item.transform);
-            Boxes.Add(item);
-            Debug.Log($"Added {fruit} with amount: {count}");
+            AddBox(fruit, StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == fruit).count, Category.Fruits);
         }
         else
-        {
             StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == fruit).count += count;
-            UpdateCountInBox();
-            Debug.Log($"Updated {fruit}, new amount: {StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == fruit).count}");
-        }
         StaticDatas.SaveDatas();
+        PopulateBoxItems();
     }
 
     public void UpdateAPCount(AProducts ap, int count)
@@ -239,21 +262,12 @@ public class Storage : MonoBehaviour
         {
             // Add new if not found
             StaticDatas.PlayerData.Storage.a_p_inStorage.Add(new APCount { animal_products = ap, count = count });
-
-            GameObject item = Instantiate(BoxPrefab, BoxHolder);
-            item.transform.name = ap.ToString();
-            item.GetComponent<S_Box>().AddItem(ap, StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == ap).count);
-            reArrangeItem(item.transform);
-            Boxes.Add(item);
-            Debug.Log($"Added {ap} with amount: {count}");
+            AddBox(ap, StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == ap).count,Category.AProducts);
         }
         else 
-        {
             StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == ap).count += count;
-            UpdateCountInBox();
-            Debug.Log($"Updated {ap}, new amount: {StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == ap).count}");
-        }
         StaticDatas.SaveDatas();
+        PopulateBoxItems();
     }
 
     public void UpdateProductCount(Products pr, int count)
@@ -263,21 +277,12 @@ public class Storage : MonoBehaviour
         {
             // Add new if not found
             StaticDatas.PlayerData.Storage.ProductsInStorage.Add(new ProductCount { product = pr, count = count });
-
-            GameObject item = Instantiate(BoxPrefab, BoxHolder);
-            item.transform.name = pr.ToString();
-            item.GetComponent<S_Box>().AddItem(pr, StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == pr).count);
-            reArrangeItem(item.transform);
-            Boxes.Add(item);
-            Debug.Log($"Added {pr} with amount: {count}");
+            AddBox(pr, StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == pr).count, Category.Products);
         }
         else
-        {
             StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == pr).count += count;
-            UpdateCountInBox();
-            Debug.Log($"Updated {pr}, new amount: {StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == pr).count}");
-        }
         StaticDatas.SaveDatas();
+        PopulateBoxItems();
     }
 
     public void UpdateItemCount(Items item, int count)
@@ -287,24 +292,48 @@ public class Storage : MonoBehaviour
         {
             // Add new if not found
             StaticDatas.PlayerData.Storage.ItemsInStorage.Add(new ItemCount { item = item, count = count });
-
-            GameObject i = Instantiate(BoxPrefab, BoxHolder);
-            i.transform.name = item.ToString();
-            i.GetComponent<S_Box>().AddItem(item, StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == item).count);
-            reArrangeItem(i.transform);
-            Boxes.Add(i);
-            Debug.Log($"Added {item} with amount: {count}");
+            AddBox(item, StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == item).count, Category.Items);
         }
         else
-        {
             StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == item).count += count;
-            UpdateCountInBox();
-            Debug.Log($"Updated {item}, new amount: {StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == item).count}");
-        }
+
         StaticDatas.SaveDatas();
+        PopulateBoxItems();
+        for (int i = 0; i < ProductionLogic.instance.Machines.Count; i++)
+            if (ProductionLogic.instance.Machines[i].GetComponent<Machine>().mStats.state == ASpotState.Broken) ProductionLogic.instance.Machines[i].GetComponent<Machine>().PopulateFixers();
     }
 
-    private void UpdateCountInBox()
+    public void UpdateAnimalFood(a_f_types food, int amount)
+    {
+        bool add = false;
+        if (StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == food) == null){
+            StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Add(new afAmount() { food = food, amount = amount }); add = true;
+        }
+        else if (StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == food).amount == 0){
+            StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == food).amount += amount; add = true;
+        }
+        else
+            StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == food).amount += amount;
+
+        if (add)
+            AddBox(food, StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == food).amount, Category.AnimalFood);
+
+        StaticDatas.SaveDatas();
+        PopulateBoxItems();
+        CalSumOfFood();
+        FoodPL.instance.AnimalFoodText.text = StaticDatas.PlayerData.PlayerInfos.Food.sumAmount.ToString();
+        if (AnimalsLogic.instance != null) AnimalsLogic.instance.PopulateFoodChooser();
+
+    }
+
+    public void CalSumOfFood()
+    {
+        StaticDatas.PlayerData.PlayerInfos.Food.sumAmount = 0;
+        for (int i = 0; i < StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Count; i++)
+            StaticDatas.PlayerData.PlayerInfos.Food.sumAmount += StaticDatas.PlayerData.PlayerInfos.Food.Amounts[i].amount;
+    }
+
+    public void UpdateCountInBox()
     {
         Debug.Log("updating item's count");
         for (int i = 0; i < Boxes.Count; i++)
@@ -323,7 +352,7 @@ public class Storage : MonoBehaviour
                         Remove(StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == s.product));
                 else if (s.category == Category.Items)StaticDatas.PlayerData.Storage.ItemsInStorage.
                         Remove(StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == s.item));
-                Destroy(Boxes[i]);
+                Destroy(Boxes[i].gameObject);
                 Boxes.RemoveAt(i);
             }
         }

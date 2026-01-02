@@ -47,18 +47,17 @@ public class AnimalSpot : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         stimer = 0;
-        LoadUI();
     }
 
     public void Init()
 	{
 		if (TheAnimal.animal != Animals.None)
 			SetAnimalInfos();
+        LoadUI();
 	}
 
     private void Update()
     {
-        LoadUI();
         if (spotState == ASpotState.HasAnimal)
         {
             btn.onClick.RemoveAllListeners();
@@ -127,9 +126,7 @@ public class AnimalSpot : MonoBehaviour
     {
         AHolder.instance.spotnumber = SpotNumber;
         if (TheAnimal.theProduct == AProducts.None)
-        {
             AHolder.instance.SpotClicked(spotState, TheAnimal.animal);
-        }
     }
 
     public void BuyAnimal(Animals animal)
@@ -173,7 +170,7 @@ public class AnimalSpot : MonoBehaviour
                 if (product == TheAnimal.products[i]) { TheAnimal.xp = TheAnimal.prXp[i]; TheAnimal.amount = TheAnimal.prAmounts[i]; }
             tPro.sprite = Sprites.instance.sprites.a_products.Find(e => e.a_product == TheAnimal.theProduct).sprite;
             StaticDatas.PlayerData.AnimalSpots[SpotNumber].AnimalProductDetails = TheAnimal;
-            FoodPL.instance.UpdateAnimalFood(AnimalsLogic.instance.TheFood, -1);
+            Storage.instance.UpdateAnimalFood(AnimalsLogic.instance.TheFood, -1);
             StaticDatas.SaveDatas();
             foreach (Transform item in AHolder.instance.Holder) Destroy(item.gameObject);
             LoadUI();
@@ -197,6 +194,7 @@ public class AnimalSpot : MonoBehaviour
         {
             PauseFertilizing();
             ReadyToCollect();
+            LoadUI();
             StaticDatas.SaveDatas();
         }
     }
@@ -222,6 +220,7 @@ public class AnimalSpot : MonoBehaviour
         if (elapsedMinutes >= TheAnimal.fTimer && ((TheAnimal.productTime - TheAnimal.pauseTime) > TheAnimal.fTimer))
         {
             PauseFertilizing();
+            LoadUI();
             StaticDatas.SaveDatas();
         }
     }
@@ -235,6 +234,7 @@ public class AnimalSpot : MonoBehaviour
         btn.onClick.RemoveAllListeners();
         btn.onClick.AddListener(() => ResumeFertilizing());
         StaticDatas.PlayerData.AnimalSpots[SpotNumber].AnimalProductDetails = TheAnimal;
+        LoadUI();
     }
 
     private void ResumeFertilizing()
@@ -248,9 +248,10 @@ public class AnimalSpot : MonoBehaviour
             TheAnimal.feedTime = time.ToString("o");
             anim.SetBool("ShowTimer", false);
             StaticDatas.PlayerData.AnimalSpots[SpotNumber].AnimalProductDetails = TheAnimal;
-            FoodPL.instance.UpdateAnimalFood(AnimalsLogic.instance.TheFood, -1);
+            Storage.instance.UpdateAnimalFood(AnimalsLogic.instance.TheFood, -1);
             StaticDatas.SaveDatas();
             LuckyBox.instance.TryToFindBox();
+            LoadUI();
         }
     }
 
@@ -293,20 +294,9 @@ public class AnimalSpot : MonoBehaviour
                 ans.anim.SetBool("ShowTimer", false);
                 ans.showtimer = false;
             }
-            else showtimer = !showtimer;
-            Debug.Log("disabling timer for" + i);
         }
-        if (showtimer)
-        {
-            Debug.Log("expanting showtimer items");
-            anim.SetBool("ShowTimer", true);
-
-        }
-        else if (!showtimer)
-        {
-            Debug.Log("shrinking showtimer items");
-            anim.SetBool("ShowTimer", false);
-        }
+        anim.SetBool("ShowTimer", !anim.GetBool("ShowTimer"));
+        LoadUI();
     }
 
     private void ReadyToCollect()
@@ -332,7 +322,6 @@ public class AnimalSpot : MonoBehaviour
             TheAnimal.hasFood = false;
             TheAnimal.pauseTime = 0;
             tProBg.gameObject.SetActive(false);
-            LoadUI();
 
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(() => SpotDetails());
@@ -341,6 +330,7 @@ public class AnimalSpot : MonoBehaviour
             StaticDatas.PlayerData.AnimalSpots[SpotNumber].state = spotState;
             StaticDatas.SaveDatas();
             LuckyBox.instance.TryToFindBox();
+            LoadUI();
         }
     }
 
@@ -356,6 +346,7 @@ public class AnimalSpot : MonoBehaviour
         StaticDatas.PlayerData.AnimalSpots[SpotNumber].state = spotState;
         StaticDatas.SaveDatas();
         foreach (Transform item in AHolder.instance.Holder) Destroy(item.gameObject);
+        LoadUI();
     }
 
     private void SetAnimalInfos()
@@ -378,5 +369,6 @@ public class AnimalSpot : MonoBehaviour
 
         StaticDatas.PlayerData.AnimalSpots[SpotNumber].AnimalProductDetails = TheAnimal;
         StaticDatas.SaveDatas();
+        LoadUI();
     }
 }

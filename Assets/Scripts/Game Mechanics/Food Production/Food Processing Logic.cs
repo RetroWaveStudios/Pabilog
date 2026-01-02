@@ -20,6 +20,7 @@ public class FoodPL : MonoBehaviour
     public Transform mholder;
     public GameObject materialPrefab;
     public List<GameObject> Materials;
+    public List<Sprite> FHIcons;
 
     [Header("Schedule Holder")]
     public Transform qholder;
@@ -60,20 +61,6 @@ public class FoodPL : MonoBehaviour
         changeFood();
         PopulateSchedule();
         PopulateFoodList();
-    }
-
-    public void UpdateAnimalFood(a_f_types food, int amount)
-    {
-        if (StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == food) == null)
-            StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Add(new afAmount() { food = food, amount = amount });
-        else
-            StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == food).amount += amount;
-        CalSumAmount();
-        AnimalFoodText.text = StaticDatas.PlayerData.PlayerInfos.Food.sumAmount.ToString();
-        if(AnimalsLogic.instance != null)
-            AnimalsLogic.instance.PopulateFoodChooser();
-        
-        StaticDatas.SaveDatas();
     }
 
     private void Update()
@@ -120,23 +107,31 @@ public class FoodPL : MonoBehaviour
         {
             if (WaterSL.instance.anim.GetBool("Open Water Details"))
                 WaterSL.instance.anim.SetBool("Open Water Details", false);
-            if (isAnTrue("Open Upgrade"))
-                CloseUpgrade();
-            else if (isAnTrue("Open MH"))
-                OpenMH(false);
-            if(StaticDatas.PlayerData.PlayerInfos.FoodLevel >= MachineImages.Count)
-                transform.Find("Food Producer/Holder Colored/Details/Upgrade Button").gameObject.SetActive(false);
+            if (Storage.instance.anim.GetBool("Open Storage"))
+                Storage.instance.anim.SetBool("Open Storage", false);
+            if (anim.GetBool("Open Upgrade"))
+                    CloseUpgrade();
+                else if (anim.GetBool("Open MH"))
+                    OpenMH(false);
+                if(StaticDatas.PlayerData.PlayerInfos.FoodLevel >= MachineImages.Count)
+                    transform.Find("Food Producer/Holder Colored/Details/Upgrade Button").gameObject.SetActive(false);
 
-            int id = Animator.StringToHash("Open Details");
-            Debug.Log($"Open Details is {anim.GetBool(id)}");
-            Debug.Log($"Setting to {!anim.GetBool(id)}");
+                int id = Animator.StringToHash("Open Details");
+                Debug.Log($"Open Details is {anim.GetBool(id)}");
+                Debug.Log($"Setting to {!anim.GetBool(id)}");
 
-            anim.SetBool(id, !anim.GetBool(id));
+                anim.SetBool(id, !anim.GetBool(id));
+            }
+
+        public void OpenFH()
+        {
+            transform.Find("Food Producer/Foods in Storage").GetComponent<Animator>().SetBool("Open Food Holder",
+                !transform.Find("Food Producer/Foods in Storage").GetComponent<Animator>().GetBool("Open Food Holder"));
         }
 
         public void OpenMH(bool tf)
         {
-            if (!isAnTrue("Open Upgrade"))
+            if (!anim.GetBool("Open Upgrade"))
             {
                 Debug.Log($"Setting to {tf}");
                 anim.SetBool("Open MH", tf);
@@ -147,42 +142,32 @@ public class FoodPL : MonoBehaviour
 
         public void OpenUpgrade()
         {
-            if (!isAnTrue("Open MH"))
+            if (anim.GetBool("Open MH"))
+                anim.SetBool("Open MH", false);
+            if (!anim.GetBool("Open Upgrade"))
             {
-                if (!isAnTrue("Open Upgrade"))
-                {
-                    Debug.Log($"Setting to {!isAnTrue("Open Upgrade")}");
-                    anim.SetBool("Open Upgrade", true);
-                    mBtn.onClick.RemoveAllListeners();
-                    priceImage.sprite = Sprites.instance.sprites.currencies.
-                        Find(e => e.Currency == lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].currency).sprite;
-                    priceText.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].price.ToString();
-                }
-                else
-                    UpgradeWellLevel();
+                Debug.Log($"Setting to {!anim.GetBool("Open Upgrade")}");
+                anim.SetBool("Open Upgrade", true);
+                mBtn.onClick.RemoveAllListeners();
+                priceImage.sprite = Sprites.instance.sprites.currencies.
+                    Find(e => e.Currency == lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].currency).sprite;
+                priceText.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].price.ToString();
             }
+            else
+                UpgradeWellLevel();
         }
 
         public void CloseUpgrade()
         {
-            if (isAnTrue("Open Upgrade"))
+            if (anim.GetBool("Open Upgrade"))
             {
-                Debug.Log($"Setting to {!isAnTrue("Open Upgrade")}");
+                Debug.Log($"Setting to {!anim.GetBool("Open Upgrade")}");
                 anim.SetBool("Open Upgrade", false);
                 mBtn.onClick.RemoveAllListeners();
                 mBtn.onClick.AddListener(() => PopulateMatHolder());
             }
         }
-
-        private bool isAnTrue(string name)
-    {
-        int index = Animator.StringToHash(name);
-        if(anim.GetBool(index))
-            return true;
-        else
-            return false;
-    }
-    #endregion
+        #endregion
 
     #region Production Section
         private void ChooseProduct(TheFood tf)
@@ -256,7 +241,7 @@ public class FoodPL : MonoBehaviour
 
         private void PopulateMatHolder()
         {
-            if(!isAnTrue("Open Upgrade"))
+            if(!anim.GetBool("Open Upgrade"))
             {
                 foreach (Transform item in mholder) Destroy(item.gameObject);
                 if (StaticDatas.PlayerData.PlayerInfos.Food.qLimit > StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count)
@@ -366,24 +351,23 @@ public class FoodPL : MonoBehaviour
 
         private void Collect()
         {
-            if (!isAnTrue("Open Upgrade") && StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].PrState == PlantState.ReadyToHarvest &&
+            if (!anim.GetBool("Open Upgrade") && StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].PrState == PlantState.ReadyToHarvest &&
                 Storage.instance.hasEnStorage(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].collectAmount))
             {
-                UpdateAnimalFood(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].Food, StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].collectAmount);
+                Storage.instance.UpdateAnimalFood(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].Food, StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].collectAmount);
                 MoneySystem.instance.UpdateXp(StaticDatas.PlayerData.PlayerInfos.Food.xp);
                 queue[StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count - 1].transform.Find("Item").GetComponent<Image>().enabled = false;
                 StaticDatas.PlayerData.PlayerInfos.Food.InQueue.RemoveAt(0);
+
                 if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count <= 0)
-                {
                     StaticDatas.PlayerData.PlayerInfos.Food.MachState = LandState.Empty;
-                }
                 if (AnimalsLogic.instance != null)
                     AnimalsLogic.instance.PopulateFoodChooser();
-                PopulateSchedule();
                 StaticDatas.SaveDatas();
                 mBtn.onClick.RemoveAllListeners();
                 mBtn.onClick.AddListener(() => PopulateMatHolder());
                 LuckyBox.instance.TryToFindBox();
+                PopulateSchedule();
             }
             //else if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count < StaticDatas.PlayerData.PlayerInfos.Food.qLimit) PopulateMatHolder();
         }
@@ -459,6 +443,22 @@ public class FoodPL : MonoBehaviour
         }
     #endregion
 
+    public void reSizeFoodsHolder()
+    {
+        Transform holder = transform.Find("Food Producer/Foods in Storage/Holder");
+        foreach (Transform food in holder)
+        {
+            food.GetComponent<RectTransform>().sizeDelta = new Vector2(55, 55);
+            food.transform.Find("Count").GetComponent<RectTransform>().sizeDelta = new Vector2(65, 22);
+            food.transform.Find("Count").GetComponent<RectTransform>().localPosition = new Vector2(0, -45);
+            food.GetComponent<Image>().color = new Color32(255, 255, 255, 255);
+
+            if(food.transform.Find("Minute"))
+                Destroy(food.transform.Find("Minute").gameObject);
+            Destroy(food.GetComponent<Button>());
+        }
+    }
+
     private void PopulateFoodList()
     {
         for (int i = StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Count; i < StaticDatas.PlayerData.PlayerInfos.Food.materials.Count; i++)
@@ -486,17 +486,8 @@ public class FoodPL : MonoBehaviour
             materials[i].foodTimer = f.foodTimer;
             materials[i].collectAmount = f.collectAmount;
         }
-        CalSumAmount();
+        Storage.instance.CalSumOfFood();
         StaticDatas.PlayerData.PlayerInfos.Food.materials = materials;
         StaticDatas.SaveDatas();
-    }
-
-    private void CalSumAmount()
-    {
-        StaticDatas.PlayerData.PlayerInfos.Food.sumAmount = 0;
-        for (int i = 0; i < StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Count; i++)
-        {
-            StaticDatas.PlayerData.PlayerInfos.Food.sumAmount += StaticDatas.PlayerData.PlayerInfos.Food.Amounts[i].amount;
-        }
     }
 }

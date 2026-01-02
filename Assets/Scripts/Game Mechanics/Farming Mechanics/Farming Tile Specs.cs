@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,8 +15,8 @@ public class FarmingTS : MonoBehaviour
     public TextMeshProUGUI timer;
 
     public GameObject ThePlantImage;
-
-    private bool showtimer;
+    private int w; // water amount to contuniue watering with full need of water
+    private int decide;
 
     [Header("Game Settings")]
     public Button btn;
@@ -39,12 +40,16 @@ public class FarmingTS : MonoBehaviour
         btn = GetComponent<Button>();
         anim = GetComponent<Animator>();
         infoText.text = "Empty";
+    }
+
+    private void Start()
+    {
+        if (landstate == LandState.Planted && ThePlant.state == PlantState.Growing && !ThePlant.hasWater) CalculateReqWater();
         LoadUI();
     }
 
     private void Update()
     {
-        LoadUI();
         if (ThePlant.state == PlantState.Growing) { if (ThePlant.hasWater) { CheckWaterTimer(); CheckforGrowth(); UpdateTimer(); } }
         else if (ThePlant.state == PlantState.ReadyToHarvest) rtharvest();
     }
@@ -54,6 +59,7 @@ public class FarmingTS : MonoBehaviour
         infoText.gameObject.SetActive(false);
         Stages.SetActive(false); PauseBG.SetActive(false); waterTimerPot.SetActive(false);
         ready.SetActive(false); infoText.text = "Empty"; ThePlantImage.SetActive(false);
+        HighlightToPlant(false);
 
         Image pImage = PauseBG.transform.Find("Icon").GetComponent<Image>();
         if  (landstate == LandState.Empty)
@@ -108,7 +114,7 @@ public class FarmingTS : MonoBehaviour
         {
             ThePlantImage.SetActive(true);
             ThePlantImage.transform.Find("The Plant").GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant == ThePlant.plant).sprite;
-            PauseBG.transform.Find("Count").gameObject.SetActive(false);
+            PauseBG.transform.Find("Count").gameObject.SetActive(true);
             infoText.gameObject.SetActive(false); waterTimerPot.SetActive(true);
             if (ThePlant.state == PlantState.Growing)
             {
@@ -117,7 +123,13 @@ public class FarmingTS : MonoBehaviour
                 {
                     PauseBG.SetActive(true); pImage.sprite = noWater;
                     pImage.transform.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 120);
-                    btn.onClick.RemoveAllListeners(); btn.onClick.AddListener(() => ResumeGrowth());
+
+                    transform.Find("Info Holder/Watering Pot/Inc").gameObject.SetActive(true);
+                    transform.Find("Info Holder/Watering Pot/Dec").gameObject.SetActive(true);
+                    if (StaticDatas.PlayerData.PlayerInfos.Water.amount < decide || decide >= w)
+                        transform.Find("Info Holder/Watering Pot/Inc").gameObject.SetActive(false);
+                    if (decide < 2)
+                        transform.Find("Info Holder/Watering Pot/Dec").gameObject.SetActive(false);
                 }
 
                 Stages.SetActive(true);
@@ -162,7 +174,7 @@ public class FarmingTS : MonoBehaviour
 
     public void ChoosePlant(Plants plant)
     {
-        if (ThePlant.plant == Plants.None && WaterSL.instance.hasEnoughWater(1))
+        if (ThePlant.plant == Plants.None)
         {
             bool enought = true;
             if (Storage.instance.hasEnought(plant, 1, false))
@@ -188,18 +200,13 @@ public class FarmingTS : MonoBehaviour
     {
         Debug.Log("Planting " + ThePlant.plant);
 
-        ThePlant.waterTime = DateTime.UtcNow.ToString("o");
-        ThePlant.wTimer = StaticDatas.PlayerData.PlayerInfos.Water.WateringTimer;
+        ThePlant.hasWater = false;
         ThePlant.state = PlantState.Growing;
-        ThePlant.hasWater = true;
-        WaterSL.instance.TriggerAmount(-1);
         Debug.Log("added time to waterTime: " + ThePlant.waterTime);
-        btn.onClick.RemoveAllListeners();
-        btn.onClick.AddListener(() => ShowTimer());
         landstate = LandState.Planted;
         StaticDatas.PlayerData.FarmSlots[SlotNumber].state = landstate;
         StaticDatas.PlayerData.FarmSlots[SlotNumber].PlantDetails = ThePlant;
-        StaticDatas.SaveDatas(); ShowTimer();
+        StaticDatas.SaveDatas(); ShowWatering(); LoadUI(); CalculateReqWater();
     }
 
     private void CheckforGrowth()
@@ -237,11 +244,12 @@ public class FarmingTS : MonoBehaviour
                 break;
             }
         }
+
         if (elapsedMinutes >= ThePlant.GrowthTime)
         {
             rtharvest();
+            PauseGrowth(true);
             StaticDatas.SaveDatas();
-            PauseGrowth();
         }
     }
 
@@ -264,35 +272,71 @@ public class FarmingTS : MonoBehaviour
         if (elapsedMinutes >= ThePlant.wTimer && ((ThePlant.GrowthTime - ThePlant.pauseTime) > ThePlant.wTimer))
         {
             Debug.Log("Calling pause");
-            PauseGrowth();
+            PauseGrowth(false);
             StaticDatas.SaveDatas();
         }
     }
 
-    private void PauseGrowth()
+    private void PauseGrowth(bool end)
     {
         ThePlant.hasWater = false;
-        anim.SetBool("Show Timer", false);
-        Debug.Log("Time deleted");
         ThePlant.pauseTime += ThePlant.wTimer;
         ThePlant.waterTime = "";
         btn.onClick.RemoveAllListeners();
-        btn.onClick.AddListener(() => ResumeGrowth());
+        if(!end)
+            CalculateReqWater();
+        else
+            anim.SetBool("Show Timer", false);
+        LoadUI();
         StaticDatas.PlayerData.FarmSlots[SlotNumber].PlantDetails = ThePlant;
     }
 
-    public void ResumeGrowth()
+    private void CalculateReqWater()
     {
-        if (WaterSL.instance.hasEnoughWater(1))
+        Debug.Log("calculating");
+        double req = (ThePlant.GrowthTime - ThePlant.pauseTime) / StaticDatas.PlayerData.PlayerInfos.Water.WateringTimer;
+        w = (int)Math.Ceiling(req);
+
+        Debug.Log("opening show water");
+        anim.SetBool("Show Watering", true);
+        btn.onClick.RemoveAllListeners();
+        //calculate max can use to water
+        if (StaticDatas.PlayerData.PlayerInfos.Water.amount >= w)
+            btn.onClick.AddListener(() => ResumeGrowth(w));
+        else
+        {
+            w = StaticDatas.PlayerData.PlayerInfos.Water.amount;
+            btn.onClick.AddListener(() => ResumeGrowth(StaticDatas.PlayerData.PlayerInfos.Water.amount));
+        }
+        decide = w;
+        Debug.Log($"decide = {decide}");
+        PauseBG.transform.Find("Count").GetComponent<TextMeshProUGUI>().text = decide.ToString();
+        LoadUI();
+    }
+
+    public void ChangeWatering(int amount)
+    {
+        decide += amount;
+        Debug.Log($"decide = {decide}");
+        btn.onClick.RemoveAllListeners();
+        btn.onClick.AddListener(() => ResumeGrowth(decide));
+        PauseBG.transform.Find("Count").GetComponent<TextMeshProUGUI>().text = decide.ToString();
+        LoadUI();
+    }
+
+    public void ResumeGrowth(int amount)
+    {
+        if (WaterSL.instance.hasEnoughWater(amount))
         {
             ThePlant.hasWater = true;
-            ThePlant.wTimer = StaticDatas.PlayerData.PlayerInfos.Water.WateringTimer;
+            ThePlant.wTimer = StaticDatas.PlayerData.PlayerInfos.Water.WateringTimer * amount;
             ThePlant.waterTime = DateTime.UtcNow.ToString("o");
-            WaterSL.instance.TriggerAmount(-1);
+            WaterSL.instance.TriggerAmount(-amount);
             Debug.Log("Saving details");
             StaticDatas.PlayerData.FarmSlots[SlotNumber].PlantDetails = ThePlant;
-            StaticDatas.SaveDatas();
+            StaticDatas.SaveDatas(); LoadUI();
             LuckyBox.instance.TryToFindBox();
+            anim.SetBool("Show Watering", false);
         }
     }
 
@@ -317,22 +361,16 @@ public class FarmingTS : MonoBehaviour
             if (i != SlotNumber)
             {
                 fts.anim.SetBool("Show Timer", false);
-                fts.showtimer = false;
             }
-            else showtimer = !showtimer;
             Debug.Log("disabling timer for" + i);
         }
-        if (showtimer)
-        {
-            Debug.Log("expanting showtimer items");
-            anim.SetBool("Show Timer", true);
+        anim.SetBool("Show Timer", !anim.GetBool("Show Timer"));
+        LoadUI();
+    }
 
-        }
-        else if (!showtimer)
-        {
-            Debug.Log("shrinking showtimer items");
-            anim.SetBool("Show Timer", false);
-        }
+    private void ShowWatering()
+    {
+        anim.SetBool("Show Watering", !anim.GetBool("Show Watering"));
     }
 
     private void rtharvest() //ready to harvest
@@ -365,7 +403,7 @@ public class FarmingTS : MonoBehaviour
 
             StaticDatas.PlayerData.FarmSlots[SlotNumber].state = landstate;
             PlantsHolder.instance.UpdateCountOfPlants();
-            StaticDatas.SaveDatas();
+            StaticDatas.SaveDatas(); LoadUI();
             LuckyBox.instance.TryToFindBox();
         }
     }
@@ -378,6 +416,14 @@ public class FarmingTS : MonoBehaviour
             landstate = LandState.Dry;
     }
 
+    public void HighlightToPlant(bool ready)
+    {
+        if(!ready)
+            transform.Find("Info Holder").GetComponent<Image>().color = new Color32(0, 0, 0, 255);
+        else
+            transform.Find("Info Holder").GetComponent<Image>().color = new Color32(0, 255, 0, 255);
+    }
+
     #region Animation Events
         public void A_Plow()
         {
@@ -386,7 +432,7 @@ public class FarmingTS : MonoBehaviour
             StaticDatas.PlayerData.FarmSlots[SlotNumber].usage = 0;
             btn.onClick.RemoveAllListeners();
             is_plowing = false;
-            StaticDatas.SaveDatas();
+            StaticDatas.SaveDatas(); LoadUI();
             LuckyBox.instance.TryToFindBox();
         }
 
@@ -397,7 +443,7 @@ public class FarmingTS : MonoBehaviour
             btn.onClick.RemoveAllListeners();
 
             is_watering = false;
-            StaticDatas.SaveDatas();
+            StaticDatas.SaveDatas(); LoadUI();
             LuckyBox.instance.TryToFindBox();
         }
     #endregion

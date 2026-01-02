@@ -86,7 +86,7 @@ public class LuckyBox : MonoBehaviour
     public void TryToFindBox()
     {
         float chance = UnityEngine.Random.value * 100;
-        if (chance > 20f && chance < currentChance)
+        if (chance > 15f && chance < currentChance)
         {
             openedNumbers.Add(currentChance);
             Debug.Log($"opened at {currentChance} try");

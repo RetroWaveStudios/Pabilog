@@ -731,6 +731,7 @@ public class LevelSystem
         public string MachineName;
         public ASpotState state;
         public int usage;
+        public int Fixed;
         public int qLimit;
         public List<PrD> queue;
     }

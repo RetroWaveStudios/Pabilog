@@ -67,6 +67,10 @@ public class ProductionLogic : MonoBehaviour
 
     public void DeSelectProductAtAllMachines()
     {
-        for (int i = 0; i < Machines.Count; i++) Machines[i].GetComponent<Machine>().prChoosed = false;
+        for (int i = 0; i < Machines.Count; i++)
+        {
+            Machines[i].GetComponent<Machine>().prChoosed = false;
+            Machines[i].GetComponent<Machine>().LoadUI();
+        }
     }
 }

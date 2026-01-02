@@ -111,7 +111,8 @@ public class AHolder : MonoBehaviour
                             ibrts.anchorMin = new Vector2(0.5f, 1);
 
                             ib.GetComponent<InfoDetails>().btn.onClick.RemoveAllListeners();
-                            ib.GetComponent<InfoDetails>().btn.onClick.AddListener(() => ib.GetComponent<InfoDetails>().DetailsOnOff("Item", ap, animal, index));
+                            int i = index;
+                            ib.GetComponent<InfoDetails>().btn.onClick.AddListener(() => ib.GetComponent<InfoDetails>().DetailsOnOff("CT", "Item", ap, animal, i));
                         #endregion
 
                         Button button = dublicate.GetComponent<Button>();

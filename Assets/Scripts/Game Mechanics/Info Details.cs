@@ -3,10 +3,12 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.VisualScripting;
 
 public class InfoDetails : MonoBehaviour
 {
     private Animator anim;
+    private string aDr;
     private int index;
     private object item, sourceInfos;
 
@@ -18,32 +20,40 @@ public class InfoDetails : MonoBehaviour
         btn = GetComponent<Button>();
     }
 
-    public void DetailsOnOff(string type, object i, object sinfo, int fsIndex)
+    public void DetailsOnOff(string direction, string type, object i, object sinfo, int fsIndex)
     {
-        anim.SetBool("Details", !anim.GetBool("Details"));
-        if(type == "Item")
+        //Debug.Log($"{type} info loaded:\ni = {i}\nsinfo = {sinfo}\nfsIndex = {fsIndex}");
+        anim.SetBool(direction, !anim.GetBool(direction));
+        aDr = direction;
+        item = i;
+        sourceInfos = sinfo;
+        index = fsIndex;
+        if (type == "Item")
         {
-            item = i;
-            sourceInfos = sinfo;
-            index = fsIndex;
             OnOffOthers("Item");
             SetItemInfos();
             foreach (Transform item in transform.Find("Info Panel")) if (item.name != "Product Infos") item.gameObject.SetActive(false); else item.gameObject.SetActive(true);
         }
         else if (type == "Land")
         {
-            index = fsIndex;
             OnOffOthers("Land");
             GetLandDetails();
             foreach (Transform item in transform.Find("Info Panel")) if (item.name != "Land Infos") item.gameObject.SetActive(false); else item.gameObject.SetActive(true);
+        }
+        else if (type == "Machine")
+        {
+            OnOffOthers("Machine");
+            GetMachineDetails();
+            foreach (Transform item in transform.Find("Info Panel")) if (item.name != "Machine Infos") item.gameObject.SetActive(false); else item.gameObject.SetActive(true);
         }
     }
 
     public void TimerAnim()
     {
         if(item != null)
-            transform.Find("Info Panel/Timer Holder/Timer Prefab").GetComponent<Animator>().SetTrigger("Spin it");
+            transform.Find("Info Panel/Product Infos/Timer Holder/Timer Prefab").GetComponent<Animator>().SetTrigger("Spin it");
     }
+
     private void SetItemInfos()
     {
         Transform details = transform.Find("Info Panel/Product Infos");
@@ -112,6 +122,7 @@ public class InfoDetails : MonoBehaviour
         details.Find("Timer Holder/Time").GetComponent<TextMeshProUGUI>().text = timeString;
         details.Find("Storage Count/Count").GetComponent<TextMeshProUGUI>().text = countInfo.ToString();
     }
+
     private void OnOffOthers(string type)
     {
         if (type == "Item")
@@ -121,8 +132,8 @@ public class InfoDetails : MonoBehaviour
                 List<GameObject> plants = PlantsHolder.instance.PlantsInPH;
                 for (int i = 0; i < plants.Count; i++)
                 {
-                    if (i != index && plants[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool("Details"))
-                        plants[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().SetBool("Details", false);
+                    if (i != index && plants[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool(aDr))
+                        plants[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().SetBool(aDr, false);
                 }
             }
             else if (item is Fruits)
@@ -130,8 +141,8 @@ public class InfoDetails : MonoBehaviour
                 List<GameObject> trees = TreeHolder.instance.Trees;
                 for (int i = 0; i < trees.Count; i++)
                 {
-                    if (i != index && trees[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool("Details"))
-                        trees[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().SetBool("Details", false);
+                    if (i != index && trees[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool(aDr))
+                        trees[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().SetBool(aDr, false);
                 }
             }
             else if (item is AProducts)
@@ -139,8 +150,8 @@ public class InfoDetails : MonoBehaviour
                 List<GameObject> aprs = AHolder.instance.allProducts;
                 for (int i = 0; i < aprs.Count; i++)
                 {
-                    if (i != index && aprs[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool("Details"))
-                        aprs[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().SetBool("Details", false);
+                    if (i != index && aprs[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool(aDr))
+                        aprs[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().SetBool(aDr, false);
                 }
             }
             else if (item is Products)
@@ -148,31 +159,43 @@ public class InfoDetails : MonoBehaviour
                 List<GameObject> products = MachinePH.instance.prs;
                 for (int i = 0; i < products.Count; i++)
                 {
-                    if (i != index && products[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool("Details"))
-                        products[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().SetBool("Details", false);
+                    if (i != index && products[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool(aDr))
+                        products[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().SetBool(aDr, false);
                 }
             }
         }
         else if (type == "Land")
             for (int i = 0; i < FarmLogic.instance.Slots.Count; i++)
-                if (i != index && FarmLogic.instance.Slots[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().GetBool("Details"))
-                    FarmLogic.instance.Slots[i].transform.Find("Info Button(Clone)").GetComponent<Animator>().SetBool("Details", false);
+            {
+                Transform main = FarmLogic.instance.transform.Find("Info Buttons");
+                if (i != index && main.GetChild(i).Find("Info Button(Clone)").GetComponent<Animator>().GetBool(aDr))
+                    main.GetChild(i).Find("Info Button(Clone)").GetComponent<Animator>().SetBool(aDr, false);
+            }
+        else if (type == "Machine")
+            for (int i = 0; i < ProductionLogic.instance.Machines.Count; i++)
+            {
+                Transform main = ProductionLogic.instance.Machines[i].transform.Find("Name/Info Button");
+                if (main == null) Debug.Log("Machine info button not found");
+                if (ProductionLogic.instance.Machines[i].name != sourceInfos.ToString() && main.GetComponent<Animator>().GetBool(aDr))
+                    main.GetComponent<Animator>().SetBool(aDr, false);
+            }
     }
 
     private void GetLandDetails()
     {
-        int usage = 0;
-        int plowed = 0;
-        int dried = 0;
-
-        usage = StaticDatas.PlayerData.FarmSlots[index].usage;
-        plowed = StaticDatas.PlayerData.FarmSlots[index].plowed;
-        dried = StaticDatas.PlayerData.FarmSlots[index].dried;
-
         Transform LandInfos = transform.Find("Info Panel/Land Infos");
+        LandInfos.transform.Find("Usage/Count").GetComponent<TextMeshProUGUI>().text = StaticDatas.PlayerData.FarmSlots[index].usage.ToString();
+        LandInfos.transform.Find("Plowed/Count").GetComponent<TextMeshProUGUI>().text = StaticDatas.PlayerData.FarmSlots[index].plowed.ToString();
+        LandInfos.transform.Find("Dried/Count").GetComponent<TextMeshProUGUI>().text = StaticDatas.PlayerData.FarmSlots[index].dried.ToString();
+    }
 
-        LandInfos.transform.Find("Usage/Count").GetComponent<TextMeshProUGUI>().text = usage.ToString();
-        LandInfos.transform.Find("Plowed/Count").GetComponent<TextMeshProUGUI>().text = plowed.ToString();
-        LandInfos.transform.Find("Dried/Count").GetComponent<TextMeshProUGUI>().text = dried.ToString();
+    private void GetMachineDetails()
+    {
+        Debug.Log($"sourceInfo = {sourceInfos}");
+        Transform LandInfos = transform.Find("Info Panel/Machine Infos");
+        LandInfos.transform.Find("Usage/Count").GetComponent<TextMeshProUGUI>().text = StaticDatas.PlayerData.MachineStats.
+            Find(e => e.MachineName == sourceInfos.ToString()).usage.ToString();
+        LandInfos.transform.Find("Fixed/Count").GetComponent<TextMeshProUGUI>().text = StaticDatas.PlayerData.MachineStats.
+            Find(e => e.MachineName == sourceInfos.ToString()).Fixed.ToString();
     }
 }

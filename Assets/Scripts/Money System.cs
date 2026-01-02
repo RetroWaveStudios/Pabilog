@@ -18,8 +18,11 @@ public class MoneySystem : MonoBehaviour
     public void UpdateCoin(int amount, out bool enought)
     {
         int c_amount = Math.Abs(amount);
-        enought = hasEnough(Currency.Coin, c_amount);
-        if(!enought) return;
+        if (amount < 0)
+            enought = hasEnough(Currency.Coin, c_amount);
+        else enought = true;
+
+        if (!enought) return;
         StaticDatas.PlayerData.PlayerInfos.Coin += amount;
         moneyText.text = StaticDatas.PlayerData.PlayerInfos.Coin.ToString();
         StaticDatas.SaveDatas();
@@ -28,7 +31,10 @@ public class MoneySystem : MonoBehaviour
     public void UpdateCyrstal(int amount, out bool enought)
     {
         int c_amount = Math.Abs(amount);
-        enought = hasEnough(Currency.Crystal, c_amount);
+        if (amount < 0)
+            enought = hasEnough(Currency.Crystal, c_amount);
+        else enought = true;
+
         if (!enought) return;
         StaticDatas.PlayerData.PlayerInfos.Crystal += amount;
         crystalText.text = StaticDatas.PlayerData.PlayerInfos.Crystal.ToString();

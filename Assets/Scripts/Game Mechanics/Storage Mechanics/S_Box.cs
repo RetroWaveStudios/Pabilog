@@ -82,6 +82,8 @@ public class S_Box : MonoBehaviour
     {
         if (category == Category.Plants)
             count = StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == plant).count;
+        else if (category == Category.Fruits)
+            count = StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == fruit).count;
         else if (category == Category.AProducts)
             count = StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == animal_product).count;
         else if (category == Category.Products)
@@ -89,7 +91,8 @@ public class S_Box : MonoBehaviour
         else if (category == Category.Items)
             count = StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == item).count;
         else if (category == Category.AnimalFood)
-            count = StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == Food).amount; 
+            count = StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == Food).amount;
+        countText.text = count.ToString();
         countText.text = count.ToString();
     }
 }
