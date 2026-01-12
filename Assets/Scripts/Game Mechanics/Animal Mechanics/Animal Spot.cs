@@ -289,7 +289,7 @@ public class AnimalSpot : MonoBehaviour
     private void ResumeFertilizing(int amount)
     {
         Debug.Log($"for spot {SpotNumber} Resume clicked");
-        if (Storage.instance.hasEnought(AnimalsLogic.instance.TheFood, 1, true))
+        if (Storage.instance.hasEnought(AnimalsLogic.instance.TheFood, amount, true))
         {
             Debug.Log($"for spot {SpotNumber} resume reqs met");
             TheAnimal.fTimer = StaticDatas.PlayerData.PlayerInfos.Food.materials.Find(e => e.Food.Equals(AnimalsLogic.instance.TheFood)).foodTimer * amount;

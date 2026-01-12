@@ -64,6 +64,9 @@ public class MenuHovering : MonoBehaviour
         if (ForestLogic.instance != null)
             ForestLogic.instance.ResetSituation();
 
+        if (TradeCenter.instance != null)
+            TradeCenter.instance.ResetSituation();
+
         PlayerProfile.instance.infoWindow.SetActive(false);
     }
 }

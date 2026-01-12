@@ -167,14 +167,20 @@ public class TradeCenter : MonoBehaviour
     public void UpdateTMOnDeal()
     {
         TotalMoneyOnDeal = 0;
-        for (int i = 0; i < yourItems.Count; i++) if (yourItems[i].GetComponent<TradeItem>().chosen) TotalMoneyOnDeal += yourItems[i].GetComponent<TradeItem>().TotalPrice;
+        if (yourItems.Count > 0)
+            for (int i = 0; i < yourItems.Count; i++) { if (yourItems[i].GetComponent<TradeItem>().chosen) TotalMoneyOnDeal += yourItems[i].GetComponent<TradeItem>().TotalPrice; }
+        else
+            TotalMoneyOnDeal = 0;
         transform.Find("Your Items/Dealable Money/Money").GetComponent<TextMeshProUGUI>().text = TotalMoneyOnDeal.ToString();
     }
 
     public void UpdateTMOnMarket()
     {
         TotalMoneyOnMarket = 0;
-        for (int i = 0; i < onMarket.Count; i++) if(onMarket[i].GetComponent<TradeItem>().chosen) TotalMoneyOnMarket += onMarket[i].GetComponent<TradeItem>().TotalPrice;
+        if (onMarket.Count > 0)
+            for (int i = 0; i < onMarket.Count; i++) { if (onMarket[i].GetComponent<TradeItem>().chosen) TotalMoneyOnMarket += onMarket[i].GetComponent<TradeItem>().TotalPrice; }
+        else
+            TotalMoneyOnMarket = 0;
         transform.Find("On Market/Dealable Money/Money").GetComponent<TextMeshProUGUI>().text = TotalMoneyOnMarket.ToString();
     }
 
@@ -217,7 +223,7 @@ public class TradeCenter : MonoBehaviour
     {
         AddedMoney += amount;
 
-        if (AddedMoney >= TotalMoneyOnDeal - TotalMoneyOnMarket) AddedMoney = TotalMoneyOnDeal - TotalMoneyOnMarket;
+        if (AddedMoney >= TotalMoneyOnMarket - TotalMoneyOnDeal) AddedMoney = TotalMoneyOnMarket - TotalMoneyOnDeal;
 
         if (AddedMoney < 0) AddedMoney = 0;
         else if (AddedMoney >= StaticDatas.PlayerData.PlayerInfos.Coin) AddedMoney = StaticDatas.PlayerData.PlayerInfos.Coin;
@@ -233,7 +239,7 @@ public class TradeCenter : MonoBehaviour
             TradeItem ti = onMarket[i].GetComponent<TradeItem>();
             Transform BC = onMarket[i].transform.Find("Button Cover");
             Transform inc = onMarket[i].transform.Find("Count Changer/Inc");
-            int availableMoney = TotalMoneyOnDeal - TotalMoneyOnMarket - AddedMoney;
+            int availableMoney = TotalMoneyOnDeal - TotalMoneyOnMarket + AddedMoney;
 
             if (availableMoney < ti.price)
             {
@@ -251,12 +257,30 @@ public class TradeCenter : MonoBehaviour
                 inc.gameObject.SetActive(true);
             }
         }
+
+        for (int i = 0; i < yourItems.Count; i++)
+        {
+            TradeItem ti = yourItems[i].GetComponent<TradeItem>();
+            Transform BC = yourItems[i].transform.Find("Button Cover");
+            Transform dec = yourItems[i].transform.Find("Count Changer/Dec");
+            int availableMoney = TotalMoneyOnDeal - TotalMoneyOnMarket;
+            if (ti.chosen && availableMoney <= 0){
+                BC.GetComponent<Button>().interactable = false;
+                dec.gameObject.SetActive(false);
+            }
+            else{
+                BC.GetComponent<Button>().interactable = true;
+                dec.gameObject.SetActive(true);
+            }
+
+        }
+
         CalculateLeftOver();
     }
 
     private void CalculateLeftOver()
     {
-        int leftover = TotalMoneyOnDeal - TotalMoneyOnMarket - AddedMoney;
+        int leftover = TotalMoneyOnDeal - TotalMoneyOnMarket + AddedMoney;
         Transform makeADeal = transform.Find("Make A Deal");
         makeADeal.Find("Leftover Money/Money").GetComponent<TextMeshProUGUI>().text = leftover.ToString();
         makeADeal.GetComponent<Button>().onClick.RemoveAllListeners();
@@ -275,10 +299,24 @@ public class TradeCenter : MonoBehaviour
         // adding chosen items to storage
         for (int i = 0; i < c_MI.Count; i++)
             Storage.instance.UpdateThingCount(c_MI[i].item, c_MI[i].count);
-
-        MoneySystem.instance.UpdateCoin((TotalMoneyOnDeal - TotalMoneyOnMarket) - AddedMoney, out bool e);
+        int finalMoney = (TotalMoneyOnDeal - TotalMoneyOnMarket) + AddedMoney;
+        MoneySystem.instance.UpdateCoin((TotalMoneyOnDeal - TotalMoneyOnMarket) + AddedMoney, out bool e);
         AddedMoney = 0;
         ChangeAddedMoney(0);
+        c_SI.Clear(); c_MI.Clear();
+        PopulateYourItems();
+        PopulateTradeableItems();
+    }
+
+    public void ResetSituation()
+    {
+        TotalMoneyOnMarket = 0;
+        TotalMoneyOnDeal = 0;
+        AddedMoney = 0;
+        c_SI.Clear();
+        c_MI.Clear();
+        yourItems.Clear();
+        onMarket.Clear();
         PopulateYourItems();
         PopulateTradeableItems();
     }
