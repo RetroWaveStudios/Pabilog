@@ -198,250 +198,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1081987107
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1081987108}
-  - component: {fileID: 1081987112}
-  - component: {fileID: 1081987111}
-  - component: {fileID: 1081987110}
-  - component: {fileID: 1081987109}
-  m_Layer: 5
-  m_Name: Lucky Box
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1081987108
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1081987107}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.0000342, y: 1.0000342, z: 1.0000342}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1580901457}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 489.35, y: -550}
-  m_SizeDelta: {x: 289.4, y: 583.4}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1081987109
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1081987107}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 165bb374c5f09c7478db68d1bd0beefb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LuckyBox
-  ItProPers:
-  - item: 0
-    count: 27
-  - item: 1
-    count: 27
-  - item: 2
-    count: 11
-  - item: 3
-    count: 11
-  - item: 4
-    count: 11
-  - item: 5
-    count: 4
-  - item: 6
-    count: 4
-  - item: 7
-    count: 4
-  - item: 8
-    count: 1
-  itemPool: 
-  GeBoFiPers: 5
-  openedNumbers: 
-  TheItem: 0
-  itemImage: {fileID: 1117342874}
---- !u!114 &1081987110
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1081987107}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
-  m_Navigation:
-    m_Mode: 3
-    m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Selected
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 1081987111}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1081987109}
-        m_TargetAssemblyTypeName: LuckyBox, Assembly-CSharp
-        m_MethodName: TryToFindBox
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &1081987111
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1081987107}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 6a517ee08a6f5554d89929408bc6508a, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &1081987112
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1081987107}
-  m_CullTransparentMesh: 1
---- !u!1 &1117342872
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1117342873}
-  - component: {fileID: 1117342875}
-  - component: {fileID: 1117342874}
-  m_Layer: 0
-  m_Name: The Item Image
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1117342873
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1117342872}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1580901457}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -300}
-  m_SizeDelta: {x: 600, y: 600}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1117342874
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1117342872}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &1117342875
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1117342872}
-  m_CullTransparentMesh: 1
 --- !u!1 &1580901456
 GameObject:
   m_ObjectHideFlags: 0
@@ -454,6 +210,9 @@ GameObject:
   - component: {fileID: 1580901460}
   - component: {fileID: 1580901459}
   - component: {fileID: 1580901458}
+  - component: {fileID: 1580901461}
+  - component: {fileID: 1580901462}
+  - component: {fileID: 1580901463}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -472,9 +231,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1081987108}
-  - {fileID: 1117342873}
+  m_Children: []
   m_Father: {fileID: 1800221769}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -540,11 +297,344 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1580901461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1580901456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd45a2aa7f1f1b34886048bc1a932e87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StaticDatas
+--- !u!114 &1580901462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1580901456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c46f09bb1600be4d8b222a2bbaf4228, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MyShop
+  ShopHolder: {fileID: 0}
+  ShopItemPrefab: {fileID: 0}
+  itemsinShop: []
+  SellWindow: {fileID: 0}
+  SellItemHolder: {fileID: 0}
+  SellingPrefab: {fileID: 0}
+  SellingItems: []
+  PriceParameterText: {fileID: 0}
+  CountParameterText: {fileID: 0}
+  ssNumber: 0
+--- !u!114 &1580901463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1580901456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fee5099fde2a073428eaefa8f2873f33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Sprites
+  sprites:
+    plants:
+    - name: Wheat
+      plant: 0
+      sprite: {fileID: 21300000, guid: 724a6ade950759340941f949ca211f76, type: 3}
+    - name: Corn
+      plant: 1
+      sprite: {fileID: 21300000, guid: 4f9bfce9908bbcc43bf96cc9e8c99e89, type: 3}
+    - name: Carrot
+      plant: 2
+      sprite: {fileID: 21300000, guid: 5e2f3f08ae00ebc42bdc81d30801bdb2, type: 3}
+    - name: Potato
+      plant: 3
+      sprite: {fileID: 21300000, guid: 71319fdc1415e1247af8a1bda020bdfb, type: 3}
+    - name: Tomato
+      plant: 4
+      sprite: {fileID: 21300000, guid: c25cbc5a499bd224494c83d1a369d5b5, type: 3}
+    - name: Sugar Cane
+      plant: 6
+      sprite: {fileID: 21300000, guid: d6b69cf55192cd043b5e6a8761ac5f42, type: 3}
+    - name: Herbs
+      plant: 7
+      sprite: {fileID: 21300000, guid: 0ff429cca706f9243b33edf265708459, type: 3}
+    - name: Onion
+      plant: 5
+      sprite: {fileID: 21300000, guid: 901145e4de63464429e46068488270fc, type: 3}
+    - name: Spice
+      plant: 8
+      sprite: {fileID: 21300000, guid: 1c774902a8042b947980792726880b1c, type: 3}
+    - name: Cotton
+      plant: 9
+      sprite: {fileID: 21300000, guid: 4f9bfce9908bbcc43bf96cc9e8c99e89, type: 3}
+    StageSprites:
+    - name: Wheat
+      plant: 0
+      stages:
+      - {fileID: 21300000, guid: 7976244f8fb605d4f970d6d4de0ffd38, type: 3}
+      - {fileID: 21300000, guid: d53ade99a34a83a4d8fc6bb9a2598ac4, type: 3}
+      - {fileID: 21300000, guid: df640cb0a5defaa4cb5ad3eac55c7e77, type: 3}
+      - {fileID: 21300000, guid: 9a7fd4c8edfec3b4984ea7bd4b8c3064, type: 3}
+    - name: Corn
+      plant: 1
+      stages:
+      - {fileID: 21300000, guid: 7976244f8fb605d4f970d6d4de0ffd38, type: 3}
+      - {fileID: 21300000, guid: d53ade99a34a83a4d8fc6bb9a2598ac4, type: 3}
+      - {fileID: 21300000, guid: df640cb0a5defaa4cb5ad3eac55c7e77, type: 3}
+      - {fileID: 21300000, guid: 06235bff4fe205048b31b77402d3019c, type: 3}
+    - name: Carrot
+      plant: 2
+      stages:
+      - {fileID: 21300000, guid: 7976244f8fb605d4f970d6d4de0ffd38, type: 3}
+      - {fileID: 21300000, guid: d53ade99a34a83a4d8fc6bb9a2598ac4, type: 3}
+      - {fileID: 21300000, guid: df640cb0a5defaa4cb5ad3eac55c7e77, type: 3}
+      - {fileID: 21300000, guid: f0d4a837388f8a84ca34cb7bd3c799e4, type: 3}
+    - name: Potato
+      plant: 3
+      stages:
+      - {fileID: 21300000, guid: 7976244f8fb605d4f970d6d4de0ffd38, type: 3}
+      - {fileID: 21300000, guid: d53ade99a34a83a4d8fc6bb9a2598ac4, type: 3}
+      - {fileID: 21300000, guid: df640cb0a5defaa4cb5ad3eac55c7e77, type: 3}
+      - {fileID: 21300000, guid: d36d9ac8bef83fd4b86fe94577ee3121, type: 3}
+    - name: Tomato
+      plant: 4
+      stages:
+      - {fileID: 21300000, guid: 7976244f8fb605d4f970d6d4de0ffd38, type: 3}
+      - {fileID: 21300000, guid: d53ade99a34a83a4d8fc6bb9a2598ac4, type: 3}
+      - {fileID: 21300000, guid: df640cb0a5defaa4cb5ad3eac55c7e77, type: 3}
+      - {fileID: 21300000, guid: 767763b0f35cb1b4fa9496da0ef4d48f, type: 3}
+    - name: Sugar Cane
+      plant: 6
+      stages:
+      - {fileID: 21300000, guid: 7976244f8fb605d4f970d6d4de0ffd38, type: 3}
+      - {fileID: 21300000, guid: d53ade99a34a83a4d8fc6bb9a2598ac4, type: 3}
+      - {fileID: 21300000, guid: df640cb0a5defaa4cb5ad3eac55c7e77, type: 3}
+      - {fileID: 21300000, guid: 63e60e28b40306a489552e26ad5acc3f, type: 3}
+    - name: Onion
+      plant: 5
+      stages:
+      - {fileID: 21300000, guid: 7976244f8fb605d4f970d6d4de0ffd38, type: 3}
+      - {fileID: 21300000, guid: d53ade99a34a83a4d8fc6bb9a2598ac4, type: 3}
+      - {fileID: 21300000, guid: df640cb0a5defaa4cb5ad3eac55c7e77, type: 3}
+      - {fileID: 21300000, guid: 9055bd716a5e9e94ea86a6cf1e84d491, type: 3}
+    - name: Herbs
+      plant: 7
+      stages:
+      - {fileID: 21300000, guid: 7976244f8fb605d4f970d6d4de0ffd38, type: 3}
+      - {fileID: 21300000, guid: d53ade99a34a83a4d8fc6bb9a2598ac4, type: 3}
+      - {fileID: 21300000, guid: df640cb0a5defaa4cb5ad3eac55c7e77, type: 3}
+      - {fileID: 21300000, guid: 5a908df236052fe49a804d219b7cb84d, type: 3}
+    - name: Spice
+      plant: 8
+      stages:
+      - {fileID: 21300000, guid: 7976244f8fb605d4f970d6d4de0ffd38, type: 3}
+      - {fileID: 21300000, guid: d53ade99a34a83a4d8fc6bb9a2598ac4, type: 3}
+      - {fileID: 21300000, guid: df640cb0a5defaa4cb5ad3eac55c7e77, type: 3}
+      - {fileID: 21300000, guid: 62a5c107364af8946872a0d6d9cdf68b, type: 3}
+    - name: Cotton
+      plant: 8
+      stages:
+      - {fileID: 21300000, guid: 58f39a95fcc44d344b3a58310187f22d, type: 3}
+      - {fileID: 21300000, guid: 7976244f8fb605d4f970d6d4de0ffd38, type: 3}
+      - {fileID: 21300000, guid: d53ade99a34a83a4d8fc6bb9a2598ac4, type: 3}
+      - {fileID: 21300000, guid: df640cb0a5defaa4cb5ad3eac55c7e77, type: 3}
+    readySprites:
+    - name: Wheat
+      plant: 0
+      sprite: {fileID: 21300000, guid: 0bb5a4219b521294ea9b89e7e3b48859, type: 3}
+    - name: Corn
+      plant: 1
+      sprite: {fileID: 21300000, guid: ad1b71740c4a17e4587461c7a53e7011, type: 3}
+    - name: Carrot
+      plant: 2
+      sprite: {fileID: 21300000, guid: 22c06f74ec55835458553fa4e04cc993, type: 3}
+    - name: Potato
+      plant: 3
+      sprite: {fileID: 21300000, guid: 7e0caa39c8fe5e94db0f445ab381c370, type: 3}
+    - name: Tomato
+      plant: 4
+      sprite: {fileID: 21300000, guid: 7e0d4b78fedf7b940a2e2d2df4c5bb56, type: 3}
+    - name: Onion
+      plant: 5
+      sprite: {fileID: 21300000, guid: e4cde39819ea3f447a546b26e880ba60, type: 3}
+    - name: Sugar Cane
+      plant: 6
+      sprite: {fileID: 21300000, guid: d44ded7c2003769409c10fbef579f618, type: 3}
+    - name: Herbs
+      plant: 7
+      sprite: {fileID: 21300000, guid: e63f1049e5d94de4fbd4f55bffbf2a5d, type: 3}
+    - name: Spice
+      plant: 8
+      sprite: {fileID: 21300000, guid: 3b901cc443b861343811c857a7a3711a, type: 3}
+    - name: Spice
+      plant: 8
+      sprite: {fileID: 21300000, guid: 22c06f74ec55835458553fa4e04cc993, type: 3}
+    trees:
+    - name: 
+      tree: 0
+      sprite: {fileID: 21300000, guid: f00b9f2df8f99c64485f6bae01fc0a79, type: 3}
+    - name: 
+      tree: 1
+      sprite: {fileID: 21300000, guid: 15eaef658e80eed47965b010b07ec082, type: 3}
+    TreeStageSprites:
+    - name: 
+      tree: 0
+      stages:
+      - {fileID: 21300000, guid: a90c31527daac4a409818ad58fe847cf, type: 3}
+      - {fileID: 21300000, guid: 5c963c9a8c99ae34c8e51106fcdc3be7, type: 3}
+      - {fileID: 21300000, guid: f00b9f2df8f99c64485f6bae01fc0a79, type: 3}
+    - name: 
+      tree: 1
+      stages:
+      - {fileID: 21300000, guid: f8cb183ea31f7ae4ab144593df82d0b0, type: 3}
+      - {fileID: 21300000, guid: e677c058ee8ff4746901269ce144ed40, type: 3}
+      - {fileID: 21300000, guid: 68ee9a79fb91ff24086600c6e8138020, type: 3}
+    fruits:
+    - name: 
+      fruit: 0
+      sprite: {fileID: 21300000, guid: 4bd1ba72dba46484798301cea3fcb477, type: 3}
+    - name: 
+      fruit: 1
+      sprite: {fileID: 21300000, guid: 7540be4fa6d3c4d459f97d76a6ba8a6c, type: 3}
+    animals:
+    - name: 
+      animal: 0
+      sprite: {fileID: 21300000, guid: 6a4b6fe4f15173142b16360c555ff454, type: 3}
+    - name: 
+      animal: 1
+      sprite: {fileID: 21300000, guid: 39789fa6381ea584bb312d2597e0a7cb, type: 3}
+    - name: 
+      animal: 2
+      sprite: {fileID: 21300000, guid: f2c26700fb380d044a4de40673352e60, type: 3}
+    - name: 
+      animal: 3
+      sprite: {fileID: 21300000, guid: c82d94c0e9133b549812485da0ecf2a7, type: 3}
+    AnimalFoodSprites:
+    - name: 
+      food: 0
+      sprite: {fileID: 21300000, guid: e7fde65f00c8f0d4baea795ef8b40211, type: 3}
+    - name: 
+      food: 1
+      sprite: {fileID: 21300000, guid: 409312876541c8f40b898f7118a89e45, type: 3}
+    - name: 
+      food: 2
+      sprite: {fileID: 21300000, guid: 8dbb98bcd5578da4caa42cb9b88636f3, type: 3}
+    - name: 
+      food: 3
+      sprite: {fileID: 21300000, guid: deac87c21b8ad8e429d55aac126d16b3, type: 3}
+    a_products:
+    - name: 
+      a_product: 0
+      sprite: {fileID: 21300000, guid: 23779324c2099624d92a26586ea71f26, type: 3}
+    - name: 
+      a_product: 1
+      sprite: {fileID: 21300000, guid: caad5f89ed2087b46b66236be59092bb, type: 3}
+    - name: 
+      a_product: 2
+      sprite: {fileID: 21300000, guid: 8ecef6e97f125b34988e2c84857dd911, type: 3}
+    - name: 
+      a_product: 3
+      sprite: {fileID: 21300000, guid: 974fb0c7521e3b943ace396e05aef956, type: 3}
+    - name: 
+      a_product: 4
+      sprite: {fileID: 21300000, guid: 92494dfd783815d41aa93ce558773eea, type: 3}
+    - name: 
+      a_product: 5
+      sprite: {fileID: 21300000, guid: faecd6dfbcc108e4292d68e9489ee13e, type: 3}
+    - name: 
+      a_product: 6
+      sprite: {fileID: 21300000, guid: b5178dfb00bbf684d85ff529c963c757, type: 3}
+    products:
+    - name: Bread
+      product: 3
+      sprite: {fileID: 21300000, guid: 852fcdc5713d0564aaf4c879668dee64, type: 3}
+    - name: Corn Bread
+      product: 4
+      sprite: {fileID: 21300000, guid: e9f60ac4ac5e8204db87ddb25eca8cf5, type: 3}
+    - name: Cookie
+      product: 5
+      sprite: {fileID: 21300000, guid: 9782bba4378d25a4bb2bfd0f489ce301, type: 3}
+    - name: Pizza
+      product: 6
+      sprite: {fileID: 21300000, guid: 04edfad29de0a1c4782c372eab6347ad, type: 3}
+    - name: Chicken Pizza
+      product: 7
+      sprite: {fileID: 21300000, guid: f785ba3cfe9109143b613a6c02f13dcc, type: 3}
+    - name: Cream
+      product: 0
+      sprite: {fileID: 21300000, guid: de242dff166a32c4189beda3e0f17209, type: 3}
+    - name: Butter
+      product: 1
+      sprite: {fileID: 21300000, guid: 6f5f3b9ec9d80ca4ea3b4530621bcce7, type: 3}
+    - name: Cheese
+      product: 2
+      sprite: {fileID: 21300000, guid: 980927317bec45f46b58c4cd80ec177b, type: 3}
+    - name: Popcorn
+      product: 9
+      sprite: {fileID: 21300000, guid: f16377d57a324394bb15229948b9e2cc, type: 3}
+    - name: Sugar
+      product: 19
+      sprite: {fileID: 21300000, guid: 3b2ee7a2cf8e5bc4f95ca73d0320f9c4, type: 3}
+    - name: Apple Juice
+      product: 20
+      sprite: {fileID: 21300000, guid: 808d27c8ab0470845b1e86932831ee77, type: 3}
+    machines:
+    - name: Oven
+      machine: 0
+      sprite: {fileID: 21300000, guid: 48cbc387e6310d24b9aaaf141069aac5, type: 3}
+    items:
+    - name: Rake
+      item: 0
+      sprite: {fileID: 21300000, guid: 018be4c231183814b897a5ee35474e78, type: 3}
+    - name: Axe
+      item: 1
+      sprite: {fileID: 21300000, guid: d54d7a86af43fbd49ab67bcbc77efabb, type: 3}
+    - name: Bolt
+      item: 2
+      sprite: {fileID: 21300000, guid: b8f507c53483a724e94bf2d05268dbfd, type: 3}
+    - name: Screw
+      item: 3
+      sprite: {fileID: 21300000, guid: adcd9344b271f8e4293f755c458ada46, type: 3}
+    - name: Hammer
+      item: 4
+      sprite: {fileID: 21300000, guid: 352dbe9e04892764792e039d1ca7f48b, type: 3}
+    - name: Tape
+      item: 5
+      sprite: {fileID: 21300000, guid: ea5e044e05512f14bb95709786431c3d, type: 3}
+    - name: Drill
+      item: 6
+      sprite: {fileID: 21300000, guid: 7bf56a0d846b7514487608aadf5832b2, type: 3}
+    - name: Pliers
+      item: 7
+      sprite: {fileID: 21300000, guid: ecb0aa66807536240b40b8e989ea55ad, type: 3}
+    - name: Tool Set
+      item: 8
+      sprite: {fileID: 21300000, guid: 2b69fd7fe92b46c4b90351ed05913fd4, type: 3}
+    currencies:
+    - name: 
+      Currency: 0
+      sprite: {fileID: 21300000, guid: 287f944d729d5fe4f938ac56148345c3, type: 3}
+    - name: 
+      Currency: 1
+      sprite: {fileID: 21300000, guid: e555482b41a3b144682b2275b90f4f87, type: 3}
+    - name: 
+      Currency: 2
+      sprite: {fileID: 21300000, guid: bf890154f38ad354aa8ff3379532552d, type: 3}
+  EraseItem: {fileID: 0}
+  InfoButtonPrefab: {fileID: 0}
 --- !u!1 &1800221766
 GameObject:
   m_ObjectHideFlags: 0

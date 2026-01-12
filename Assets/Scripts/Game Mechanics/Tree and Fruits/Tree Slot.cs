@@ -148,7 +148,7 @@ public class TreeSlot : MonoBehaviour
     {
         bool enought = true;
         if (Storage.instance.hasEnought(Items.Axe, 1, false))
-            Storage.instance.UpdateItemCount(Items.Axe, -1);
+            Storage.instance.UpdateThingCount(Items.Axe, -1);
         else
             MoneySystem.instance.UpdateCyrstal(-2, out enought);
 
@@ -191,15 +191,19 @@ public class TreeSlot : MonoBehaviour
         TheTree.hasWater = true;
         TheTree.wTimer = TheTree.wTimerByStages[TheTree.stage];
         TheTree.hFrutis = new List<int>() { 0, 1, 2 };
-        WaterSL.instance.TriggerAmount(-TheTree.WaterAmoutByStage[TheTree.stage]);
-        Debug.Log("added time to waterTime: " + TheTree.waterTime);
         btn.onClick.RemoveAllListeners();
         btn.onClick.AddListener(() => ShowTimer());
         landstate = LandState.Planted;
+
         StaticDatas.PlayerData.TreeSpots[SlotNumber].state = landstate;
         StaticDatas.PlayerData.TreeSpots[SlotNumber].TreeDetails = TheTree;
+        WaterSL.instance.TriggerAmount(-TheTree.WaterAmoutByStage[TheTree.stage]);
         MoneySystem.instance.UpdateCoin(-TheTree.price, out bool s);
+        MoneySystem.instance.UpdateXp(TheTree.xp);
+
+        LuckyBox.instance.TryToFindBox(0.3f + (0.1f * SlotNumber));
         StaticDatas.SaveDatas();
+
         wamount.text = TheTree.WaterAmoutByStage[TheTree.stage].ToString();
         reqWaterButton.onClick.RemoveAllListeners();
         reqWaterButton.onClick.AddListener(() => ResumeGrowth(TheTree.WaterAmoutByStage[TheTree.stage]));
@@ -296,9 +300,10 @@ public class TreeSlot : MonoBehaviour
                 ts.stageMask.enabled = false;
             }
             WaterSL.instance.TriggerAmount(-wateramount);
+            MoneySystem.instance.UpdateXp(5 * wateramount);
             StaticDatas.PlayerData.TreeSpots[SlotNumber].TreeDetails = TheTree;
             StaticDatas.SaveDatas();
-            LuckyBox.instance.TryToFindBox();
+            LuckyBox.instance.TryToFindBox(0.5f);
             LoadUI();
         }
     }
@@ -385,11 +390,11 @@ public class TreeSlot : MonoBehaviour
         {
             TheTree.pauseTime = 0;
             TheTree.waterTime = "";
-            Storage.instance.UpdateFruitCount(TheTree.fruit, 1);
-            MoneySystem.instance.UpdateXp(TheTree.xp);
+            Storage.instance.UpdateThingCount(TheTree.fruit, 1);
             
             btn.onClick.RemoveAllListeners();
             TheTree.stage = 2;
+            MoneySystem.instance.UpdateXp(2);
             CollectAFruit();
             if (TheTree.harvestAmount <= 0)
             {
@@ -419,7 +424,7 @@ public class TreeSlot : MonoBehaviour
             StaticDatas.PlayerData.TreeSpots[SlotNumber].TreeDetails = TheTree;
             StaticDatas.PlayerData.TreeSpots[SlotNumber].state = landstate;
             StaticDatas.SaveDatas();
-            LuckyBox.instance.TryToFindBox();
+            LuckyBox.instance.TryToFindBox(0.2f);
             LoadUI();
         }
         else PushNotice.instance.Push("No Space in Storage", PushType.Alert);
@@ -438,14 +443,14 @@ public class TreeSlot : MonoBehaviour
                 fruits[TheTree.hFrutis[dropindex]].GetComponent<FruitDrop>().slotNumber = SlotNumber;
                 Debug.Log($"fruits[{TheTree.hFrutis[dropindex]}].slotNubmer changed to {SlotNumber}");
                 Animator an = fruits[TheTree.hFrutis[dropindex]].GetComponent<Animator>();
-                /*if (an != null)
+                if (an != null)
                 {
                     Debug.Log("Animating");
                     an.SetTrigger("Drop Fruit");
                     Debug.Log("Animated");
                 }
                 else Debug.Log("an = null");
-                Debug.Log($"animation done");*/
+                Debug.Log($"animation done");
                 fruits[TheTree.hFrutis[dropindex]].SetActive(false);
                 TheTree.hFrutis.RemoveAt(dropindex);
                 TheTree.harvestAmount--;
@@ -491,8 +496,9 @@ public class TreeSlot : MonoBehaviour
         btn.onClick.RemoveAllListeners();
         btn.onClick.AddListener(() => SlotClicked());
         isAxing = false;
+        LuckyBox.instance.TryToFindBox(0.5f);
+        MoneySystem.instance.UpdateXp(15);
         StaticDatas.SaveDatas();
-        LuckyBox.instance.TryToFindBox();
         LoadUI();
     }
     #endregion

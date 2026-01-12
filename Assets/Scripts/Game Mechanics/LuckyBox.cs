@@ -32,7 +32,10 @@ public class LuckyBox : MonoBehaviour
     private void Awake()
     {
         instance = this;
+    }
 
+    private void Start()
+    {
         chanceText.text = Math.Round(currentChance, 2).ToString();
         chanceText.color = Color.white;
         anim = GetComponent<Animator>();
@@ -83,17 +86,18 @@ public class LuckyBox : MonoBehaviour
         }
     }*/
 
-    public void TryToFindBox()
+    public void TryToFindBox(float increas)
     {
         float chance = UnityEngine.Random.value * 100;
-        if (chance > 15f && chance < currentChance)
+        currentChance = Mathf.Min(currentChance + increas, maxChance);
+
+        if (chance > 14f && chance < currentChance)
         {
             openedNumbers.Add(currentChance);
             Debug.Log($"opened at {currentChance} try");
             SetBox();
         }
 
-        currentChance = Mathf.Min(currentChance + chanceIncrease, maxChance);
         chanceText.text = Math.Round(currentChance, 2).ToString();
         chanceText.color = Color.white;
         StaticDatas.PlayerData.PlayerInfos.currentChanceOfLB = currentChance;
@@ -128,7 +132,7 @@ public class LuckyBox : MonoBehaviour
     public void TakeItem()
     {
         anim.SetTrigger("Close Screen");
-        Storage.instance.UpdateItemCount(TheItem, 1);
+        Storage.instance.UpdateThingCount(TheItem, 1);
         StaticDatas.SaveDatas();
     }
 }

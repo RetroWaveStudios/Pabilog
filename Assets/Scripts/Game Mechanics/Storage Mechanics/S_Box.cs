@@ -14,10 +14,6 @@ public class S_Box : MonoBehaviour
     public Items item = Items.None;
     public a_f_types Food = a_f_types.None;
 
-    [Header("UI Settings")]
-    public GameObject theItem;
-    public TextMeshProUGUI countText;
-
     private void Awake()
     {
         RectTransform irts = gameObject.transform.Find("Item Icon").GetComponent<RectTransform>();
@@ -30,8 +26,7 @@ public class S_Box : MonoBehaviour
 
     public void AddItem(object a_item, int c)
     {
-        Storage storage = GetComponentInParent<Storage>();
-        Image image = theItem.GetComponent<Image>();
+        Image image = transform.Find("Item Icon").GetComponent<Image>();
 
         if (a_item is Plants)
         {
@@ -92,7 +87,6 @@ public class S_Box : MonoBehaviour
             count = StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == item).count;
         else if (category == Category.AnimalFood)
             count = StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == Food).amount;
-        countText.text = count.ToString();
-        countText.text = count.ToString();
+        transform.Find("Count").GetComponent<TextMeshProUGUI>().text = count.ToString();
     }
 }

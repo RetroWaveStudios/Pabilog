@@ -141,7 +141,8 @@ public class AnimalsLogic : MonoBehaviour
             AnimalSpot ans = dublicate.GetComponent<AnimalSpot>();
             ans.TheAnimal.theProduct = AProducts.None;
             AddBuySpot();
-            LuckyBox.instance.TryToFindBox();
+            LuckyBox.instance.TryToFindBox(0.2f * StaticDatas.PlayerData.animal_slot_count);
+            StaticDatas.SaveDatas();
         }
     }
 
@@ -177,7 +178,7 @@ public class AnimalsLogic : MonoBehaviour
         int count = Foods.Count;
 
         // Example formula — adjust how you like
-        foodChooserTargetY = ((count * 105) + ((count - 1) * 50)) - 150;
+        foodChooserTargetY = (((count * 105) + ((count - 1) * 50)) / 2) + (80 * count) - 11.9f;
         Debug.Log($"foodChooserTargetY = {foodChooserTargetY}");
         Debug.Log($"after cal target: localposition = {FoodsHolder.GetComponent<RectTransform>().localPosition}");
     }
@@ -191,15 +192,14 @@ public class AnimalsLogic : MonoBehaviour
         foreach (Transform fitem in FoodPL.instance.transform.Find("Food Producer/Foods in Storage/Holder")) Destroy(fitem.gameObject);
         for (int i = 0; i < foodnames.Count; i++)
         {
-            if (StaticDatas.PlayerData.unlocked_items.u_plants
-                .Find(e => e.plant == StaticDatas.PlayerData.PlayerInfos.Food.materials[i].material).owned)
+            if (StaticDatas.PlayerData.unlocked_items.u_plants.Contains(StaticDatas.PlayerData.PlayerInfos.Food.materials[i].material))
             {
                 GameObject dublicate = Instantiate(FoodPrefab, FoodsHolder);
                 dublicate.transform.name = StaticDatas.PlayerData.PlayerInfos.Food.materials[i].material.ToString() + " Animal Food";
                 dublicate.GetComponent<Image>().sprite =
                     Sprites.instance.sprites.AnimalFoodSprites.Find(e => e.food == foodnames[i]).sprite;
                 int index = i;
-                if (FoodPL.instance.hasEnoughFood(foodnames[i], 1, false))
+                if (Storage.instance.hasEnought(foodnames[i], 1, false))
                 {
                     dublicate.GetComponent<Button>().onClick.AddListener(() => FoodChooser(foodnames[index]));
                     dublicate.GetComponent<Image>().color = new Color32(255, 255, 255, 255);
@@ -222,15 +222,19 @@ public class AnimalsLogic : MonoBehaviour
         rts.sizeDelta = new Vector2(160, vlg.padding.top + (Foods.Count * 105) + ((Foods.Count - 1) * vlg.spacing));
         // Recalculate animation target now that list created
         RecalculateFoodChooserTarget();
+        for (int i = 0; i < Spots.Count; i++)
+            if (Spots[i].GetComponent<AnimalSpot>().TheAnimal.state == AState.Fertilizing && !Spots[i].GetComponent<AnimalSpot>().TheAnimal.hasFood) Spots[i].GetComponent<AnimalSpot>().CalculateFoodCount();
     }
 
     public void FoodChooser(a_f_types food)
     {
-        if (FoodPL.instance.hasEnoughFood(food, 1, true))
+        if (Storage.instance.hasEnought(food, 1, true))
         {
             TheFood = food;
             TheFoodImage.sprite = Sprites.instance.sprites.AnimalFoodSprites.Find(e => e.food == TheFood).sprite;
             OpenFoodChooser(false);
+            for (int i = 0; i < Spots.Count; i++)
+                if (Spots[i].GetComponent<AnimalSpot>().TheAnimal.state == AState.Fertilizing && !Spots[i].GetComponent<AnimalSpot>().TheAnimal.hasFood) Spots[i].GetComponent<AnimalSpot>().CalculateFoodCount();
         }
     }
 

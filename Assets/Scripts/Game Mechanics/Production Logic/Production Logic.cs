@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ProductionLogic : MonoBehaviour
@@ -19,13 +20,14 @@ public class ProductionLogic : MonoBehaviour
         PopulateMachines();
     }
 
-    private void PopulateMachines()
+    public void PopulateMachines()
     {
-        for (int i = 0; i < StaticDatas.PlayerData.unlocked_items.u_machines.Count; i++)
-        {
-            string m = StaticDatas.PlayerData.unlocked_items.u_machines[i].MachineName;
-            if (StaticDatas.PlayerData.unlocked_items.u_machines[i].owned)
+        foreach (Transform machine in transform.Find("Machinary")) Destroy(machine.gameObject);
+        Machines.Clear();
+        if (StaticDatas.PlayerData.unlocked_items.u_machines != null || StaticDatas.PlayerData.unlocked_items.u_machines.Count > 0)
+            for (int i = 0; i < StaticDatas.PlayerData.unlocked_items.u_machines.Count; i++)
             {
+                string m = StaticDatas.PlayerData.unlocked_items.u_machines[i];
                 if (StaticDatas.PlayerData.MachineStats.Find(e => e.MachineName == m) == null)
                 {
                     MachineStats ms = new MachineStats()
@@ -54,8 +56,6 @@ public class ProductionLogic : MonoBehaviour
 
                 Machines.Add(dublicate);
             }
-            else Debug.Log("machine is locked " + m);
-        }
     }
 
     public void ResetSituation()

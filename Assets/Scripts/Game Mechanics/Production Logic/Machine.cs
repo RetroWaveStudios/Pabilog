@@ -232,10 +232,11 @@ public class Machine : MonoBehaviour
         {
             mStats.qLimit++;
             MoneySystem.instance.UpdateCoin(-FoodPL.instance.sPrices[mStats.qLimit - 2], out bool s);
+            MoneySystem.instance.UpdateXp(15 * mStats.qLimit);
             Transform child = qHolder.Find("Buy Slot");
             if (child != null) Destroy(child.gameObject);
             PopulateQueue();
-            LuckyBox.instance.TryToFindBox();
+            LuckyBox.instance.TryToFindBox(0.5f * mStats.qLimit);
             SaveStats();
             LoadUI();
         }
@@ -399,13 +400,13 @@ public class Machine : MonoBehaviour
             if (mStats.queue.Count >= mStats.qLimit) return;
             Debug.Log("All resources met reqs");
             for (int i = 0; i < c_product.p_Used.Count; i++)
-                Storage.instance.UpdatePlantCount(c_product.p_Used[i].Plant, -c_product.p_Used[i].count);
+                Storage.instance.UpdateThingCount(c_product.p_Used[i].Plant, -c_product.p_Used[i].count);
             for (int i = 0; i < c_product.f_used.Count; i++)
-                Storage.instance.UpdateFruitCount(c_product.f_used[i].Fruit, -c_product.f_used[i].count);
+                Storage.instance.UpdateThingCount(c_product.f_used[i].Fruit, -c_product.f_used[i].count);
             for (int i = 0; i < c_product.ap_Used.Count; i++)
-                Storage.instance.UpdateAPCount(c_product.ap_Used[i].animal_products, -c_product.ap_Used[i].count);
+                Storage.instance.UpdateThingCount(c_product.ap_Used[i].animal_products, -c_product.ap_Used[i].count);
             for (int i = 0; i < c_product.pr_Used.Count; i++)
-                Storage.instance.UpdateProductCount(c_product.pr_Used[i].product, -c_product.pr_Used[i].count);
+                Storage.instance.UpdateThingCount(c_product.pr_Used[i].product, -c_product.pr_Used[i].count);
 
             // new tf processed item
             PrD newItem = c_product.Clone();
@@ -479,6 +480,7 @@ public class Machine : MonoBehaviour
     public void rtCollect()
     {
         mStats.queue[0].state = AState.ReadyToCollect;
+        btn.onClick.RemoveAllListeners();
         btn.onClick.AddListener(() => CollectProduct());
     }
 
@@ -488,7 +490,7 @@ public class Machine : MonoBehaviour
         {
             foreach (Transform item in ShelfHolder) Destroy(item.gameObject); ShelfHolder.gameObject.SetActive(false);
 
-            Storage.instance.UpdateProductCount(TheProduct.product, TheProduct.amount);
+            Storage.instance.UpdateThingCount(TheProduct.product, TheProduct.amount);
             
             Debug.Log($"The Product Xp: {TheProduct.xp}");
             MoneySystem.instance.UpdateXp(TheProduct.xp);
@@ -520,7 +522,7 @@ public class Machine : MonoBehaviour
             SaveStats();
             PopulateQueue();
             LoadUI();
-            LuckyBox.instance.TryToFindBox();
+            LuckyBox.instance.TryToFindBox(0.5f);
         }
     }
 
@@ -611,7 +613,9 @@ public class Machine : MonoBehaviour
             mStats.state = ASpotState.Empty;
 
         mStats.Fixed += 1;
-        Storage.instance.UpdateItemCount(item, -1);
+        Storage.instance.UpdateThingCount(item, -1);
+        MoneySystem.instance.UpdateXp(20);
+        LuckyBox.instance.TryToFindBox(1);
         SaveStats();
         LoadUI();
     }

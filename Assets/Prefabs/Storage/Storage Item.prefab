@@ -171,9 +171,9 @@ MonoBehaviour:
   plant: 10
   fruit: 6
   animal_product: 7
-  product: 46
-  theItem: {fileID: 1814174452659572728}
-  countText: {fileID: 1485001495083473203}
+  product: 50
+  item: 9
+  Food: 4
 --- !u!114 &349825967604015241
 MonoBehaviour:
   m_ObjectHideFlags: 0

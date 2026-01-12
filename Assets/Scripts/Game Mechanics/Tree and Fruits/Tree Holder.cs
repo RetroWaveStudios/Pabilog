@@ -22,16 +22,15 @@ public class TreeHolder : MonoBehaviour
     {
         foreach (Transform item in Holder) Destroy(item.gameObject);
         Debug.Log("Populate Holder Called in TH");
-        for (int i = 0; i < StaticDatas.PlayerData.unlocked_items.u_fruits.Count; i++)
-        {
-            if (StaticDatas.PlayerData.unlocked_items.u_fruits[i].owned)
+        if(StaticDatas.PlayerData.unlocked_items.u_fruits != null || StaticDatas.PlayerData.unlocked_items.u_fruits.Count > 0)
+            for (int i = 0; i < StaticDatas.PlayerData.unlocked_items.u_fruits.Count; i++)
             {
-                Fruits f = StaticDatas.PlayerData.unlocked_items.u_fruits[i].fruit;
+                Fruits f = StaticDatas.PlayerData.unlocked_items.u_fruits[i];
                 Debug.Log(f + " tree added to Holder to be able to buy");
                 GameObject dublicate = Instantiate(TreePrefab, Holder);
                 dublicate.transform.name = f.ToString();
 
-                dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.trees.Find(e => e.tree == f).sprite;
+                dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.trees.Find(e => e.fruit == f).sprite;
                 Button button = dublicate.GetComponent<Button>();
                 button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(() => ChooseTree(f));
@@ -50,7 +49,6 @@ public class TreeHolder : MonoBehaviour
 
                 Trees.Add(dublicate);
             }
-        }
     }
 
     private void ChooseTree(Fruits t)

@@ -1,0 +1,119 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+#region Tasks
+[System.Serializable]
+public class Task
+{
+    public TaskType difficulty;
+    public List<PlantCount> Plants;
+    public List<FruitCount> Fruits;
+    public List<afAmount> AnimalFoods;
+    public List<APCount> AnimalProducts;
+    public List<ProductCount> Products;
+    public List<ItemCount> Items;
+
+    public string StartTime;
+    public double Timer;
+
+    public Currency currency;
+    public int Money;
+    public int Xp;
+}
+
+[System.Serializable]
+public class TaskDetails
+{
+    public TaskState state;
+    public string EmptyTime;
+    public double timeToSpawn;
+    public Task Task;
+}
+
+#region Allowed List
+[System.Serializable]
+public class TAllowed<T>
+{
+    public Category allowedCat;
+    public List<T> plants;
+    public Vector2 countRange; // for example (2, 7)
+    public Vector2 priceRange; //price Multiplication Range. For example (1.6, 2.5)
+}
+[System.Serializable]
+public class TAllowedPlant
+{
+    public Category allowedCat;
+    public List<Plants> plants;
+    public Vector2 countRange; // for example (2, 7)
+    public Vector2 priceRange; //price Multiplication Range. For example (1.6, 2.5)
+    public Vector2 XpRange;
+}
+[System.Serializable]
+public class TAllowedFruit
+{
+    public string name;
+    public Category allowedCat;
+    public List<Fruits> fruits;
+    public Vector2 countRange; // for example (2, 7)
+    public Vector2 priceRange; //price Multiplication Range. For example (1.6, 2.5)
+    public Vector2 XpRange;
+}
+
+[System.Serializable]
+public class TAllowedAFoods
+{
+    public string name;
+    public Category allowedCat;
+    public List<a_f_types> animal_foods;
+    public Vector2 countRange; // for example (2, 7)
+    public Vector2 priceRange; //price Multiplication Range. For example (1.6, 2.5)
+    public Vector2 XpRange;
+}
+
+[System.Serializable]
+public class TAllowedAP
+{
+    public string name;
+    public Category allowedCat;
+    public List<AProducts> animal_product;
+    public Vector2 countRange; // for example (2, 7)
+    public Vector2 priceRange; //price Multiplication Range. For example (1.6, 2.5)
+    public Vector2 XpRange;
+}
+
+[System.Serializable]
+public class TAllowedProduct
+{
+    public string name;
+    public Category allowedCat;
+    public List<Products> products;
+    public Vector2 countRange; // for example (2, 7)
+    public Vector2 priceRange; //price Multiplication Range. For example (1.6, 2.5)
+    public Vector2 XpRange;
+}
+
+[System.Serializable]
+public class TAllowedItems
+{
+    public string name;
+    public Category allowedCat;
+    public List<Items> items;
+    public Vector2 countRange; // for example (2, 7)
+    public Vector2 priceRange; //price Multiplication Range. For example (1.6, 2.5)
+    public Vector2 XpRange;
+}
+#endregion
+
+[System.Serializable]
+public class TasksAlgorithm
+{
+    public string name;
+    public TaskType difficulty;
+    public TAllowedPlant AllowedPlants;
+    public TAllowedFruit AllowedFruits;
+    public TAllowedAFoods AllowedAnimalFoods;
+    public TAllowedAP AllowedAnimalProducts;
+    public TAllowedProduct AllowedProduts;
+    public TAllowedItems AllowedItems;
+}
+#endregion

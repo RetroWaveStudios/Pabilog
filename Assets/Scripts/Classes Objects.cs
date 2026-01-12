@@ -224,10 +224,10 @@ public enum Category
 {
     Plants,
     Fruits,
+    AnimalFood,
     AProducts,
     Products,
-    Items,
-    AnimalFood
+    Items
 }
 
 public enum ItemCat
@@ -242,6 +242,21 @@ public enum PushType
     Alert,
     Notice,
     Achivement
+}
+
+public enum TaskType
+{
+    Easy,
+    Medium,
+    Hard,
+    Legendary,
+    None
+}
+
+public enum TaskState
+{
+    Empty,
+    HasTask,
 }
 #endregion
 
@@ -358,13 +373,6 @@ public class FruitSprites
     public Sprite sprite;
 }
 
-[System.Serializable]
-public class TreeSprites
-{
-    public string name;
-    public Fruits tree;
-    public Sprite sprite;
-}
 [System.Serializable]
 public class TreeStages
 {
@@ -603,10 +611,15 @@ public class afSprites
 }
 
 [System.Serializable]
-public class afAmount
+public class afAmount : IStorageItem
 {
+    public Category category;
     public a_f_types food;
     public int amount;
+
+
+    public int Count => amount;
+    public object Item => food;
 }
 
 [System.Serializable]
@@ -656,7 +669,7 @@ public class LevelSystem
 
         for (int level = 2; level <= maxLevel; level++)
         {
-            double xp = 50 * Math.Pow(level - 1, 3);
+            double xp = 50 * Math.Pow(level - 1, 2.7);
             xpReqs.Add((int)Math.Round(xp));
         }
 
@@ -735,97 +748,92 @@ public class LevelSystem
         public int qLimit;
         public List<PrD> queue;
     }
-    #endregion
-
-    #region Unlock Section
-    [System.Serializable]
-    public class u_Plants
-    {
-        public Plants plant;
-        public bool owned;
-    }
 
     [System.Serializable]
-    public class u_Fruits
+    public class TaskSystem
     {
-        public Fruits fruit;
-        public bool owned;
+        public List<TaskDetails> Tasks;
     }
 
-    [System.Serializable]
-    public class u_Animals
-    {
-        public Animals animal;
-        public bool owned;
-    }
-
-    [System.Serializable]
-    public class u_AProducts
-    {
-        public AProducts animalProduct;
-        public bool owned;
-    }
-
-    [System.Serializable]
-    public class u_Products
-    {
-        public Products Product;
-        public bool owned;
-    }
-    [System.Serializable]
-    public class u_Machines
-    {
-        public string MachineName;
-        public bool owned;
-    }
+#endregion
 
     [System.Serializable]
     public class u_items
     {
-        public List<u_Plants> u_plants;
-        public List<u_Fruits> u_fruits;
-        public List<u_Animals> u_animals;
-        public List<u_AProducts> u_a_products;
-        public List<u_Machines> u_machines;
-        public List<u_Products> u_Products;
+        public List<Plants> u_plants;
+        public List<Fruits> u_fruits;
+        public List<Animals> u_animals;
+        public List<AProducts> u_a_products;
+        public List<string> u_machines;
+        public List<Products> u_Products;
     }
-#endregion
 
-    #region Storage Items
+#region Storage Items
     [System.Serializable]
-    public class PlantCount
+    public class ThingCount : IStorageItem
+    {
+        public object item;
+        public int count;
+
+        public int Count => count;
+        public object Item => item;
+    }
+
+    public interface IStorageItem
+    {
+        int Count { get; }
+        object Item { get; }
+    }
+
+    [System.Serializable]
+    public class PlantCount : IStorageItem
     {
         public Plants Plant;
         public int count;
+
+        public int Count => count;
+        public object Item => Plant;
     }
     [System.Serializable]
 
-    public class FruitCount
-    {
+    public class FruitCount : IStorageItem
+{
         public Fruits Fruit;
         public int count;
-    }
+
+        public int Count => count;
+        public object Item => Fruit;
+}
 
     [System.Serializable]
-    public class APCount
-    {
+    public class APCount : IStorageItem
+{
         public AProducts animal_products;
         public int count;
-    }
+
+        public int Count => count;
+        public object Item => animal_products;
+}
 
     [System.Serializable]
-    public class ProductCount
-    {
+    public class ProductCount : IStorageItem
+{
         public Products product;
         public int count;
-    }
+
+        public int Count => count;
+        public object Item => product;
+}
 
     [System.Serializable]
-    public class ItemCount
-    {
+    public class ItemCount : IStorageItem
+{
         public Items item;
         public int count;
-    }
+
+        public int Count => count;
+        public object Item => item;
+}
 
 [System.Serializable]
     public class StorageItems
@@ -912,7 +920,7 @@ public class StorageSprites
     public List<PGStages> StageSprites;
     public List<PlantSprites> readySprites;
 
-    public List<TreeSprites> trees;
+    public List<FruitSprites> trees;
     public List<TreeStages> TreeStageSprites;
     public List<FruitSprites> fruits;
 

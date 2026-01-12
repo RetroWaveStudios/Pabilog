@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class StaticDatas : MonoBehaviour
@@ -117,5 +118,10 @@ public class StaticDatas : MonoBehaviour
             int rand = UnityEngine.Random.Range(i, list.Count);
             (list[i], list[rand]) = (list[rand], list[i]);
         }
+    }
+
+    public static string FormatEnum(Enum value)
+    {
+        return Regex.Replace(value.ToString(), "(\\B[A-Z])", " $1");
     }
 }

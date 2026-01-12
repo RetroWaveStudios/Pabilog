@@ -22,7 +22,6 @@ public class FarmLogic : MonoBehaviour
     {
         instance = this;
         canvasGroup = GetComponent<CanvasGroup>();
-        PlayerProfile.instance.Awake();
         StaticDatas.LoadDatas();
         int price = 100;
         int axp = 5;
@@ -127,7 +126,7 @@ public class FarmLogic : MonoBehaviour
 
             PopulateSlots(Slots.Count);
             AddBuySlot();
-            LuckyBox.instance.TryToFindBox();
+            LuckyBox.instance.TryToFindBox(0.2f * StaticDatas.PlayerData.land_slot_count);
         }
     }
 

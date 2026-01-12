@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -143,7 +142,7 @@ public class FarmingTS : MonoBehaviour
     {
         bool enought = true;
         if (Storage.instance.hasEnought(Items.Rake, 1, false))
-            Storage.instance.UpdateItemCount(Items.Rake, -1);
+            Storage.instance.UpdateThingCount(Items.Rake, -1);
         else MoneySystem.instance.UpdateCyrstal(-1, out enought);
 
         if(enought)
@@ -151,8 +150,8 @@ public class FarmingTS : MonoBehaviour
             btn.onClick.RemoveAllListeners();
             anim.SetTrigger("Plow Land");
             is_plowing = true;
-
             StaticDatas.PlayerData.FarmSlots[SlotNumber].plowed++;
+            for (int i = 0; i < FarmLogic.instance.Slots.Count; i++) FarmLogic.instance.Slots[i].GetComponent<FarmingTS>().LoadUI();
         }
     }
 
@@ -167,8 +166,8 @@ public class FarmingTS : MonoBehaviour
             btn.onClick.RemoveAllListeners();
             anim.SetTrigger("Water Land");
             is_watering = true;
-
             StaticDatas.PlayerData.FarmSlots[SlotNumber].dried++;
+            for (int i = 0; i < FarmLogic.instance.Slots.Count; i++) FarmLogic.instance.Slots[i].GetComponent<FarmingTS>().LoadUI();
         }
     }
 
@@ -178,7 +177,7 @@ public class FarmingTS : MonoBehaviour
         {
             bool enought = true;
             if (Storage.instance.hasEnought(plant, 1, false))
-                Storage.instance.UpdatePlantCount(plant, -FarmLogic.instance.PlantDetails.Find(e => e.plant == plant).price);
+                Storage.instance.UpdateThingCount(plant, -FarmLogic.instance.PlantDetails.Find(e => e.plant == plant).price);
             else MoneySystem.instance.UpdateCyrstal(-1, out enought);
             if (enought)
             {
@@ -291,14 +290,15 @@ public class FarmingTS : MonoBehaviour
         StaticDatas.PlayerData.FarmSlots[SlotNumber].PlantDetails = ThePlant;
     }
 
-    private void CalculateReqWater()
+    public void CalculateReqWater()
     {
         Debug.Log("calculating");
         double req = (ThePlant.GrowthTime - ThePlant.pauseTime) / StaticDatas.PlayerData.PlayerInfos.Water.WateringTimer;
         w = (int)Math.Ceiling(req);
 
         Debug.Log("opening show water");
-        anim.SetBool("Show Watering", true);
+        if(w > 1)
+            anim.SetBool("Show Watering", true);
         btn.onClick.RemoveAllListeners();
         //calculate max can use to water
         if (StaticDatas.PlayerData.PlayerInfos.Water.amount >= w)
@@ -306,7 +306,9 @@ public class FarmingTS : MonoBehaviour
         else
         {
             w = StaticDatas.PlayerData.PlayerInfos.Water.amount;
-            btn.onClick.AddListener(() => ResumeGrowth(StaticDatas.PlayerData.PlayerInfos.Water.amount));
+            if (StaticDatas.PlayerData.PlayerInfos.Water.amount > 0)
+                btn.onClick.AddListener(() => ResumeGrowth(StaticDatas.PlayerData.PlayerInfos.Water.amount));
+            else btn.onClick.RemoveAllListeners();
         }
         decide = w;
         Debug.Log($"decide = {decide}");
@@ -334,8 +336,9 @@ public class FarmingTS : MonoBehaviour
             WaterSL.instance.TriggerAmount(-amount);
             Debug.Log("Saving details");
             StaticDatas.PlayerData.FarmSlots[SlotNumber].PlantDetails = ThePlant;
+            MoneySystem.instance.UpdateXp(2 * amount);
+            LuckyBox.instance.TryToFindBox(0.3f);
             StaticDatas.SaveDatas(); LoadUI();
-            LuckyBox.instance.TryToFindBox();
             anim.SetBool("Show Watering", false);
         }
     }
@@ -388,7 +391,7 @@ public class FarmingTS : MonoBehaviour
         if (ThePlant.state == PlantState.ReadyToHarvest && Storage.instance.hasEnStorage(ThePlant.harvestAmount))
         {
             anim.SetBool("Show Timer", false);
-            Storage.instance.UpdatePlantCount(ThePlant.plant, ThePlant.harvestAmount);
+            Storage.instance.UpdateThingCount(ThePlant.plant, ThePlant.harvestAmount);
             MoneySystem.instance.UpdateXp(ThePlant.xp);
 
             btn.onClick.RemoveAllListeners();
@@ -404,7 +407,7 @@ public class FarmingTS : MonoBehaviour
             StaticDatas.PlayerData.FarmSlots[SlotNumber].state = landstate;
             PlantsHolder.instance.UpdateCountOfPlants();
             StaticDatas.SaveDatas(); LoadUI();
-            LuckyBox.instance.TryToFindBox();
+            LuckyBox.instance.TryToFindBox(0.3f);
         }
     }
 
@@ -432,8 +435,9 @@ public class FarmingTS : MonoBehaviour
             StaticDatas.PlayerData.FarmSlots[SlotNumber].usage = 0;
             btn.onClick.RemoveAllListeners();
             is_plowing = false;
+            MoneySystem.instance.UpdateXp(15);
+            LuckyBox.instance.TryToFindBox(0.5f);
             StaticDatas.SaveDatas(); LoadUI();
-            LuckyBox.instance.TryToFindBox();
         }
 
         public void A_Water()
@@ -443,8 +447,9 @@ public class FarmingTS : MonoBehaviour
             btn.onClick.RemoveAllListeners();
 
             is_watering = false;
+            MoneySystem.instance.UpdateXp(15);
+            LuckyBox.instance.TryToFindBox(0.3f);
             StaticDatas.SaveDatas(); LoadUI();
-            LuckyBox.instance.TryToFindBox();
         }
     #endregion
 }

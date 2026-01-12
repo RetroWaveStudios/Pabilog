@@ -3,7 +3,6 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Unity.VisualScripting;
 
 public class InfoDetails : MonoBehaviour
 {

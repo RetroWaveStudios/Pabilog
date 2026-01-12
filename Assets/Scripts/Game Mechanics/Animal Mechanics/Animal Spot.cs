@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class AnimalSpot : MonoBehaviour
@@ -31,16 +33,20 @@ public class AnimalSpot : MonoBehaviour
     public GameObject noFood;
     public TextMeshProUGUI noFoodTimer;
 
-    private bool showtimer;
+    private int f; // water amount to contuniue watering with full need of water
+    private int decide;
+
     private int stimer;
     private Animator anim;
 
+    public string listeners = "";
+
     private Dictionary<Animals, (Vector2, Vector2)> a_s_pos = new Dictionary<Animals, (Vector2, Vector2)>()
     {
-        { Animals.Chicken, (new Vector2(0, 0), new Vector2(135, 135)) },
-        { Animals.Cow, (new Vector2(0, 24), new Vector2(245, 245)) },
-        { Animals.Sheep, (new Vector2(0, 24), new Vector2(245, 245)) },
-        { Animals.Pig, (new Vector2(-15, 24), new Vector2(245, 245)) },
+        { Animals.Chicken, (new Vector2(0, 0), new Vector2(120, 120)) },
+        { Animals.Cow, (new Vector2(0, 18), new Vector2(220, 220)) },
+        { Animals.Sheep, (new Vector2(0, 18), new Vector2(220, 220)) },
+        { Animals.Pig, (new Vector2(-15, 26), new Vector2(200, 200)) },
     };
 
     private void Awake()
@@ -53,6 +59,7 @@ public class AnimalSpot : MonoBehaviour
 	{
 		if (TheAnimal.animal != Animals.None)
 			SetAnimalInfos();
+        if (spotState == ASpotState.HasAnimal && TheAnimal.state == AState.Fertilizing && !TheAnimal.hasFood) CalculateFoodCount();
         LoadUI();
 	}
 
@@ -60,34 +67,29 @@ public class AnimalSpot : MonoBehaviour
     {
         if (spotState == ASpotState.HasAnimal)
         {
-            btn.onClick.RemoveAllListeners();
             if (TheAnimal.state == AState.Fertilizing && TheAnimal.hasFood)
             {
-                CheckFoodTimer();
-                btn.onClick.AddListener(() => ShowTimer());
-                CheckFertilizing();
-                UpdateTimer();
+                if (TheAnimal.hasFood)
+                {
+                    CheckFoodTimer();
+                    CheckFertilizing();
+                    UpdateTimer();
+                }                    
             }
-            else if (TheAnimal.state == AState.Fertilizing && !TheAnimal.hasFood)
-            {
-                btn.onClick.AddListener(() => ResumeFertilizing());
-            }
-            else if (TheAnimal.state == AState.ReadyToCollect)
-            {
-                ReadyToCollect();
-            }
-            else btn.onClick.AddListener(() => SpotDetails());
+            else if (TheAnimal.state == AState.ReadyToCollect) ReadyToCollect();
         }
     }
 
     private void LoadUI()
     {
-        infoText.gameObject.SetActive(false);
+        infoText.gameObject.SetActive(false); AnimalImage.SetActive(false); noFood.SetActive(false);
+        ChickenSpot.SetActive(false); FeedingPot.SetActive(false); tPro.gameObject.SetActive(false); tProBg.gameObject.SetActive(false);
+        ProgressSpot.SetActive(false); timer.gameObject.SetActive(false);
+        listeners = "";
         if (spotState == ASpotState.Empty)
         {
-            infoText.gameObject.SetActive(true); infoText.text = "Empty"; AnimalImage.SetActive(false); noFood.SetActive(false);
-            ChickenSpot.SetActive(false); FeedingPot.SetActive(false); tPro.gameObject.SetActive(false); tProBg.gameObject.SetActive(false);
-            ProgressSpot.SetActive(false); timer.gameObject.SetActive(false);
+            infoText.gameObject.SetActive(true); infoText.text = "Empty";
+            btn.onClick.RemoveAllListeners(); btn.onClick.AddListener(() => SpotDetails()); listeners = "SpotDetails";
         }
         else
         {
@@ -97,6 +99,11 @@ public class AnimalSpot : MonoBehaviour
                 tPro.gameObject.SetActive(true); tProBg.gameObject.SetActive(true);
                 tPro.sprite = Sprites.instance.sprites.a_products.Find(e => e.a_product == TheAnimal.theProduct).sprite;
             }
+            else
+            {
+                btn.onClick.RemoveAllListeners();
+                btn.onClick.AddListener(() => SpotDetails()); listeners = "SpotDetails";
+            }
             infoText.gameObject.SetActive(false); timer.gameObject.SetActive(false); AnimalImage.SetActive(true);
             if (TheAnimal.animal == Animals.Chicken) { ChickenSpot.SetActive(true); FeedingPot.SetActive(false); }
             else { ChickenSpot.SetActive(false); FeedingPot.SetActive(true); }
@@ -104,12 +111,23 @@ public class AnimalSpot : MonoBehaviour
             if (TheAnimal.state == AState.Fertilizing)
             {
                 ProgressSpot.SetActive(true);
-                if (TheAnimal.hasFood) noFood.SetActive(false);
-                else { noFood.SetActive(true); noFoodTimer.text = StaticDatas.convertToTimer(TheAnimal.productTime * 60, TheAnimal.pauseTime * 60); }
+                if (TheAnimal.hasFood) { noFood.SetActive(false);
+                    btn.onClick.RemoveAllListeners(); btn.onClick.AddListener(() => ShowTimer()); listeners = "Show Timer"; }
+                else { noFood.SetActive(true); noFoodTimer.text = StaticDatas.convertToTimer(TheAnimal.productTime * 60, TheAnimal.pauseTime * 60);
+                    Debug.Log($"at spot {SpotNumber} {TheAnimal.animal} state is {TheAnimal.state} and hasFood = {TheAnimal.hasFood}");;
+
+                    noFood.transform.Find("Count Details/Inc").gameObject.SetActive(true);
+                    noFood.transform.Find("Count Details/Dec").gameObject.SetActive(true);
+                    if (StaticDatas.PlayerData.PlayerInfos.Water.amount < decide || decide >= f)
+                        noFood.transform.Find("Count Details/Inc").gameObject.SetActive(false);
+                    if (decide < 2)
+                        noFood.transform.Find("Count Details/Dec").gameObject.SetActive(false);
+                }
                 tProBg.color = new Color32(0, 110, 215, 255);
             }
 
-            else if (TheAnimal.state == AState.ReadyToCollect) { ProgressSpot.SetActive(false);}
+            else if (TheAnimal.state == AState.ReadyToCollect) { ProgressSpot.SetActive(false);
+                btn.onClick.RemoveAllListeners(); btn.onClick.AddListener(() => CollectProduct()); }
 
             Image image = AnimalImage.GetComponent<Image>();
             image.sprite = Sprites.instance.sprites.animals.Find(e => e.animal == TheAnimal.animal).sprite;
@@ -124,6 +142,7 @@ public class AnimalSpot : MonoBehaviour
 
     public void SpotDetails()
     {
+        Debug.Log($"sending details. State = {spotState}");
         AHolder.instance.spotnumber = SpotNumber;
         if (TheAnimal.theProduct == AProducts.None)
             AHolder.instance.SpotClicked(spotState, TheAnimal.animal);
@@ -147,10 +166,8 @@ public class AnimalSpot : MonoBehaviour
             MoneySystem.instance.UpdateCoin(-TheAnimal.a_price, out bool s);
             MoneySystem.instance.UpdateXp(TheAnimal.a_Xp);
             spotState = ASpotState.HasAnimal;
-
-            StaticDatas.PlayerData.AnimalSpots[SpotNumber].AnimalProductDetails = TheAnimal;
-            StaticDatas.PlayerData.AnimalSpots[SpotNumber].state = spotState;
-            StaticDatas.SaveDatas();
+            
+            SaveState();
             AHolder.instance.SpotClicked(spotState, TheAnimal.animal);
             LoadUI();
         }
@@ -158,22 +175,20 @@ public class AnimalSpot : MonoBehaviour
 
     public void Product(AProducts product)
     {
-        if (FoodPL.instance.hasEnoughFood(AnimalsLogic.instance.TheFood, 1, true))
+        if (Storage.instance.hasEnought(AnimalsLogic.instance.TheFood, 1, true))
         {
             TheAnimal.fTimer = StaticDatas.PlayerData.PlayerInfos.Food.materials.Find(e => e.Food == AnimalsLogic.instance.TheFood).foodTimer;
             TheAnimal.theProduct = product;
             TheAnimal.productTime = TheAnimal.prTimes[TheAnimal.products.IndexOf(product)];
-            TheAnimal.feedTime = DateTime.UtcNow.ToString("o");
-            TheAnimal.hasFood = true;
+            TheAnimal.feedTime = "";
+            TheAnimal.hasFood = false;
             TheAnimal.state = AState.Fertilizing;
             for(int i = 0; i < TheAnimal.products.Count; i++)
                 if (product == TheAnimal.products[i]) { TheAnimal.xp = TheAnimal.prXp[i]; TheAnimal.amount = TheAnimal.prAmounts[i]; }
             tPro.sprite = Sprites.instance.sprites.a_products.Find(e => e.a_product == TheAnimal.theProduct).sprite;
-            StaticDatas.PlayerData.AnimalSpots[SpotNumber].AnimalProductDetails = TheAnimal;
-            Storage.instance.UpdateAnimalFood(AnimalsLogic.instance.TheFood, -1);
-            StaticDatas.SaveDatas();
+            SaveState();
             foreach (Transform item in AHolder.instance.Holder) Destroy(item.gameObject);
-            LoadUI();
+            LoadUI(); CalculateFoodCount();
         }
     }
 
@@ -192,10 +207,10 @@ public class AnimalSpot : MonoBehaviour
 
         if (elapsedMinutes >= TheAnimal.productTime)
         {
-            PauseFertilizing();
+            PauseFertilizing(true);
             ReadyToCollect();
+            SaveState();
             LoadUI();
-            StaticDatas.SaveDatas();
         }
     }
 
@@ -219,38 +234,73 @@ public class AnimalSpot : MonoBehaviour
 
         if (elapsedMinutes >= TheAnimal.fTimer && ((TheAnimal.productTime - TheAnimal.pauseTime) > TheAnimal.fTimer))
         {
-            PauseFertilizing();
-            LoadUI();
-            StaticDatas.SaveDatas();
+            PauseFertilizing(false);
+            SaveState();
         }
     }
 
-    private void PauseFertilizing()
+    private void PauseFertilizing(bool end)
     {
         TheAnimal.hasFood = false;
         TheAnimal.pauseTime += TheAnimal.fTimer;
         TheAnimal.feedTime = "";
-        anim.SetBool("ShowTimer", false);
+        if (end)
+            CalculateFoodCount();
+        else
+            anim.SetBool("Show Timer", false);
         btn.onClick.RemoveAllListeners();
-        btn.onClick.AddListener(() => ResumeFertilizing());
         StaticDatas.PlayerData.AnimalSpots[SpotNumber].AnimalProductDetails = TheAnimal;
         LoadUI();
     }
 
-    private void ResumeFertilizing()
+    public void CalculateFoodCount()
     {
-        if (FoodPL.instance.hasEnoughFood(AnimalsLogic.instance.TheFood, 1, true))
+        Debug.Log("calculating");
+        double req = (TheAnimal.productTime - TheAnimal.pauseTime) / StaticDatas.PlayerData.PlayerInfos.Food.materials.Find(e => e.Food.Equals(AnimalsLogic.instance.TheFood)).foodTimer;
+        f = (int)Math.Ceiling(req);
+        
+        btn.onClick.RemoveAllListeners();
+        //calculate max can use to water
+        if (StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food.Equals(AnimalsLogic.instance.TheFood)).amount >= f)
+            btn.onClick.AddListener(() => ResumeFertilizing(f));
+        else
         {
-            TheAnimal.fTimer = StaticDatas.PlayerData.PlayerInfos.Food.materials.Find(e => e.Food == AnimalsLogic.instance.TheFood).foodTimer;
+            f = StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food.Equals(AnimalsLogic.instance.TheFood)).amount;
+            if (StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food.Equals(AnimalsLogic.instance.TheFood)).amount > 0)
+                btn.onClick.AddListener(() => ResumeFertilizing(StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food.Equals(AnimalsLogic.instance.TheFood)).amount));
+            else btn.onClick.RemoveAllListeners();
+        }
+        decide = f;
+        Debug.Log($"decide = {decide}");
+        noFood.transform.Find("Count Details/Count").GetComponent<TextMeshProUGUI>().text = decide.ToString();
+        LoadUI();
+    }
+
+    public void ChangeFooding(int amount)
+    {
+        decide += amount;
+        Debug.Log($"decide = {decide}");
+        btn.onClick.RemoveAllListeners();
+        btn.onClick.AddListener(() => ResumeFertilizing(decide));
+        noFood.transform.Find("Count").GetComponent<TextMeshProUGUI>().text = decide.ToString();
+        LoadUI();
+    }
+
+    private void ResumeFertilizing(int amount)
+    {
+        Debug.Log($"for spot {SpotNumber} Resume clicked");
+        if (Storage.instance.hasEnought(AnimalsLogic.instance.TheFood, 1, true))
+        {
+            Debug.Log($"for spot {SpotNumber} resume reqs met");
+            TheAnimal.fTimer = StaticDatas.PlayerData.PlayerInfos.Food.materials.Find(e => e.Food.Equals(AnimalsLogic.instance.TheFood)).foodTimer * amount;
             TheAnimal.hasFood = true;
             DateTime time = DateTime.UtcNow;
             time.AddSeconds(-(TheAnimal.fTimer * 60));
             TheAnimal.feedTime = time.ToString("o");
-            anim.SetBool("ShowTimer", false);
-            StaticDatas.PlayerData.AnimalSpots[SpotNumber].AnimalProductDetails = TheAnimal;
-            Storage.instance.UpdateAnimalFood(AnimalsLogic.instance.TheFood, -1);
-            StaticDatas.SaveDatas();
-            LuckyBox.instance.TryToFindBox();
+            Storage.instance.UpdateThingCount(AnimalsLogic.instance.TheFood, -amount);
+            MoneySystem.instance.UpdateXp(5 * amount);
+            LuckyBox.instance.TryToFindBox(0.25f * amount);
+            SaveState();
             LoadUI();
         }
     }
@@ -287,23 +337,14 @@ public class AnimalSpot : MonoBehaviour
     public void ShowTimer()
     {
         for (int i = 0; i < AnimalsLogic.instance.Spots.Count; i++)
-        {
-            AnimalSpot ans = AnimalsLogic.instance.Spots[i].GetComponent<AnimalSpot>();
-            if (i != SpotNumber)
-            {
-                ans.anim.SetBool("ShowTimer", false);
-                ans.showtimer = false;
-            }
-        }
-        anim.SetBool("ShowTimer", !anim.GetBool("ShowTimer"));
+            if (i != SpotNumber) AnimalsLogic.instance.Spots[i].GetComponent<AnimalSpot>().anim.SetBool("Show Timer", false);
+        anim.SetBool("Show Timer", !anim.GetBool("Show Timer"));
         LoadUI();
     }
 
     private void ReadyToCollect()
     {
         TheAnimal.state = AState.ReadyToCollect;
-        btn.onClick.RemoveAllListeners();
-        btn.onClick.AddListener(() => CollectProduct());
         tProBg.color = new Color32(0, 100, 0, 255);
         StaticDatas.PlayerData.AnimalSpots[SpotNumber].AnimalProductDetails = TheAnimal;
     }
@@ -312,9 +353,9 @@ public class AnimalSpot : MonoBehaviour
     {
         if (TheAnimal.state == AState.ReadyToCollect && Storage.instance.hasEnStorage(TheAnimal.amount))
         {
-            Storage.instance.UpdateAPCount(TheAnimal.theProduct, TheAnimal.amount);
+            Storage.instance.UpdateThingCount(TheAnimal.theProduct, TheAnimal.amount);
             MoneySystem.instance.UpdateXp(TheAnimal.xp);
-            anim.SetBool("ShowTimer", false);
+            anim.SetBool("Show Timer", false);
             spotState = ASpotState.HasAnimal;
             TheAnimal.theProduct = AProducts.None;
             TheAnimal.state = AState.None;
@@ -323,13 +364,8 @@ public class AnimalSpot : MonoBehaviour
             TheAnimal.pauseTime = 0;
             tProBg.gameObject.SetActive(false);
 
-            btn.onClick.RemoveAllListeners();
-            btn.onClick.AddListener(() => SpotDetails());
-
-            StaticDatas.PlayerData.AnimalSpots[SpotNumber].AnimalProductDetails = TheAnimal;
-            StaticDatas.PlayerData.AnimalSpots[SpotNumber].state = spotState;
-            StaticDatas.SaveDatas();
-            LuckyBox.instance.TryToFindBox();
+            SaveState();
+            LuckyBox.instance.TryToFindBox(0.3f);
             LoadUI();
         }
     }
@@ -342,9 +378,7 @@ public class AnimalSpot : MonoBehaviour
             animal = Animals.None,
             theProduct = AProducts.None
         };
-        StaticDatas.PlayerData.AnimalSpots[SpotNumber].AnimalProductDetails = TheAnimal;
-        StaticDatas.PlayerData.AnimalSpots[SpotNumber].state = spotState;
-        StaticDatas.SaveDatas();
+        SaveState();
         foreach (Transform item in AHolder.instance.Holder) Destroy(item.gameObject);
         LoadUI();
     }
@@ -366,9 +400,14 @@ public class AnimalSpot : MonoBehaviour
         TheAnimal.prXp = AnimalsLogic.instance.AnimalsDetails.Find(e => e.animal == TheAnimal.animal).prXp;
         TheAnimal.prAmounts = AnimalsLogic.instance.AnimalsDetails.Find(e => e.animal == TheAnimal.animal).prAmounts;
 
-
-        StaticDatas.PlayerData.AnimalSpots[SpotNumber].AnimalProductDetails = TheAnimal;
-        StaticDatas.SaveDatas();
+        SaveState();
         LoadUI();
+    }
+
+    private void SaveState()
+    {
+        StaticDatas.PlayerData.AnimalSpots[SpotNumber].AnimalProductDetails = TheAnimal;
+        StaticDatas.PlayerData.AnimalSpots[SpotNumber].state = spotState;
+        StaticDatas.SaveDatas();
     }
 }

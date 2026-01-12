@@ -45,6 +45,7 @@ public class MoneySystem : MonoBehaviour
     {
         StaticDatas.PlayerData.PlayerInfos.XP += amount;
         PlayerProfile.instance.UpdateLevelBar();
+        PlayerProfile.instance.CheckLevelUp();
         StaticDatas.SaveDatas();
     }
 

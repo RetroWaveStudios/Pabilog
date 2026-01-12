@@ -21,24 +21,24 @@ public class MyShop : MonoBehaviour
     public TextMeshProUGUI PriceParameterText;
     public TextMeshProUGUI CountParameterText;
 
-    private Dictionary<Plants, int> PlantPR = new Dictionary<Plants, int>()
+    public Dictionary<Plants, int> PlantPR = new Dictionary<Plants, int>()
     {
         { Plants.Wheat, 6 },            { Plants.Corn, 8 },                 { Plants.Potato, 25 },
         { Plants.Carrot, 10 },          { Plants.Tomato, 34 },              { Plants.Onion, 50 },
         { Plants.SugarCane, 24 },       { Plants.Herbs, 20 },               { Plants.Spice, 40 },
         { Plants.Cotton, 60}
     };
-    private Dictionary<Fruits, int> FruitPR = new Dictionary<Fruits, int>()
+    public Dictionary<Fruits, int> FruitPR = new Dictionary<Fruits, int>()
     {
         { Fruits.Apple, 15 },           { Fruits.Berry, 25 },               { Fruits.Banana, 50 },
         { Fruits.Orange, 60 },          { Fruits.Cacao, 65 },               { Fruits.Cherry, 30}
     };
-    private Dictionary<AProducts, int> AProductPR = new Dictionary<AProducts, int>()
+    public Dictionary<AProducts, int> AProductPR = new Dictionary<AProducts, int>()
     {
         { AProducts.Egg, 8 },           { AProducts.Ch_Meat, 150 },         { AProducts.Milk, 10 },
         { AProducts.Cow_Meat, 250 },    { AProducts.Wool, 20 },             { AProducts.Bacon, 120 },
     };
-    private Dictionary<Products, int> ProductPR = new Dictionary<Products, int>()
+    public Dictionary<Products, int> ProductPR = new Dictionary<Products, int>()
     {
         //  Dairy Churn Products
         { Products.Cream, 20 },            { Products.Butter, 40 },           { Products.Cheese, 60 },
@@ -82,13 +82,13 @@ public class MyShop : MonoBehaviour
         //  Simple Sewing Machine
         { Products.SimpleTShirt, 100 },    { Products.Hat, 80 },              { Products.Sweater, 120 },
     };
-    private Dictionary<Items, int> ItemPR = new Dictionary<Items, int>()
+    public Dictionary<Items, int> ItemPR = new Dictionary<Items, int>()
     {
         { Items.Rake, 120 },                { Items.Bolt, 200 },                { Items.Screw, 200 },
         { Items.Axe, 120 },                 { Items.Hammer, 200 },              { Items.Tape, 400},
         { Items.Drill, 400 },               { Items.Pliers, 400 },              { Items.ToolSet, 1000},
     };
-    private Dictionary<a_f_types, int> afPR = new Dictionary<a_f_types, int>()
+    public Dictionary<a_f_types, int> afPR = new Dictionary<a_f_types, int>()
     {
         { a_f_types.Wheat, 20 },               { a_f_types.Corn, 40 },
         { a_f_types.Carrot, 60 },              { a_f_types.Potato, 80 },
@@ -122,151 +122,57 @@ public class MyShop : MonoBehaviour
         }
     }
 
-    public void PopulateHodler()
+    public void PopulateHodler(Transform holder)
     {
         SellingItems.Clear();
-        foreach (Transform item in SellItemHolder) Destroy(item.gameObject);
+        foreach (Transform item in holder) Destroy(item.gameObject);
         int slotn = 0;
         for (int i = 0; i < StaticDatas.PlayerData.Storage.PlantsInStorage.Count; i++)
-        {
-            GameObject dublicate = Instantiate(SellingPrefab, SellItemHolder);
-            Transform count = dublicate.transform.Find("Count");
-            Transform icon = dublicate.transform.Find("Item Icon");
-            Button button = dublicate.GetComponent<Button>();
-            button.onClick.RemoveAllListeners();
-            if ((StaticDatas.PlayerData.Storage.PlantsInStorage != null && StaticDatas.PlayerData.Storage.PlantsInStorage.Count > 0) &&
-                StaticDatas.PlayerData.Storage.PlantsInStorage[i].count > 0)
-            {
-                Plants p = StaticDatas.PlayerData.Storage.PlantsInStorage[i].Plant;
-                count.GetComponent<TextMeshProUGUI>().text = StaticDatas.PlayerData.Storage.PlantsInStorage[i].count.ToString();
-                icon.GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant
-                    == p).sprite;
-                button.onClick.AddListener(() => TheItem = p);
-                int s = slotn;
-                button.onClick.AddListener(() => SellParameters(s, TheItem));
-                slotn++;
-                SellingItems.Add(dublicate);
-            }
-            else Destroy(dublicate);
-        }
+            CreatePrefabInHolder(StaticDatas.PlayerData.Storage.PlantsInStorage, i, slotn, out slotn, holder);
+
         for (int i = 0; i < StaticDatas.PlayerData.Storage.FruitInStorage.Count; i++)
-        {
-            GameObject dublicate = Instantiate(SellingPrefab, SellItemHolder);
-            Transform count = dublicate.transform.Find("Count");
-            Transform icon = dublicate.transform.Find("Item Icon");
-            Button button = dublicate.GetComponent<Button>();
-            button.onClick.RemoveAllListeners();
-            if ((StaticDatas.PlayerData.Storage.FruitInStorage != null && StaticDatas.PlayerData.Storage.FruitInStorage.Count > 0) &&
-                StaticDatas.PlayerData.Storage.FruitInStorage[i].count > 0)
-            {
-                Fruits f = StaticDatas.PlayerData.Storage.FruitInStorage[i].Fruit;
-                count.GetComponent<TextMeshProUGUI>().text = StaticDatas.PlayerData.Storage.FruitInStorage[i].count.ToString();
-                icon.GetComponent<Image>().sprite = Sprites.instance.sprites.fruits.Find(e => e.fruit
-                    == f).sprite;
-                button.onClick.AddListener(() => TheItem = f);
-                int s = slotn;
-                button.onClick.AddListener(() => SellParameters(s, TheItem));
-                slotn++;
-                SellingItems.Add(dublicate);
-            }
-            else Destroy(dublicate);
-        }
+            CreatePrefabInHolder(StaticDatas.PlayerData.Storage.FruitInStorage, i, slotn, out slotn, holder);
+
         for (int i = 0; i < StaticDatas.PlayerData.Storage.a_p_inStorage.Count; i++)
-        {
-            GameObject dublicate = Instantiate(SellingPrefab, SellItemHolder);
-            Transform count = dublicate.transform.Find("Count");
-            Transform icon = dublicate.transform.Find("Item Icon");
-            Button button = dublicate.GetComponent<Button>();
-            button.onClick.RemoveAllListeners();
-            if ((StaticDatas.PlayerData.Storage.a_p_inStorage != null && StaticDatas.PlayerData.Storage.a_p_inStorage.Count > 0) &&
-                StaticDatas.PlayerData.Storage.a_p_inStorage[i].count > 0)
-            {
-                AProducts ap = StaticDatas.PlayerData.Storage.a_p_inStorage[i].animal_products;
-                count.GetComponent<TextMeshProUGUI>().text = StaticDatas.PlayerData.Storage.a_p_inStorage[i].count.ToString();
-                icon.GetComponent<Image>().sprite = Sprites.instance.sprites.a_products.Find(e => e.a_product
-                    == ap).sprite;
-                button.onClick.AddListener(() => TheItem = ap);
-                int s = slotn;
-                button.onClick.AddListener(() => SellParameters(s, TheItem));
-                slotn++;
-                SellingItems.Add(dublicate);
-            }
-            else Destroy(dublicate);
-        }
+            CreatePrefabInHolder(StaticDatas.PlayerData.Storage.a_p_inStorage, i, slotn, out slotn, holder);
+
         for (int i = 0; i < StaticDatas.PlayerData.Storage.ProductsInStorage.Count; i++)
-        {
-            GameObject dublicate = Instantiate(SellingPrefab, SellItemHolder);
-            Transform count = dublicate.transform.Find("Count");
-            Transform icon = dublicate.transform.Find("Item Icon");
-            Button button = dublicate.GetComponent<Button>();
-            button.onClick.RemoveAllListeners();
-            if ((StaticDatas.PlayerData.Storage.ProductsInStorage != null && StaticDatas.PlayerData.Storage.ProductsInStorage.Count > 0) &&
-                StaticDatas.PlayerData.Storage.ProductsInStorage[i].count > 0)
-            {
-                Products p = StaticDatas.PlayerData.Storage.ProductsInStorage[i].product;
-                count.GetComponent<TextMeshProUGUI>().text = StaticDatas.PlayerData.Storage.ProductsInStorage[i].count.ToString();
-                icon.GetComponent<Image>().sprite = Sprites.instance.sprites.products.Find(e => e.product
-                    == p).sprite;
-                button.onClick.AddListener(() => TheItem = p);
-                int s = slotn;
-                button.onClick.AddListener(() => SellParameters(s, TheItem));
-                slotn++;
-                SellingItems.Add(dublicate);
-            }
-            else Destroy(dublicate);
-        }
+            CreatePrefabInHolder(StaticDatas.PlayerData.Storage.ProductsInStorage, i, slotn, out slotn, holder);
+
         for (int i = 0; i < StaticDatas.PlayerData.Storage.ItemsInStorage.Count; i++)
-        {
-            GameObject dublicate = Instantiate(SellingPrefab, SellItemHolder);
-            Transform count = dublicate.transform.Find("Count");
-            Transform icon = dublicate.transform.Find("Item Icon");
-            Button button = dublicate.GetComponent<Button>();
-            button.onClick.RemoveAllListeners();
-            if ((StaticDatas.PlayerData.Storage.ItemsInStorage != null && StaticDatas.PlayerData.Storage.ItemsInStorage.Count > 0) &&
-                StaticDatas.PlayerData.Storage.ItemsInStorage[i].count > 0)
-            {
-                Items it = StaticDatas.PlayerData.Storage.ItemsInStorage[i].item;
-                count.GetComponent<TextMeshProUGUI>().text = StaticDatas.PlayerData.Storage.ItemsInStorage[i].count.ToString();
-                icon.GetComponent<Image>().sprite = Sprites.instance.sprites.items.Find(e => e.item
-                    == it).sprite;
-                button.onClick.AddListener(() => TheItem = it);
-                int s = slotn;
-                button.onClick.AddListener(() => SellParameters(s, TheItem));
-                slotn++;
-                SellingItems.Add(dublicate);
-            }
-            else Destroy(dublicate);
-        }
+            CreatePrefabInHolder(StaticDatas.PlayerData.Storage.ItemsInStorage, i, slotn, out slotn, holder);
+
         for (int i = 0; i < StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Count; i++)
-        {
-            GameObject dublicate = Instantiate(SellingPrefab, SellItemHolder);
-            Transform count = dublicate.transform.Find("Count");
-            Transform icon = dublicate.transform.Find("Item Icon");
-            Button button = dublicate.GetComponent<Button>();
-            button.onClick.RemoveAllListeners();
-            if ((StaticDatas.PlayerData.PlayerInfos.Food.Amounts != null && StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Count > 0) &&
-                StaticDatas.PlayerData.PlayerInfos.Food.Amounts[i].amount > 0)
-            {
-                a_f_types af = StaticDatas.PlayerData.PlayerInfos.Food.Amounts[i].food;
-                count.GetComponent<TextMeshProUGUI>().text = StaticDatas.PlayerData.PlayerInfos.Food.Amounts[i].amount.ToString();
-                icon.GetComponent<Image>().sprite = Sprites.instance.sprites.AnimalFoodSprites.Find(e => e.food
-                    == af).sprite;
-                button.onClick.AddListener(() => TheItem = af);
-                int s = slotn;
-                button.onClick.AddListener(() => SellParameters(s, TheItem));
-                slotn++;
-                SellingItems.Add(dublicate);
-            }
-            else Destroy(dublicate);
-        }
+            CreatePrefabInHolder(StaticDatas.PlayerData.PlayerInfos.Food.Amounts, i, slotn, out slotn, holder);
 
         RectTransform rts = SellItemHolder.GetComponent<RectTransform>();
         GridLayoutGroup glg = SellItemHolder.GetComponent<GridLayoutGroup>();
-        if (SellItemHolder.childCount > 4) rts.sizeDelta = new Vector2(728, (float)glg.padding.top + (float)glg.padding.bottom +
-                (float)((SellItemHolder.childCount / 4) * 174) + (float)(((SellItemHolder.childCount - 1) / 4) * 35.3));
-        else rts.sizeDelta = new Vector2(728, (float)glg.padding.top + (float)glg.padding.bottom + 174);
+        if (SellItemHolder.childCount > 4) rts.sizeDelta = new Vector2(728, glg.padding.top + glg.padding.bottom +
+                ((SellItemHolder.childCount / 4) * 174) + (float)(((SellItemHolder.childCount - 1) / 4) * 35.3));
+        else rts.sizeDelta = new Vector2(728, glg.padding.top + glg.padding.bottom + 174);
 
         transform.Find("Sell Image/Sell Parameters").gameObject.SetActive(false);
+    }
+
+    private void CreatePrefabInHolder<T>(List<T> checkOn, int i, int insn, out int outsn, Transform holder) where T : IStorageItem
+    {
+        outsn = insn;
+        GameObject dublicate = Instantiate(SellingPrefab, holder);
+        Button button = dublicate.GetComponent<Button>();
+        button.onClick.RemoveAllListeners();
+
+        if ((checkOn != null && checkOn.Count > 0) && checkOn[i].Count > 0)
+        {
+            object item = checkOn[i].Item;
+            dublicate.transform.Find("Count").GetComponent<TextMeshProUGUI>().text = checkOn[i].Count.ToString();
+            dublicate.transform.Find("Item Icon").GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(item);
+            button.onClick.AddListener(() => TheItem = item);
+            int s = insn;
+            button.onClick.AddListener(() => SellParameters(s, TheItem));
+            outsn++;
+            SellingItems.Add(dublicate);
+        }
+        else Destroy(dublicate);
     }
 
     private void SellParameters(int snumb, object item)
@@ -406,14 +312,7 @@ public class MyShop : MonoBehaviour
 
     private void DeleteFromStorage()
     {
-        Debug.Log("Deleting " + TheItem + " count: " + count);
-        if (TheItem is Plants) Storage.instance.UpdatePlantCount((Plants)TheItem, -count);
-        else if (TheItem is Fruits) Storage.instance.UpdateFruitCount((Fruits)TheItem, -count);
-        else if (TheItem is AProducts) Storage.instance.UpdateAPCount((AProducts)TheItem, -count);
-        else if (TheItem is Products) Storage.instance.UpdateProductCount((Products)TheItem, -count);
-        else if (TheItem is Items) Storage.instance.UpdateItemCount((Items)TheItem, -count);
-        else if (TheItem is a_f_types) Storage.instance.UpdateAnimalFood((a_f_types)TheItem, -count);
-
+        Storage.instance.UpdateThingCount(TheItem, -count);
         if(PlantsHolder.instance != null) PlantsHolder.instance.UpdateCountOfPlants();
         StaticDatas.SaveDatas();
     }
@@ -422,5 +321,22 @@ public class MyShop : MonoBehaviour
     {
         SellWindowState(false);
         if (canvasGroup != null) StaticDatas.AdjustCanvasGroup(canvasGroup, false);
+    }
+
+    public int GetPriceOfItem(object item)
+    {
+        if (item is Plants)
+            return PlantPR[(Plants)item];
+        else if (item is Fruits)
+            return FruitPR[(Fruits)item];
+        else if (item is a_f_types)
+            return afPR[(a_f_types)item];
+        else if (item is AProducts)
+            return AProductPR[(AProducts)item];
+        else if (item is Products)
+            return ProductPR[(Products)item];
+        else if (item is Items)
+            return ItemPR[(Items)item];
+        else return 0;
     }
 }

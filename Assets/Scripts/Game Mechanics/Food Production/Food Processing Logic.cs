@@ -8,6 +8,7 @@ public class FoodPL : MonoBehaviour
 {
     public static FoodPL instance;
     public List<TheFood> materials;
+    private List<TheFood> OriginalMaterials;
     public List<FoodLevelSystem> lSystem;
     public Animator anim;
 
@@ -57,6 +58,7 @@ public class FoodPL : MonoBehaviour
 
         mBtn.onClick.RemoveAllListeners();
         mBtn.onClick.AddListener(() => PopulateMatHolder());
+        OriginalMaterials = new List<TheFood>(materials);
         SetImages();
         changeFood();
         PopulateSchedule();
@@ -109,6 +111,8 @@ public class FoodPL : MonoBehaviour
                 WaterSL.instance.anim.SetBool("Open Water Details", false);
             if (Storage.instance.anim.GetBool("Open Storage"))
                 Storage.instance.anim.SetBool("Open Storage", false);
+            if (TasksLogic.instance.anim.GetBool("Open Task Board"))
+                TasksLogic.instance.anim.SetBool("Open Task Board", false);
             if (anim.GetBool("Open Upgrade"))
                     CloseUpgrade();
                 else if (anim.GetBool("Open MH"))
@@ -174,7 +178,7 @@ public class FoodPL : MonoBehaviour
         {
             if (Storage.instance.hasEnought(tf.material, tf.reqAmount, true) && StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count < StaticDatas.PlayerData.PlayerInfos.Food.qLimit)
             {
-                Storage.instance.UpdatePlantCount(tf.material, -tf.reqAmount);
+                Storage.instance.UpdateThingCount(tf.material, -tf.reqAmount);
 
                 TheFood newItem = tf.Clone();
                 newItem.PrState = PlantState.Growing;
@@ -251,7 +255,7 @@ public class FoodPL : MonoBehaviour
                         var proto = materials.Find(e => e.material == StaticDatas.PlayerData.PlayerInfos.Food.materials[i].material);
                         TheFood tf = proto.Clone();
                         Debug.Log($"in popmatholder: Food {tf.Food} \n material {tf.material}");
-                        if (StaticDatas.PlayerData.unlocked_items.u_plants.Find(e => e.plant == tf.material).owned)
+                        if (StaticDatas.PlayerData.unlocked_items.u_plants.Contains(tf.material))
                         {
                             GameObject dublicate = Instantiate(materialPrefab, mholder);
                             dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant == tf.material).sprite;
@@ -335,11 +339,14 @@ public class FoodPL : MonoBehaviour
             {
                 StaticDatas.PlayerData.PlayerInfos.Food.qLimit++;
                 MoneySystem.instance.UpdateCoin(-sPrices[StaticDatas.PlayerData.PlayerInfos.Food.qLimit - 2], out bool s);
+                MoneySystem.instance.UpdateXp(StaticDatas.PlayerData.PlayerInfos.Food.qLimit * 20);
                 Transform child = qholder.Find("Buy Slot");
-                StaticDatas.SaveDatas();
                 if (child != null) Destroy(child.gameObject);
                 PopulateSchedule();
-                LuckyBox.instance.TryToFindBox();
+                LuckyBox.instance.TryToFindBox(0.3f * StaticDatas.PlayerData.PlayerInfos.Food.qLimit);
+                mBtn.onClick.RemoveAllListeners();
+                mBtn.onClick.AddListener(() => PopulateMatHolder());
+                StaticDatas.SaveDatas();
             }
         }
 
@@ -354,7 +361,7 @@ public class FoodPL : MonoBehaviour
             if (!anim.GetBool("Open Upgrade") && StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].PrState == PlantState.ReadyToHarvest &&
                 Storage.instance.hasEnStorage(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].collectAmount))
             {
-                Storage.instance.UpdateAnimalFood(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].Food, StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].collectAmount);
+                Storage.instance.UpdateThingCount(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].Food, StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].collectAmount);
                 MoneySystem.instance.UpdateXp(StaticDatas.PlayerData.PlayerInfos.Food.xp);
                 queue[StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count - 1].transform.Find("Item").GetComponent<Image>().enabled = false;
                 StaticDatas.PlayerData.PlayerInfos.Food.InQueue.RemoveAt(0);
@@ -366,22 +373,11 @@ public class FoodPL : MonoBehaviour
                 StaticDatas.SaveDatas();
                 mBtn.onClick.RemoveAllListeners();
                 mBtn.onClick.AddListener(() => PopulateMatHolder());
-                LuckyBox.instance.TryToFindBox();
+                LuckyBox.instance.TryToFindBox(0.3f);
                 PopulateSchedule();
             }
             //else if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count < StaticDatas.PlayerData.PlayerInfos.Food.qLimit) PopulateMatHolder();
         }
-
-        public bool hasEnoughFood(a_f_types type, int amount, bool push)
-    {
-        if (StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == type) != null &&
-            StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == type).amount >= amount)
-            return true;
-        else{
-            if(push) PushNotice.instance.Push($"No Enough {type.ToString()} Animal Food", PushType.Alert);
-            return false;
-        }
-    }
     #endregion
 
     #region Upgrage System
@@ -403,14 +399,17 @@ public class FoodPL : MonoBehaviour
                         priceText.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].price.ToString();
                     }
                     else FinishLevel();
-                    LuckyBox.instance.TryToFindBox();
+
+                    if (lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].currency == Currency.Coin)
+                        MoneySystem.instance.UpdateCoin(-lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].price, out bool s);
+                    else if (lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].currency == Currency.Crystal)
+                        MoneySystem.instance.UpdateCyrstal(-lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].price, out bool s);
+                    MoneySystem.instance.UpdateXp(lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].xp);
+
+                    LuckyBox.instance.TryToFindBox(0.5f * StaticDatas.PlayerData.PlayerInfos.FoodLevel);
                 }
                 else return;
 
-                if (lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].currency == Currency.Coin)
-                    MoneySystem.instance.UpdateCoin(-lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].price, out bool s);
-                else if (lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].currency == Currency.Crystal)
-                    MoneySystem.instance.UpdateCyrstal(-lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].price, out bool s);
             }
         }
 
@@ -423,11 +422,11 @@ public class FoodPL : MonoBehaviour
             {
                 cPTD.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].progTimerDec.ToString() + "%";
                 cFTI.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].foodTimerInc.ToString() + "%";
-                cPrX.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].productionX.ToString() + "x";
+                cPrX.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].productionX.ToString();
 
                 nPTD.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].progTimerDec.ToString() + "%";
                 nFTI.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].foodTimerInc.ToString() + "%";
-                nPrX.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].productionX.ToString() + "x";
+                nPrX.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].productionX.ToString();
 
                 NextWell.sprite = MachineImages[StaticDatas.PlayerData.PlayerInfos.FoodLevel];
             }
@@ -478,9 +477,9 @@ public class FoodPL : MonoBehaviour
         {
             TheFood f = new TheFood()
             {
-                pTimer = materials[i].pTimer - (((materials[i].pTimer) / 100) * lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].progTimerDec),
-                foodTimer = materials[i].foodTimer + (((materials[i].foodTimer) / 100) * lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].foodTimerInc),
-                collectAmount = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].productionX
+                pTimer = OriginalMaterials[i].pTimer - (((materials[i].pTimer) / 100) * lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].progTimerDec),
+                foodTimer = OriginalMaterials[i].foodTimer + (((materials[i].foodTimer) / 100) * lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].foodTimerInc),
+                collectAmount = OriginalMaterials[i].collectAmount * lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel - 1].productionX
             };
             materials[i].pTimer = f.pTimer;
             materials[i].foodTimer = f.foodTimer;

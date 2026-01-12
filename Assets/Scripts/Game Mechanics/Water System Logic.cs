@@ -52,6 +52,7 @@ public class WaterSL : MonoBehaviour
         instance = this;
         StaticDatas.LoadDatas();
         SetImages(); CheckLevel();
+        transform.Find("Water Well/Holder Colored/Details/Tap Value").gameObject.SetActive(false);
     }
 
     private void Update()
@@ -72,6 +73,7 @@ public class WaterSL : MonoBehaviour
             finalReturn = 0;
             increasement = baseInc;
             tcd = false;
+            transform.Find("Water Well/Holder Colored/Details/Tap Value").gameObject.SetActive(false);
         }
     }
 
@@ -82,6 +84,8 @@ public class WaterSL : MonoBehaviour
             FoodPL.instance.anim.SetBool("Open Details", false);
         if (Storage.instance.anim.GetBool("Open Storage"))
             Storage.instance.anim.SetBool("Open Storage", false);
+        if (TasksLogic.instance.anim.GetBool("Open Task Board"))
+            TasksLogic.instance.anim.SetBool("Open Task Board", false);
         if (isAnTrue("Open Water Details"))
             CloseUpgrade();
         anim.SetBool(id, !anim.GetBool(id));
@@ -139,14 +143,14 @@ public class WaterSL : MonoBehaviour
                     priceText.text = WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel].price.ToString();
                 }
                 else FinishLevel();
-                LuckyBox.instance.TryToFindBox();
+                if (WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel - 1].currency == Currency.Coin)
+                    MoneySystem.instance.UpdateCoin(-WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel - 1].price, out bool s);
+                else if (WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel - 1].currency == Currency.Crystal)
+                    MoneySystem.instance.UpdateCyrstal(-WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel - 1].price, out bool s);
+                MoneySystem.instance.UpdateXp(30 * StaticDatas.PlayerData.PlayerInfos.WellLevel);
+                LuckyBox.instance.TryToFindBox(0.5f * StaticDatas.PlayerData.PlayerInfos.WellLevel);
             }
             else return;
-
-            if (WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel - 1].currency == Currency.Coin)
-                MoneySystem.instance.UpdateCoin(-WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel - 1].price, out bool s);
-            else if (WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel - 1].currency == Currency.Crystal)
-                MoneySystem.instance.UpdateCyrstal(-WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel - 1].price, out bool s);
         }
     }
 
@@ -272,6 +276,11 @@ public class WaterSL : MonoBehaviour
         else if (amount < 0)
             anim.SetTrigger("Remove Water");
         UpdateWaterAmount();
+        for (int i = 0; i < FarmLogic.instance.Slots.Count; i++)
+            if (FarmLogic.instance.Slots[i].GetComponent<FarmingTS>().landstate == LandState.Planted && !FarmLogic.instance.Slots[i].GetComponent<FarmingTS>().ThePlant.hasWater)
+                FarmLogic.instance.Slots[i].GetComponent<FarmingTS>().CalculateReqWater();
+        for (int i = 0; i < ForestLogic.instance.Slots.Count; i++)
+            ForestLogic.instance.Slots[i].GetComponent<TreeSlot>().LoadUI();
     }
 
     public void UpdateWaterAmount()
@@ -296,11 +305,13 @@ public class WaterSL : MonoBehaviour
             finalReturn += increasement; // each tap contributes
             increasement += 0.01f;
             float showFR = MathF.Round(finalReturn, 2);
+            transform.Find("Water Well/Holder Colored/Details/Tap Value").gameObject.SetActive(true);
             transform.Find("Water Well/Holder Colored/Details/Tap Value").GetComponent<TextMeshProUGUI>().text = showFR.ToString();
             if (finalReturn >= 1f)
             {
                 int waterGained = Mathf.FloorToInt(finalReturn);
                 TriggerAmount(waterGained);
+                MoneySystem.instance.UpdateXp(1);
                 finalReturn -= waterGained;
                 increasement -= 0.1f;
             }

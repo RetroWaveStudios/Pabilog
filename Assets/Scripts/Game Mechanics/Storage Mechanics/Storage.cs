@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -38,6 +38,8 @@ public class Storage : MonoBehaviour
             WaterSL.instance.anim.SetBool("Open Water Details", false);
         if (FoodPL.instance.anim.GetBool("Open Details"))
             FoodPL.instance.anim.SetBool("Open Details", false);
+        if (TasksLogic.instance.anim.GetBool("Open Task Board"))
+            TasksLogic.instance.anim.SetBool("Open Task Board", false);
         int id = Animator.StringToHash("Open Storage");
         anim.SetBool("Open Storage", !anim.GetBool(id));
     }
@@ -91,6 +93,10 @@ public class Storage : MonoBehaviour
 
         AdjustMainHolder();
         UpdateCountInBox();
+        if(PlantsHolder.instance != null)
+            PlantsHolder.instance.PopulatePlantsHolder();
+        if (TasksLogic.instance != null)
+            TasksLogic.instance.CheckTasks();
     }
 
     private void reArrangeItem(Transform item)
@@ -209,6 +215,11 @@ public class Storage : MonoBehaviour
                 if (s.fruit == (Fruits)item) { Debug.Log($"item found: {(Fruits)item} count: {s.count}"); return s.count; }
             }
 
+            else if (s.category == Category.AnimalFood && item is a_f_types)
+            {
+                if(s.Food == (a_f_types)item) { Debug.Log($"item found: {(a_f_types)item} count: {s.count}"); return s.count; }
+            }
+
             else if (s.category == Category.AProducts && item is AProducts)
             {
                 if (s.animal_product == (AProducts)item) { Debug.Log($"item found: {(AProducts)item} count: {s.count}"); return s.count; }
@@ -227,7 +238,23 @@ public class Storage : MonoBehaviour
         return 0;
     }
 
-    public void UpdatePlantCount(Plants plant, int count)
+    public void UpdateThingCount(object item, int count)
+    {
+        if (item is Plants)
+            UpdatePlantCount((Plants)item, count);
+        else if (item is Fruits)
+            UpdateFruitCount((Fruits)item, count);
+        else if (item is a_f_types)
+            UpdateAnimalFood((a_f_types)item, count);
+        else if (item is AProducts)
+            UpdateAPCount((AProducts)item, count);
+        else if (item is Products)
+            UpdateProductCount((Products)item, count);
+        else if (item is Items)
+            UpdateItemCount((Items)item, count);
+    }
+
+    private void UpdatePlantCount(Plants plant, int count)
     {
         // Find existing entry
         if (StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == plant) == null)
@@ -241,7 +268,7 @@ public class Storage : MonoBehaviour
         PopulateBoxItems();
     }
 
-    public void UpdateFruitCount(Fruits fruit, int count)
+    private void UpdateFruitCount(Fruits fruit, int count)
     {
         // Find existing entry
         if (StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == fruit) == null)
@@ -255,7 +282,7 @@ public class Storage : MonoBehaviour
         PopulateBoxItems();
     }
 
-    public void UpdateAPCount(AProducts ap, int count)
+    private void UpdateAPCount(AProducts ap, int count)
     {
         // Find existing entry
         if (StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == ap) == null)
@@ -270,7 +297,7 @@ public class Storage : MonoBehaviour
         PopulateBoxItems();
     }
 
-    public void UpdateProductCount(Products pr, int count)
+    private void UpdateProductCount(Products pr, int count)
     {
         // Find existing entry
         if (StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == pr) == null)
@@ -285,7 +312,7 @@ public class Storage : MonoBehaviour
         PopulateBoxItems();
     }
 
-    public void UpdateItemCount(Items item, int count)
+    private void UpdateItemCount(Items item, int count)
     {
         // Find existing entry
         if (StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == item) == null)
@@ -303,7 +330,7 @@ public class Storage : MonoBehaviour
             if (ProductionLogic.instance.Machines[i].GetComponent<Machine>().mStats.state == ASpotState.Broken) ProductionLogic.instance.Machines[i].GetComponent<Machine>().PopulateFixers();
     }
 
-    public void UpdateAnimalFood(a_f_types food, int amount)
+    private void UpdateAnimalFood(a_f_types food, int amount)
     {
         bool add = false;
         if (StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == food) == null){
@@ -370,6 +397,7 @@ public class Storage : MonoBehaviour
             if (s == null) { Debug.Log("s is null"); return false; }
             if (s.category == Category.Plants && item is Plants) { if (s.plant == (Plants)item && s.count >= count) return true; }
             else if (s.category == Category.Fruits && item is Fruits) { if (s.fruit == (Fruits)item && s.count >= count) return true; }
+            else if (s.category == Category.AnimalFood && item is a_f_types) { if (s.Food == (a_f_types)item && s.count >= count) return true; }
             else if (s.category == Category.AProducts && item is AProducts){ if (s.animal_product == (AProducts)item && s.count >= count) return true; }
             else if (s.category == Category.Products && item is Products){ if (s.product == (Products)item && s.count >= count)  return true; }
             else if (s.category == Category.Items && item is Items){ if(s.item == (Items)item && s.count >= count) return true; }

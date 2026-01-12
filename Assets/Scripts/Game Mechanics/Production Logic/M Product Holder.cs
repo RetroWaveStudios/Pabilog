@@ -23,8 +23,7 @@ public class MachinePH : MonoBehaviour
         foreach(Transform item in Holder) Destroy(item.gameObject);
         for (int i = 0; i < mp.products.Count; i++)
         {
-            if (StaticDatas.PlayerData.unlocked_items.u_Products.Find(e => e.Product == mp.products[i].product) != null &&
-                StaticDatas.PlayerData.unlocked_items.u_Products.Find(e => e.Product == mp.products[i].product).owned &&
+            if (StaticDatas.PlayerData.unlocked_items.u_Products.Contains(mp.products[i].product) &&
                 Sprites.instance.sprites.products.Find(e => e.product == mp.products[i].product) != null)
             {
                 Products p = mp.products[i].product;

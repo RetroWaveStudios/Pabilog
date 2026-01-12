@@ -73,7 +73,7 @@ public class ShopItem : MonoBehaviour
     public void SetItem()
     {
         MyShop.instance.SellWindowState(true);
-        MyShop.instance.PopulateHodler();
+        MyShop.instance.PopulateHodler(MyShop.instance.SellItemHolder);
         MyShop.instance.ssNumber = ssNumber;
     }
 

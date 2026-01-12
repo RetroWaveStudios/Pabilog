@@ -37,11 +37,11 @@ public class AHolder : MonoBehaviour
     {
         allAnimals = new();
         foreach (Transform item in Holder) Destroy(item.gameObject);
-        for (int i = 0; i < StaticDatas.PlayerData.unlocked_items.u_animals.Count; i++)
-        {
-            Animals a = StaticDatas.PlayerData.unlocked_items.u_animals[i].animal;
-            if (StaticDatas.PlayerData.unlocked_items.u_animals[i].owned)
+
+        if (StaticDatas.PlayerData.unlocked_items.u_animals != null || StaticDatas.PlayerData.unlocked_items.u_animals.Count > 0)
+            for (int i = 0; i < StaticDatas.PlayerData.unlocked_items.u_animals.Count; i++)
             {
+                Animals a = StaticDatas.PlayerData.unlocked_items.u_animals[i];
                 GameObject dublicate = Instantiate(A_P_Prefab, Holder);
                 dublicate.transform.name = a.ToString();
 
@@ -70,11 +70,11 @@ public class AHolder : MonoBehaviour
                 button.onClick.AddListener(() => ans.BuyAnimal(a));
                 allAnimals.Add(dublicate);
             }
-        }
     }
 
     private void ChooseProduct(Animals animal)
     {
+        Debug.Log($"{animal} sent for product choosing");
         allProducts = new();
         foreach (Transform item in Holder) Destroy(item.gameObject);
         foreach (var item in products)
@@ -85,7 +85,10 @@ public class AHolder : MonoBehaviour
                 int index = 0;
                 foreach (var ap in animalProducts)
                 {
-                    if(ap != AProducts.None){
+                    Debug.Log($"checking if animal product {ap} is unlocked");
+                    if (ap != AProducts.None && StaticDatas.PlayerData.unlocked_items.u_a_products.Contains(ap))
+                    {
+                        Debug.Log($"animal product {ap} is unlocked");
                         GameObject dublicate = Instantiate(A_P_Prefab, Holder);
                         dublicate.transform.name = ap.ToString();
 

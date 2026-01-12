@@ -24,37 +24,36 @@ public class PlantsHolder : MonoBehaviour
         PlantsInPH = new();
         int hindex = 0;
         foreach (Transform item in ph) Destroy(item.gameObject);
-        for (int i = 0; i < StaticDatas.PlayerData.unlocked_items.u_plants.Count; i++)
-        {
-            if (StaticDatas.PlayerData.unlocked_items.u_plants[i].owned)
+
+        if (StaticDatas.PlayerData.unlocked_items.u_plants != null || StaticDatas.PlayerData.unlocked_items.u_plants.Count > 0)
+            for (int i = 0; i < StaticDatas.PlayerData.unlocked_items.u_plants.Count; i++)
             {
-                Plants p = StaticDatas.PlayerData.unlocked_items.u_plants[i].plant;
-                Debug.Log("working on Plant " + p);
-                GameObject dublicate = Instantiate(PlantPrefab, ph);
-                dublicate.transform.name = p.ToString();
+                Plants p = StaticDatas.PlayerData.unlocked_items.u_plants[i];
+                    Debug.Log("working on Plant " + p);
+                    GameObject dublicate = Instantiate(PlantPrefab, ph);
+                    dublicate.transform.name = p.ToString();
 
-                Button button = dublicate.GetComponent<Button>();
-                button.onClick.RemoveAllListeners();
-                int chosen = hindex;
-                button.onClick.AddListener(() => PHChoosePlant(chosen, p));
+                    Button button = dublicate.GetComponent<Button>();
+                    button.onClick.RemoveAllListeners();
+                    int chosen = hindex;
+                    button.onClick.AddListener(() => PHChoosePlant(chosen, p));
 
-                dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant == p).sprite;
+                    dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant == p).sprite;
 
-                #region Info Button detailing
-                    GameObject ib = Instantiate(Sprites.instance.InfoButtonPrefab, dublicate.transform);
-                    RectTransform ibrts = ib.GetComponent<RectTransform>();
-                    ibrts.anchoredPosition = new Vector2(0, 10);
-                    ibrts.anchorMax = new Vector2(0.5f, 1);
-                    ibrts.anchorMin = new Vector2(0.5f, 1);
-                    ib.GetComponent<InfoDetails>().btn.onClick.RemoveAllListeners();
-                    ib.GetComponent<InfoDetails>().btn.onClick.AddListener(() => ib.GetComponent<InfoDetails>().DetailsOnOff("CT", "Item", p, null, chosen));
-                #endregion
+                    #region Info Button detailing
+                        GameObject ib = Instantiate(Sprites.instance.InfoButtonPrefab, dublicate.transform);
+                        RectTransform ibrts = ib.GetComponent<RectTransform>();
+                        ibrts.anchoredPosition = new Vector2(0, 10);
+                        ibrts.anchorMax = new Vector2(0.5f, 1);
+                        ibrts.anchorMin = new Vector2(0.5f, 1);
+                        ib.GetComponent<InfoDetails>().btn.onClick.RemoveAllListeners();
+                        ib.GetComponent<InfoDetails>().btn.onClick.AddListener(() => ib.GetComponent<InfoDetails>().DetailsOnOff("CT", "Item", p, null, chosen));
+                    #endregion
 
-                PlantsInPH.Add(dublicate);
-                UpdateCountOfPlants();
-                hindex++;
+                    PlantsInPH.Add(dublicate);
+                    UpdateCountOfPlants();
+                    hindex++;
             }
-        }
 
         GridLayoutGroup glg = ph.GetComponent<GridLayoutGroup>();
         RectTransform rts = ph.GetComponent<RectTransform>();
