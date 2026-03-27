@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -153,8 +154,7 @@ public class FoodPL : MonoBehaviour
                 Debug.Log($"Setting to {!anim.GetBool("Open Upgrade")}");
                 anim.SetBool("Open Upgrade", true);
                 mBtn.onClick.RemoveAllListeners();
-                priceImage.sprite = Sprites.instance.sprites.currencies.
-                    Find(e => e.Currency == lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].currency).sprite;
+                priceImage.sprite = Sprites.instance.GetSpriteFromSource(lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].currency);
                 priceText.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].price.ToString();
             }
             else
@@ -191,7 +191,7 @@ public class FoodPL : MonoBehaviour
                 }
                 else
                 {
-                    DateTime lastFinish = DateTime.Parse(inqueue[inqueue.Count - 1].fillTime, null, System.Globalization.DateTimeStyles.RoundtripKind);
+                    bool passed = StaticDatas.TryGetStartTime(inqueue[inqueue.Count - 1].fillTime, "Food", out DateTime lastFinish);
                     newItem.fillTime = lastFinish.AddMinutes(inqueue[inqueue.Count - 1].pTimer).ToString("o");
                 }
 
@@ -201,7 +201,7 @@ public class FoodPL : MonoBehaviour
                 StaticDatas.SaveDatas();
 
                 queue[StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count - 1].transform.Find("Item").GetComponent<Image>().sprite =
-                    Sprites.instance.sprites.AnimalFoodSprites.Find(e => e.food == tf.Food).sprite;
+                    Sprites.instance.GetSpriteFromSource(tf.Food);
                 queue[StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count - 1].transform.Find("Item").GetComponent<Image>().enabled = true;
                 if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count >= StaticDatas.PlayerData.PlayerInfos.Food.qLimit){
                     PopulateMatHolder();
@@ -213,12 +213,11 @@ public class FoodPL : MonoBehaviour
 
         private void CheckGrowth()
         {
-            DateTime startTime;
-            if (!StaticDatas.TryGetStartTime(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].fillTime, "Food Timer", out startTime)) return;
-
-            TimeSpan elapsed = DateTime.UtcNow - startTime;
-            double elapsedMinutes = elapsed.TotalMinutes;
-            if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].PrState == PlantState.Growing && elapsedMinutes > StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].pTimer)
+            double elapsedMinutes;
+            if (!StaticDatas.ElapsedMinutes(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].fillTime, "Food Timer", out elapsedMinutes)) return;
+            CalculateSkipCost(out int cost);
+            if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].PrState == PlantState.Growing && elapsedMinutes >
+            StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].pTimer)
             {
                 StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].PrState = PlantState.ReadyToHarvest;
                 Debug.Log("Plant state set to ready");
@@ -258,7 +257,7 @@ public class FoodPL : MonoBehaviour
                         if (StaticDatas.PlayerData.unlocked_items.u_plants.Contains(tf.material))
                         {
                             GameObject dublicate = Instantiate(materialPrefab, mholder);
-                            dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant == tf.material).sprite;
+                            dublicate.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(tf.material);
                             dublicate.GetComponent<RectTransform>().sizeDelta = new Vector2(65, 65);
                             dublicate.transform.Find("Price").gameObject.SetActive(false);
 
@@ -289,9 +288,20 @@ public class FoodPL : MonoBehaviour
                 {
                     dublicate.transform.name = "Animal Food";
                     dublicate.transform.Find("Item").GetComponent<Image>().enabled = true;
-                    dublicate.transform.Find("Item").GetComponent<Image>().sprite = Sprites.instance.sprites.AnimalFoodSprites.Find(e => e.food ==
-                        StaticDatas.PlayerData.PlayerInfos.Food.InQueue[i].Food).sprite;
+                    dublicate.transform.Find("Item").GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[i].Food);
                     dublicate.transform.Find("Price").gameObject.SetActive(false);
+
+                    #region Skip Button
+                        Transform skip = dublicate.transform.Find("Price");
+                        skip.name = "Skip Button";
+                        skip.gameObject.SetActive(true);
+                        skip.Find("Icon").GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(Currency.Crystal);
+                        RectTransform srts = skip.GetComponent<RectTransform>();
+                        skip.GetComponent<Button>().onClick.RemoveAllListeners();
+                        skip.GetComponent<Button>().onClick.AddListener(() => SkipFood());
+
+                        if(i > 0 || StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].PrState != PlantState.Growing) skip.gameObject.SetActive(false);
+                    #endregion
                 }
                 else
                 {
@@ -303,16 +313,42 @@ public class FoodPL : MonoBehaviour
                 dublicate.GetComponent<RectTransform>().localScale = new Vector3(1 - (float)(i * 0.08), 1 - (float)(i * 0.08), 1 - (float)(i * 0.08));
                 Debug.Log($"slot added to queue");
                 queue.Add(dublicate);
+                CalculateSkipCost(out int cost);
             }
-            int add = 0;
-            if (StaticDatas.PlayerData.PlayerInfos.Food.qLimit < 4)
+                int add = 0;
+                if (StaticDatas.PlayerData.PlayerInfos.Food.qLimit < 4)
+                {
+                    Debug.Log($"adding addbuyslot");
+                    AddBuySlot(); add = 1;
+                }
+                RectTransform rts = qholder.GetComponent<RectTransform>();
+                HorizontalLayoutGroup hlg = qholder.GetComponent<HorizontalLayoutGroup>();
+                rts.sizeDelta = new Vector2(((StaticDatas.PlayerData.PlayerInfos.Food.qLimit + add) * 80) + (hlg.padding.left * 2) + (StaticDatas.PlayerData.PlayerInfos.Food.qLimit * hlg.spacing), 100);
+            }
+
+        private void CalculateSkipCost(out int cost)
+        {
+            cost = 0;
+            if(StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count > 0)
             {
-                Debug.Log($"adding addbuyslot");
-                AddBuySlot(); add = 1;
+                Debug.Log($"StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].pTimer = {StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].pTimer}");
+                cost = StaticDatas.FindSkipCost(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].fillTime, "Food", StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].pTimer);
+                Debug.Log($"cost = {cost}");
+                queue[0].transform.Find("Skip Button/Price Text").GetComponent<TextMeshProUGUI>().text = cost.ToString();
             }
-            RectTransform rts = qholder.GetComponent<RectTransform>();
-            HorizontalLayoutGroup hlg = qholder.GetComponent<HorizontalLayoutGroup>();
-            rts.sizeDelta = new Vector2(((StaticDatas.PlayerData.PlayerInfos.Food.qLimit + add) * 80) + (hlg.padding.left * 2) + (StaticDatas.PlayerData.PlayerInfos.Food.qLimit * hlg.spacing), 100);
+        }
+
+        private void SkipFood()
+        {
+            CalculateSkipCost(out int cost);
+            if (MoneySystem.instance.hasEnough(Currency.Crystal, cost))
+            {
+                MoneySystem.instance.UpdateCyrstal(-cost, out bool enought);
+                StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].PrState = PlantState.ReadyToHarvest;
+                if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue.Count > 1) StaticDatas.PlayerData.PlayerInfos.Food.InQueue[1].fillTime = DateTime.UtcNow.ToString("o");
+                queue[0].transform.Find("Skip Button").gameObject.SetActive(false);
+                LoadUI();
+            }
         }
 
         private void AddBuySlot()
@@ -394,8 +430,7 @@ public class FoodPL : MonoBehaviour
                         changeFood();
                         SetImages();
                         StaticDatas.SaveDatas();
-                        priceImage.sprite = Sprites.instance.sprites.currencies.
-                            Find(e => e.Currency == lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].currency).sprite;
+                        priceImage.sprite = Sprites.instance.GetSpriteFromSource(lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].currency);
                         priceText.text = lSystem[StaticDatas.PlayerData.PlayerInfos.FoodLevel].price.ToString();
                     }
                     else FinishLevel();

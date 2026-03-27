@@ -144,7 +144,7 @@ public class ATask : MonoBehaviour
         MoneySystem.instance.UpdateXp(task.Xp);
 
         LuckyBox.instance.TryToFindBox(1f);
-
+        TasksLogic.instance.CompleteTask();
         DeleteTask();
     }
 

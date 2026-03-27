@@ -170,9 +170,19 @@ public class Machine : MonoBehaviour
                 dublicate.transform.name = mStats.queue[i].name;
                 dublicate.transform.Find("Item").GetComponent<Image>().enabled = true;
                 dublicate.transform.Find("Item").GetComponent<Image>().sprite =
-                    Sprites.instance.sprites.products.Find(e => e.product == mStats.queue[i].product).sprite;
+                Sprites.instance.GetSpriteFromSource(mStats.queue[i].product);
 
-                dublicate.transform.Find("Price").gameObject.SetActive(false);
+                #region Skip Button
+                    Transform skip = dublicate.transform.Find("Price");
+                    skip.name = "Skip Button";
+                    skip.gameObject.SetActive(true);
+                    skip.Find("Icon").GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(Currency.Crystal);
+                    RectTransform srts = skip.GetComponent<RectTransform>();
+                    skip.GetComponent<Button>().onClick.RemoveAllListeners();
+                    skip.GetComponent<Button>().onClick.AddListener(() => SkipProduct());
+
+                    if (i > 0 || mStats.queue[0].state != AState.Fertilizing) skip.gameObject.SetActive(false);
+                #endregion
             }
             else
             {
@@ -205,6 +215,32 @@ public class Machine : MonoBehaviour
 
         qEditing = false;
         LoadUI();
+    }
+
+    private void CalculateSkipCost(out int cost)
+    {
+        cost = 0;
+        if (mStats.queue.Count > 0)
+        {
+            Debug.Log($"mStats.queue[0].prTimer = {mStats.queue[0].prTimer}");
+            cost = StaticDatas.FindSkipCost(mStats.queue[0].Time, "Food", mStats.queue[0].prTimer);
+            Debug.Log($"cost = {cost}");
+            queue[0].transform.Find("Skip Button/Price Text").GetComponent<TextMeshProUGUI>().text = cost.ToString();
+        }
+    }
+
+    private void SkipProduct()
+    {
+        CalculateSkipCost(out int cost);
+        if (MoneySystem.instance.hasEnough(Currency.Crystal, cost))
+        {
+            MoneySystem.instance.UpdateCyrstal(-cost, out bool enought);
+            mStats.queue[0].state = AState.ReadyToCollect;
+            if (mStats.queue.Count > 1) mStats.queue[1].Time = DateTime.UtcNow.ToString("o");
+            queue[0].transform.Find("Skip Button").gameObject.SetActive(false);
+            prChoosed = false;
+            LoadUI();
+        }
     }
 
     private void AddBuySlot()
@@ -269,7 +305,7 @@ public class Machine : MonoBehaviour
             GameObject dublicate = Instantiate(prPrefab, prHolder);
             dublicate.transform.name = c_product.p_Used[i].Plant.ToString();
             dublicate.transform.Find("The Product").GetComponent<Image>().sprite =
-                Sprites.instance.sprites.plants.Find(e => e.plant == c_product.p_Used[i].Plant).sprite;
+                Sprites.instance.GetSpriteFromSource(c_product.p_Used[i].Plant);
 
             Transform count = dublicate.transform.Find("Count Text");
             count.GetComponent<TextMeshProUGUI>().text = c_product.p_Used[i].count.ToString();
@@ -286,7 +322,7 @@ public class Machine : MonoBehaviour
             GameObject dublicate = Instantiate(prPrefab, prHolder);
             dublicate.transform.name = c_product.f_used[i].Fruit.ToString();
             dublicate.transform.Find("The Product").GetComponent<Image>().sprite =
-                Sprites.instance.sprites.fruits.Find(e => e.fruit == c_product.f_used[i].Fruit).sprite;
+                Sprites.instance.GetSpriteFromSource(c_product.f_used[i].Fruit);
 
             Transform count = dublicate.transform.Find("Count Text");
             count.GetComponent<TextMeshProUGUI>().text = c_product.f_used[i].count.ToString();
@@ -303,7 +339,7 @@ public class Machine : MonoBehaviour
             GameObject dublicate = Instantiate(prPrefab, prHolder);
             dublicate.transform.name = c_product.ap_Used[i].animal_products.ToString();
             dublicate.transform.Find("The Product").GetComponent<Image>().sprite =
-                Sprites.instance.sprites.a_products.Find(e => e.a_product == c_product.ap_Used[i].animal_products).sprite;
+                Sprites.instance.GetSpriteFromSource(c_product.ap_Used[i].animal_products);
 
             Transform count = dublicate.transform.Find("Count Text");
             count.GetComponent<TextMeshProUGUI>().text = c_product.ap_Used[i].count.ToString();
@@ -320,7 +356,7 @@ public class Machine : MonoBehaviour
             GameObject dublicate = Instantiate(prPrefab, prHolder);
             dublicate.transform.name = c_product.pr_Used[i].product.ToString();
             dublicate.transform.Find("The Product").GetComponent<Image>().sprite =
-                Sprites.instance.sprites.products.Find(e => e.product == c_product.pr_Used[i].product).sprite;
+                Sprites.instance.GetSpriteFromSource(c_product.pr_Used[i].product);
 
             Transform count = dublicate.transform.Find("Count Text");
             count.GetComponent<TextMeshProUGUI>().text = c_product.pr_Used[i].count.ToString();
@@ -349,7 +385,7 @@ public class Machine : MonoBehaviour
             {
                 GameObject pr = Instantiate(productPrefab, ShelfHolder);
                 pr.transform.name = TheProduct.p_Used[i].Plant.ToString();
-                pr.GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant == TheProduct.p_Used[i].Plant).sprite;
+                pr.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(TheProduct.p_Used[i].Plant);
                 pr.transform.Find("Details").gameObject.SetActive(false);
                 Destroy(pr.GetComponent<Button>());
             }
@@ -357,7 +393,7 @@ public class Machine : MonoBehaviour
             {
                 GameObject pr = Instantiate(productPrefab, ShelfHolder);
                 pr.transform.name = TheProduct.f_used[i].Fruit.ToString();
-                pr.GetComponent<Image>().sprite = Sprites.instance.sprites.fruits.Find(e => e.fruit == TheProduct.f_used[i].Fruit).sprite;
+                pr.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(TheProduct.f_used[i].Fruit);
                 pr.transform.Find("Details").gameObject.SetActive(false);
                 Destroy(pr.GetComponent<Button>());
             }
@@ -365,7 +401,7 @@ public class Machine : MonoBehaviour
             {
                 GameObject pr = Instantiate(productPrefab, ShelfHolder);
                 pr.transform.name = TheProduct.ap_Used[i].animal_products.ToString();
-                pr.GetComponent<Image>().sprite = Sprites.instance.sprites.a_products.Find(e => e.a_product == TheProduct.ap_Used[i].animal_products).sprite;
+                pr.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(TheProduct.ap_Used[i].animal_products);
                 pr.transform.Find("Details").gameObject.SetActive(false);
                 Destroy(pr.GetComponent<Button>());
             }
@@ -373,7 +409,7 @@ public class Machine : MonoBehaviour
             {
                 GameObject pr = Instantiate(productPrefab, ShelfHolder);
                 pr.transform.name = TheProduct.pr_Used[i].product.ToString();
-                pr.GetComponent<Image>().sprite = Sprites.instance.sprites.products.Find(e => e.product == TheProduct.pr_Used[i].product).sprite;
+                pr.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(TheProduct.pr_Used[i].product);
                 pr.transform.Find("Details").gameObject.SetActive(false);
                 Destroy(pr.GetComponent<Button>());
             }
@@ -425,7 +461,7 @@ public class Machine : MonoBehaviour
 
             inqueue.Add(newItem); // IMPORTANT: add the clone
             queue[mStats.queue.Count - 1].transform.Find("Item").GetComponent<Image>().sprite =
-                Sprites.instance.sprites.products.Find(e => e.product == c_product.product).sprite;
+                Sprites.instance.GetSpriteFromSource(c_product.product);
             queue[mStats.queue.Count - 1].transform.Find("Item").GetComponent<Image>().enabled = true;
             mStats.queue = inqueue;
 
@@ -451,7 +487,7 @@ public class Machine : MonoBehaviour
         TimeSpan elapsed = DateTime.UtcNow - startTime;
         double elapsedMinutes = elapsed.TotalMinutes;
         double totalSeconds = elapsed.TotalSeconds;
-
+        CalculateSkipCost(out int cost);
         /*        
         float progress = Mathf.Clamp01((float)(totalSeconds / (TheProduct.prTimer * 60)));
         Image filler = prImage.GetComponent<Image>();
@@ -522,7 +558,7 @@ public class Machine : MonoBehaviour
             SaveStats();
             PopulateQueue();
             LoadUI();
-            LuckyBox.instance.TryToFindBox(0.5f);
+            LuckyBox.instance.TryToFindBox(0.3f);
         }
     }
 
@@ -582,8 +618,7 @@ public class Machine : MonoBehaviour
         {
             GameObject fixer = Instantiate(prPrefab, transform.Find("Broken Screen/Fixers"));
 
-            fixer.transform.Find("The Product").GetComponent<Image>().sprite =
-                Sprites.instance.sprites.items.Find(e => e.item == fixers[i]).sprite;
+            fixer.transform.Find("The Product").GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(fixers[i]);
             fixer.transform.Find("The Product").GetComponent<RectTransform>().sizeDelta = new Vector2(55, 55);
 
             fixer.transform.Find("Count Text").GetComponent<TextMeshProUGUI>().text = Storage.instance.GetCountOf(fixers[i]) + " / 1";

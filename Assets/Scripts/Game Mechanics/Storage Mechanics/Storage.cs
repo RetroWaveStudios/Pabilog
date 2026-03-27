@@ -241,20 +241,20 @@ public class Storage : MonoBehaviour
     public void UpdateThingCount(object item, int count)
     {
         if (item is Plants)
-            UpdatePlantCount((Plants)item, count);
+            U_PlantCount((Plants)item, count);
         else if (item is Fruits)
-            UpdateFruitCount((Fruits)item, count);
+            U_FruitCount((Fruits)item, count);
         else if (item is a_f_types)
-            UpdateAnimalFood((a_f_types)item, count);
+            U_AnimalFood((a_f_types)item, count);
         else if (item is AProducts)
-            UpdateAPCount((AProducts)item, count);
+            U_APCount((AProducts)item, count);
         else if (item is Products)
-            UpdateProductCount((Products)item, count);
+            U_ProductCount((Products)item, count);
         else if (item is Items)
-            UpdateItemCount((Items)item, count);
+            U_ItemCount((Items)item, count);
     }
 
-    private void UpdatePlantCount(Plants plant, int count)
+    private void U_PlantCount(Plants plant, int count)
     {
         // Find existing entry
         if (StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == plant) == null)
@@ -268,7 +268,7 @@ public class Storage : MonoBehaviour
         PopulateBoxItems();
     }
 
-    private void UpdateFruitCount(Fruits fruit, int count)
+    private void U_FruitCount(Fruits fruit, int count)
     {
         // Find existing entry
         if (StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == fruit) == null)
@@ -282,7 +282,7 @@ public class Storage : MonoBehaviour
         PopulateBoxItems();
     }
 
-    private void UpdateAPCount(AProducts ap, int count)
+    private void U_APCount(AProducts ap, int count)
     {
         // Find existing entry
         if (StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == ap) == null)
@@ -297,7 +297,7 @@ public class Storage : MonoBehaviour
         PopulateBoxItems();
     }
 
-    private void UpdateProductCount(Products pr, int count)
+    private void U_ProductCount(Products pr, int count)
     {
         // Find existing entry
         if (StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == pr) == null)
@@ -312,7 +312,7 @@ public class Storage : MonoBehaviour
         PopulateBoxItems();
     }
 
-    private void UpdateItemCount(Items item, int count)
+    private void U_ItemCount(Items item, int count)
     {
         // Find existing entry
         if (StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == item) == null)
@@ -328,9 +328,10 @@ public class Storage : MonoBehaviour
         PopulateBoxItems();
         for (int i = 0; i < ProductionLogic.instance.Machines.Count; i++)
             if (ProductionLogic.instance.Machines[i].GetComponent<Machine>().mStats.state == ASpotState.Broken) ProductionLogic.instance.Machines[i].GetComponent<Machine>().PopulateFixers();
+        for (int i = 0; i < FarmLogic.instance.Slots.Count; i++) FarmLogic.instance.Slots[i].GetComponent<FarmingTS>().LoadUI();
     }
 
-    private void UpdateAnimalFood(a_f_types food, int amount)
+    private void U_AnimalFood(a_f_types food, int amount)
     {
         bool add = false;
         if (StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == food) == null){
@@ -451,7 +452,7 @@ public class Storage : MonoBehaviour
             GameObject dublicate = Instantiate(itemPrefab, itemOption.transform.Find("Reqs Holder"));
             Destroy(dublicate.GetComponent<Button>());
             dublicate.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 120);
-            dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.items.Find(e => e.item == rItems[i]).sprite;
+            dublicate.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(rItems[i]);
             dublicate.transform.Find("Details").GetComponent<Image>().color = new Color32(0, 0, 0, 150);
             dublicate.transform.Find("Details").GetComponent<RectTransform>().sizeDelta = new Vector2(140, 40);
             dublicate.transform.Find("Details").GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -30, 0);
@@ -475,7 +476,7 @@ public class Storage : MonoBehaviour
         GameObject tbdublicate = Instantiate(itemPrefab, tbOption.transform.Find("Reqs Holder"));
         Destroy(tbdublicate.GetComponent<Button>());
         tbdublicate.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 120);
-        tbdublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.items.Find(e => e.item == Items.ToolSet).sprite;
+        tbdublicate.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(Items.ToolSet);
         tbdublicate.transform.Find("Details").GetComponent<Image>().color = new Color32(0, 0, 0, 150);
         tbdublicate.transform.Find("Details").GetComponent<RectTransform>().sizeDelta = new Vector2(140, 40);
         tbdublicate.transform.Find("Details").GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -30, 0);
@@ -530,11 +531,11 @@ public class Storage : MonoBehaviour
         List<Items> rItems = new List<Items>() { Items.Tape, Items.Pliers, Items.Drill };
         if (index == 0){
             for (int i = 0; i < rItems.Count; i++)
-                UpdateItemCount(rItems[i], -LevelReqs[StaticDatas.PlayerData.StorageLevel].ItemCount);
+                UpdateThingCount(rItems[i], -LevelReqs[StaticDatas.PlayerData.StorageLevel].ItemCount);
             StaticDatas.PlayerData.StorageLevel++;
         }
         else if (index == 1){
-            UpdateItemCount(Items.ToolSet, -LevelReqs[StaticDatas.PlayerData.StorageLevel].ToolSet);
+            UpdateThingCount(Items.ToolSet, -LevelReqs[StaticDatas.PlayerData.StorageLevel].ToolSet);
             StaticDatas.PlayerData.StorageLevel += 2;
         }
         StaticDatas.SaveDatas();

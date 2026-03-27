@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Stone Well Level 1_0: 5461204128957841352
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

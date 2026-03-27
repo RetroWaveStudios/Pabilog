@@ -6,6 +6,7 @@ public class Sprites : MonoBehaviour
     public StorageSprites sprites;
     public Sprite EraseItem;
 
+    public GameObject SkipButton;
     public GameObject InfoButtonPrefab;
 
     private void Awake()

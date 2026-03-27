@@ -448,6 +448,12 @@ public class TasksLogic : MonoBehaviour
         }
     }
 
+    public void CompleteTask()
+    {
+        transform.Find("Tasks Window/Main Holder/Info Holder/Buttons/Send").GetComponent<Button>().onClick.RemoveAllListeners();
+        transform.Find("Tasks Window/Main Holder/Info Holder/Buttons/Delete Task").GetComponent<Button>().onClick.RemoveAllListeners();
+    }
+
     public void CheckTasks()
     {
         for (int i = 0; i < TaskList.Tasks.Count; i++) 

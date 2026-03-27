@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class StaticDatas : MonoBehaviour
 {
     public static PlayerDatas PlayerData;
     public static int save_queue = 0;
+
+    public static int MinutesToSkip = 3;
 
     private void Awake()
     {
@@ -102,6 +105,29 @@ public class StaticDatas : MonoBehaviour
         }
 
         return true; // success
+    }
+
+    public static bool ElapsedMinutes(string timeString, string productName, out double elapsedMinutes)
+    {
+        elapsedMinutes = 0;
+        DateTime startTime;
+        if (!TryGetStartTime(timeString, productName, out startTime)) return false;
+
+        TimeSpan elapsed = DateTime.UtcNow - startTime;
+        elapsedMinutes = Math.Abs(elapsed.TotalMinutes);
+        Debug.Log($"elapsed in em = {elapsedMinutes}");
+        return true;
+    }
+
+    public static int FindSkipCost(string timeString, string productName, double reqTime)
+    {
+        bool enought = ElapsedMinutes(timeString, productName, out double elapsed);
+        int calc = (int)Math.Ceiling((reqTime - elapsed) / MinutesToSkip);
+        float cost = calc - (float)(calc * 0.2f);
+        if (enought)
+            return (int)Math.Ceiling(cost);
+        else 
+            return 0;
     }
 
     public static void AdjustCanvasGroup(CanvasGroup cg, bool onoff)

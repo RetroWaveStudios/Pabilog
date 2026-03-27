@@ -61,26 +61,26 @@ public class FarmLogic : MonoBehaviour
         fts.SlotNumber = i;
         fts.ThePlant = StaticDatas.PlayerData.FarmSlots[i].PlantDetails;
         fts.landstate = StaticDatas.PlayerData.FarmSlots[i].state;
+        fts.AddSkip();
         fts.LoadUI();
         Slots.Add(dublicate);
 
         #region Clean Info Button
-        GameObject cib = Instantiate(SlotPrefab, transform.Find("Info Buttons"));
-        cib.name = StaticDatas.PlayerData.FarmSlots[i].PlantDetails.plant.ToString() + " Info Button";
+            GameObject cib = Instantiate(SlotPrefab, transform.Find("Info Buttons"));
+            cib.name = StaticDatas.PlayerData.FarmSlots[i].PlantDetails.plant.ToString() + " Info Button";
         
-        GameObject ib = Instantiate(Sprites.instance.InfoButtonPrefab, cib.transform);
-        RectTransform ibrts = ib.GetComponent<RectTransform>();
-        ibrts.anchoredPosition = new Vector2(0, 0);
-        ibrts.anchorMax = new Vector2(1, 1);
-        ibrts.anchorMin = new Vector2(1, 1);
-        ib.GetComponent<InfoDetails>().btn.onClick.RemoveAllListeners();
-        ib.GetComponent<InfoDetails>().btn.onClick.AddListener(() => ib.GetComponent<InfoDetails>().DetailsOnOff(GetAnimDirection(i), "Land", null, null, i));
-
-        #region cleaning inside SlotPrefab
-        foreach (Transform item in cib.transform) if (item.name != "Info Button(Clone)") Destroy(item.gameObject);
-        Destroy(cib.GetComponent<Image>());
-        Destroy(cib.GetComponent<Animator>());
-        #endregion
+            GameObject ib = Instantiate(Sprites.instance.InfoButtonPrefab, cib.transform);
+            RectTransform ibrts = ib.GetComponent<RectTransform>();
+            ibrts.anchoredPosition = new Vector2(0, 0);
+            ibrts.anchorMax = new Vector2(1, 1);
+            ibrts.anchorMin = new Vector2(1, 1);
+            ib.GetComponent<InfoDetails>().btn.onClick.RemoveAllListeners();
+            ib.GetComponent<InfoDetails>().btn.onClick.AddListener(() => ib.GetComponent<InfoDetails>().DetailsOnOff(GetAnimDirection(i), "Land", null, null, i));
+            #region cleaning inside SlotPrefab
+                foreach (Transform item in cib.transform) if (item.name != "Info Button(Clone)") Destroy(item.gameObject);
+                Destroy(cib.GetComponent<Image>());
+                Destroy(cib.GetComponent<Animator>());
+            #endregion
         #endregion
     }
 

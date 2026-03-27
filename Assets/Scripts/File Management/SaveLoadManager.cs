@@ -168,24 +168,3 @@ public class SaveLoadManager : MonoBehaviour
         }
     }
 }
-/*
-    "Storage": {
-        "PlantsInStorage": [
-            {
-                "Plant": 0,
-                "count": 13
-            },
-            {
-                "Plant": 1,
-                "count": 10
-            }
-        ],
-        "a_p_inStorage": [
-            {
-                "animal_products": 0,
-                "count": 1
-            }
-        ],
-        "ProductsInStorage": []
-    },
-*/

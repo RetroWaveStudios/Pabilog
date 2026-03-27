@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 4a1a34a6cd3884949a5d09a7a1451732
+guid: 134df70cb3a8c6d4ead34490e5282de7
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6966466284199082451
-    second: Notice Tumpnale_0
+      213: 6047544203564243165
+    second: Skip Button_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Notice Tumpnale_0
+      name: Skip Button_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 2600
-        height: 414
+        width: 743
+        height: 743
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d26049e03d3225f90800000000000000
-      internalID: -6966466284199082451
+      spriteID: dd85be079613de350800000000000000
+      internalID: 6047544203564243165
       vertices: []
       indices: 
       edges: []
@@ -147,8 +147,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      Notice Tumpnale_0: -6966466284199082451
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

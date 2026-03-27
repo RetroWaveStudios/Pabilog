@@ -4136,7 +4136,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -386.2, y: 274.10007}
+  m_AnchoredPosition: {x: -386.2, y: 274.10037}
   m_SizeDelta: {x: 790, y: 548}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &310559751
@@ -12646,8 +12646,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1273446541}
   m_HandleRect: {fileID: 1273446540}
   m_Direction: 2
-  m_Value: -0.00030515715
-  m_Size: 0.99962664
+  m_Value: -0.0015257858
+  m_Size: 0.99961996
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -12828,7 +12828,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -386.2, y: 274.70004}
+  m_AnchoredPosition: {x: -386.2, y: 274.70035}
   m_SizeDelta: {x: 790, y: 548}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &831614703
@@ -15456,7 +15456,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: 1.0601921}
+  m_AnchoredPosition: {x: 0, y: 1.0607018}
   m_SizeDelta: {x: 723, y: 1080.9}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &946802461
@@ -16591,6 +16591,7 @@ MonoBehaviour:
       Currency: 2
       sprite: {fileID: 21300000, guid: bf890154f38ad354aa8ff3379532552d, type: 3}
   EraseItem: {fileID: 21300000, guid: 6383305d765aa8b4aba41b46789edbdd, type: 3}
+  SkipButton: {fileID: 3988546453472414284, guid: d4b9860d48a453d489e405882e8897fc, type: 3}
   InfoButtonPrefab: {fileID: 8836679156702708020, guid: 1c1d6e270a49f1d44936a6bcb0cb7f24, type: 3}
 --- !u!1 &979659748
 GameObject:
@@ -17570,8 +17571,8 @@ MonoBehaviour:
   AddedMoney: 0
   TotalMoneyOnDeal: 0
   TotalMoneyOnMarket: 0
-  YIPersentage: 15
-  OMPersentage: 10
+  YIPersentage: 20
+  OMPersentage: 20
   c_SI: []
   c_MI: []
 --- !u!1 &1020575246
@@ -23063,7 +23064,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 46.300713, y: -50}
+  m_AnchoredPosition: {x: 46.30072, y: -50}
   m_SizeDelta: {x: 90, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1418131644
@@ -24338,7 +24339,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -332.5, y: 11576660}
+  m_AnchoredPosition: {x: -332.5, y: 11945943}
   m_SizeDelta: {x: 664, y: 800}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1501697308
@@ -27201,7 +27202,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 211763094}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.99999166
+  m_Size: 0.999985
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -28199,8 +28200,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1341554300}
   m_HandleRect: {fileID: 1341554299}
   m_Direction: 2
-  m_Value: -0.000115154304
-  m_Size: 0.99900246
+  m_Value: -0.00057570526
+  m_Size: 0.999018
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -31458,14 +31459,6 @@ MonoBehaviour:
     Machine: 01000000
     Coin: 500
     Crystal: 4
-  - Plant: 
-    Trees: 
-    Animal: 
-    AnimalProduct: 
-    Product: 
-    Machine: 
-    Coin: 500
-    Crystal: 4
   - Plant: 06000000
     Trees: 
     Animal: 
@@ -31499,14 +31492,6 @@ MonoBehaviour:
     Coin: 700
     Crystal: 6
   - Plant: 
-    Trees: 
-    Animal: 
-    AnimalProduct: 
-    Product: 
-    Machine: 
-    Coin: 800
-    Crystal: 5
-  - Plant: 
     Trees: 00000000
     Animal: 
     AnimalProduct: 
@@ -31526,7 +31511,7 @@ MonoBehaviour:
     Trees: 
     Animal: 
     AnimalProduct: 
-    Product: 06000000
+    Product: 02000000
     Machine: 
     Coin: 900
     Crystal: 6
@@ -31534,7 +31519,7 @@ MonoBehaviour:
     Trees: 
     Animal: 
     AnimalProduct: 
-    Product: 0200000014000000
+    Product: 0600000014000000
     Machine: 
     Coin: 1000
     Crystal: 7
@@ -31870,7 +31855,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 45}
+  m_AnchoredPosition: {x: 0, y: 112}
   m_SizeDelta: {x: 382, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1886900979
@@ -32248,13 +32233,13 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 15
+    m_Top: 10
     m_Bottom: 0
   m_ChildAlignment: 1
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 95, y: 95}
-  m_Spacing: {x: 60, y: 40}
+  m_Spacing: {x: 10, y: 10}
   m_Constraint: 0
   m_ConstraintCount: 2
 --- !u!1 &1905149658

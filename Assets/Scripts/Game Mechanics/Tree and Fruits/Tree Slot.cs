@@ -107,7 +107,7 @@ public class TreeSlot : MonoBehaviour
             {
                 pImage.transform.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 120);
                 PauseBG.transform.Find("Count").GetComponent<TextMeshProUGUI>().text = "1";
-                pImage.sprite = Sprites.instance.sprites.items.Find(e => e.item == Items.Axe).sprite;
+                pImage.sprite = Sprites.instance.GetSpriteFromSource(Items.Axe);
             }
             else
             {
@@ -115,7 +115,7 @@ public class TreeSlot : MonoBehaviour
                 {
                     pImage.transform.GetComponent<RectTransform>().sizeDelta = new Vector2(60, 60);
                     PauseBG.transform.Find("Count").GetComponent<TextMeshProUGUI>().text = "2";
-                    pImage.sprite = Sprites.instance.sprites.currencies.Find(e => e.Currency == Currency.Crystal).sprite;
+                    pImage.sprite = Sprites.instance.GetSpriteFromSource(Currency.Crystal);
                 }
             }
         }
@@ -123,10 +123,10 @@ public class TreeSlot : MonoBehaviour
         {
             PauseBG.transform.Find("Count").gameObject.SetActive(false);
             Stages.SetActive(true);
-            Stages.GetComponent<Image>().sprite = Sprites.instance.sprites.TreeStageSprites.Find(e => e.tree == TheTree.fruit).stages[TheTree.stage];
+            Stages.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(TheTree.fruit, "tree stages", TheTree.stage);
             TheFruitImage.SetActive(true);
 
-            TheFruitImage.transform.Find("The Fruit").GetComponent<Image>().sprite = Sprites.instance.sprites.fruits.Find(e => e.fruit == TheTree.fruit).sprite;
+            TheFruitImage.transform.Find("The Fruit").GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(TheTree.fruit);
             if (TheTree.state == PlantState.Growing)
             {
                 ready.SetActive(false); infoText.gameObject.SetActive(false); ProgressPot.SetActive(true);
@@ -138,7 +138,7 @@ public class TreeSlot : MonoBehaviour
             }
             else if (TheTree.state == PlantState.ReadyToHarvest)
             {
-                Stages.GetComponent<Image>().sprite = Sprites.instance.sprites.TreeStageSprites.Find(e => e.tree == TheTree.fruit).stages[TheTree.stage];
+                Stages.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(TheTree.fruit, "tree stages", TheTree.stage);
                 ready.SetActive(true); ProgressPot.SetActive(false);
             }
         }
@@ -226,7 +226,7 @@ public class TreeSlot : MonoBehaviour
         Image filler = progressTimer.GetComponent<Image>();
         // update UI (0 = empty, 1 = full, or invert if needed)
         filler.fillAmount = progress;
-        Stages.GetComponent<Image>().sprite = Sprites.instance.sprites.TreeStageSprites.Find(e => e.tree == TheTree.fruit).stages[TheTree.stage];
+        Stages.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(TheTree.fruit, "tree stages", TheTree.stage);
 
         if (elapsedMinutes >= TheTree.GrowthTimeByStage[TheTree.stage]) UpdateStage();
     }
@@ -303,7 +303,7 @@ public class TreeSlot : MonoBehaviour
             MoneySystem.instance.UpdateXp(5 * wateramount);
             StaticDatas.PlayerData.TreeSpots[SlotNumber].TreeDetails = TheTree;
             StaticDatas.SaveDatas();
-            LuckyBox.instance.TryToFindBox(0.5f);
+            LuckyBox.instance.TryToFindBox(0.05f * wateramount);
             LoadUI();
         }
     }
@@ -370,7 +370,7 @@ public class TreeSlot : MonoBehaviour
 
     private void ShowWatering()
     {
-        anim.SetBool("Show Timer", !anim.GetBool("Show Timer"));
+        anim.SetBool("Show Timer", false);
         anim.SetBool("Show Watering", true);
         if (SlotNumber < ForestLogic.instance.maxSlotCount - 4) ForestLogic.instance.Slots[SlotNumber + 4].GetComponent<TreeSlot>().stageMask.enabled = true;
         LoadUI();
@@ -478,7 +478,7 @@ public class TreeSlot : MonoBehaviour
                         Debug.Log($"matched f = {f}");
                         fruits[i].SetActive(true);
                         Image image = fruits[i].GetComponent<Image>();
-                        image.sprite = Sprites.instance.sprites.fruits.Find(e => e.fruit == TheTree.fruit).sprite;
+                        image.sprite = Sprites.instance.GetSpriteFromSource(TheTree.fruit);
                         break;
                     }
                 }

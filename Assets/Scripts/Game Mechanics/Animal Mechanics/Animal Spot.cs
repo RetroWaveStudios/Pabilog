@@ -60,6 +60,17 @@ public class AnimalSpot : MonoBehaviour
 		if (TheAnimal.animal != Animals.None)
 			SetAnimalInfos();
         if (spotState == ASpotState.HasAnimal && TheAnimal.state == AState.Fertilizing && !TheAnimal.hasFood) CalculateFoodCount();
+        #region
+            Transform skip = transform.Find("Skip Button");
+            skip.Find("Price/Icon").GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(Currency.Crystal);
+            skip.GetComponent<Button>().onClick.RemoveAllListeners();
+            skip.GetComponent<Button>().onClick.AddListener(() => SkipOnOff());
+
+            skip.transform.Find("Price").GetComponent<Button>().onClick.RemoveAllListeners();
+            skip.transform.Find("Price").GetComponent<Button>().onClick.AddListener(() => SkipProduct());
+
+            if (TheAnimal.state != AState.Fertilizing) skip.gameObject.SetActive(false);
+        #endregion
         LoadUI();
 	}
 
@@ -85,6 +96,7 @@ public class AnimalSpot : MonoBehaviour
         infoText.gameObject.SetActive(false); AnimalImage.SetActive(false); noFood.SetActive(false);
         ChickenSpot.SetActive(false); FeedingPot.SetActive(false); tPro.gameObject.SetActive(false); tProBg.gameObject.SetActive(false);
         ProgressSpot.SetActive(false); timer.gameObject.SetActive(false);
+        transform.Find("Skip Button").gameObject.SetActive(false);
         listeners = "";
         if (spotState == ASpotState.Empty)
         {
@@ -112,6 +124,7 @@ public class AnimalSpot : MonoBehaviour
             {
                 ProgressSpot.SetActive(true);
                 if (TheAnimal.hasFood) { noFood.SetActive(false);
+                    transform.Find("Skip Button").gameObject.SetActive(true);
                     btn.onClick.RemoveAllListeners(); btn.onClick.AddListener(() => ShowTimer()); listeners = "Show Timer"; }
                 else { noFood.SetActive(true); noFoodTimer.text = StaticDatas.convertToTimer(TheAnimal.productTime * 60, TheAnimal.pauseTime * 60);
                     Debug.Log($"at spot {SpotNumber} {TheAnimal.animal} state is {TheAnimal.state} and hasFood = {TheAnimal.hasFood}");;
@@ -127,6 +140,7 @@ public class AnimalSpot : MonoBehaviour
             }
 
             else if (TheAnimal.state == AState.ReadyToCollect) { ProgressSpot.SetActive(false);
+                transform.Find("Skip Button").gameObject.SetActive(false);
                 btn.onClick.RemoveAllListeners(); btn.onClick.AddListener(() => CollectProduct()); }
 
             Image image = AnimalImage.GetComponent<Image>();
@@ -138,6 +152,13 @@ public class AnimalSpot : MonoBehaviour
             RectTransform PPrts = ProgressSpot.GetComponent<RectTransform>();
             PPrts.sizeDelta = new Vector2(240, 244);
         }
+    }
+
+    public void SkipOnOff()
+    {
+        Animator anim = transform.Find("Skip Button").GetComponent<Animator>();
+        int id = Animator.StringToHash("SkipOnOff");
+        anim.SetBool("SkipOnOff", !anim.GetBool(id));
     }
 
     public void SpotDetails()
@@ -204,7 +225,7 @@ public class AnimalSpot : MonoBehaviour
         float progress = Mathf.Clamp01((float)(totalSeconds / (TheAnimal.productTime * 60)));
         Image filler = productTimer.GetComponent<Image>();
         filler.fillAmount = progress;
-
+        CalculateSkipCost(out int cost);
         if (elapsedMinutes >= TheAnimal.productTime)
         {
             PauseFertilizing(true);
@@ -299,8 +320,27 @@ public class AnimalSpot : MonoBehaviour
             TheAnimal.feedTime = time.ToString("o");
             Storage.instance.UpdateThingCount(AnimalsLogic.instance.TheFood, -amount);
             MoneySystem.instance.UpdateXp(5 * amount);
-            LuckyBox.instance.TryToFindBox(0.25f * amount);
+            LuckyBox.instance.TryToFindBox(0.1f * amount);
             SaveState();
+            LoadUI();
+        }
+    }
+
+    private void CalculateSkipCost(out int cost)
+    {
+        cost = 0;
+        cost = StaticDatas.FindSkipCost(TheAnimal.feedTime, "Food", TheAnimal.productTime);
+        Debug.Log($"cost = {cost}");
+        transform.Find("Skip Button/Price/Cost").GetComponent<TextMeshProUGUI>().text = cost.ToString();
+    }
+
+    private void SkipProduct()
+    {
+        CalculateSkipCost(out int cost);
+        if (MoneySystem.instance.hasEnough(Currency.Crystal, cost))
+        {
+            MoneySystem.instance.UpdateCyrstal(-cost, out bool enought);
+            TheAnimal.state = AState.ReadyToCollect;
             LoadUI();
         }
     }

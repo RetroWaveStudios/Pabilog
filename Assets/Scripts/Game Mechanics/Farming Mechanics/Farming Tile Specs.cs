@@ -41,6 +41,26 @@ public class FarmingTS : MonoBehaviour
         infoText.text = "Empty";
     }
 
+    public void AddSkip()
+    {
+        Transform skip = transform.Find("Skip Button");
+        skip.Find("Price/Icon").GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(Currency.Crystal);
+        skip.GetComponent<Button>().onClick.RemoveAllListeners();
+        skip.GetComponent<Button>().onClick.AddListener(() => SkipOnOff());
+
+        skip.transform.Find("Price").GetComponent<Button>().onClick.RemoveAllListeners();
+        skip.transform.Find("Price").GetComponent<Button>().onClick.AddListener(() => SkipPlant());
+
+        if (ThePlant.state != PlantState.Growing) skip.gameObject.SetActive(false);
+    }
+
+    public void SkipOnOff()
+    {
+        Animator anim = transform.Find("Skip Button").GetComponent<Animator>();
+        int id = Animator.StringToHash("SkipOnOff");
+        anim.SetBool("SkipOnOff", !anim.GetBool(id));
+    }
+
     private void Start()
     {
         if (landstate == LandState.Planted && ThePlant.state == PlantState.Growing && !ThePlant.hasWater) CalculateReqWater();
@@ -58,6 +78,7 @@ public class FarmingTS : MonoBehaviour
         infoText.gameObject.SetActive(false);
         Stages.SetActive(false); PauseBG.SetActive(false); waterTimerPot.SetActive(false);
         ready.SetActive(false); infoText.text = "Empty"; ThePlantImage.SetActive(false);
+        transform.Find("Skip Button").gameObject.SetActive(false);
         HighlightToPlant(false);
 
         Image pImage = PauseBG.transform.Find("Icon").GetComponent<Image>();
@@ -81,7 +102,7 @@ public class FarmingTS : MonoBehaviour
                 if(!is_watering)
                 {
                     PauseBG.transform.Find("Count").GetComponent<TextMeshProUGUI>().text = "1";
-                    pImage.sprite = Sprites.instance.sprites.currencies.Find(e => e.Currency == Currency.Crystal).sprite;
+                    pImage.sprite = Sprites.instance.GetSpriteFromSource(Currency.Crystal);
                     pImage.transform.GetComponent<RectTransform>().sizeDelta = new Vector2(60, 60);
                 }
             }
@@ -96,7 +117,7 @@ public class FarmingTS : MonoBehaviour
             if (Storage.instance.hasEnought(Items.Rake, 1, false) || is_plowing)
             {
                 PauseBG.transform.Find("Count").GetComponent<TextMeshProUGUI>().text = "1";
-                pImage.sprite = Sprites.instance.sprites.items.Find(e => e.item == Items.Rake).sprite;
+                pImage.sprite = Sprites.instance.GetSpriteFromSource(Items.Rake);
                 pImage.transform.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 120);
             }
             else
@@ -104,7 +125,7 @@ public class FarmingTS : MonoBehaviour
                 if(!is_plowing)
                 {
                     PauseBG.transform.Find("Count").GetComponent<TextMeshProUGUI>().text = "1";
-                    pImage.sprite = Sprites.instance.sprites.currencies.Find(e => e.Currency == Currency.Crystal).sprite;
+                    pImage.sprite = Sprites.instance.GetSpriteFromSource(Currency.Crystal);
                     pImage.transform.GetComponent<RectTransform>().sizeDelta = new Vector2(60, 60);
                 }
             }
@@ -112,12 +133,16 @@ public class FarmingTS : MonoBehaviour
         else
         {
             ThePlantImage.SetActive(true);
-            ThePlantImage.transform.Find("The Plant").GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant == ThePlant.plant).sprite;
+            ThePlantImage.transform.Find("The Plant").GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(ThePlant.plant);
             PauseBG.transform.Find("Count").gameObject.SetActive(true);
             infoText.gameObject.SetActive(false); waterTimerPot.SetActive(true);
             if (ThePlant.state == PlantState.Growing)
             {
-                if (ThePlant.hasWater) { PauseBG.SetActive(false); btn.onClick.RemoveAllListeners(); btn.onClick.AddListener(() => ShowTimer()); }
+                if (ThePlant.hasWater)
+                {
+                    transform.Find("Skip Button").gameObject.SetActive(true);
+                    PauseBG.SetActive(false); btn.onClick.RemoveAllListeners(); btn.onClick.AddListener(() => ShowTimer());
+                }
                 else
                 {
                     PauseBG.SetActive(true); pImage.sprite = noWater;
@@ -134,7 +159,7 @@ public class FarmingTS : MonoBehaviour
                 Stages.SetActive(true);
             }
             else if (ThePlant.state == PlantState.ReadyToHarvest)
-            { Stages.SetActive(false); ready.SetActive(true); PauseBG.SetActive(false); }
+            { Stages.SetActive(false); ready.SetActive(true); PauseBG.SetActive(false); transform.Find("Skip Button").gameObject.SetActive(false); }
         }
     }
 
@@ -214,16 +239,12 @@ public class FarmingTS : MonoBehaviour
 
         // Precompute stage thresholds (in minutes)
         double[] stagesTime = new double[Sprites.instance.sprites.StageSprites.Find(e => e.plant == ThePlant.plant).stages.Count];
-        for (int i = 0; i < Sprites.instance.sprites.StageSprites.Find(e => e.plant == ThePlant.plant).stages.Count; i++)
-        {
-            stagesTime[i] = (i + 1) * slices;
-        }
+        for (int i = 0; i < Sprites.instance.sprites.StageSprites.Find(e => e.plant == ThePlant.plant).stages.Count; i++) stagesTime[i] = (i + 1) * slices;
 
-        DateTime startTime;
-        if (!StaticDatas.TryGetStartTime(ThePlant.waterTime, "plant slot " + SlotNumber.ToString(), out startTime)) return;
+        double elapsedMinutes;
+        if (!StaticDatas.ElapsedMinutes(ThePlant.waterTime, "plant slot " + SlotNumber.ToString(), out elapsedMinutes)) return;
 
-        TimeSpan elapsed = DateTime.UtcNow - startTime;
-        double elapsedMinutes = elapsed.TotalMinutes + ThePlant.pauseTime;
+        elapsedMinutes += ThePlant.pauseTime;
 
         // --- Update plant stages ---
         for (int i = 0; i < stagesTime.Length; i++)
@@ -232,17 +253,11 @@ public class FarmingTS : MonoBehaviour
             if (elapsedMinutes <= stagesTime[i])
             {
                 // Set correct sprite
-                Image image = Stages.GetComponent<Image>();
-                for (int p = 0; p < Sprites.instance.sprites.StageSprites.Count; p++)
-                {
-                    if (Sprites.instance.sprites.StageSprites[p].plant == ThePlant.plant)
-                    {
-                        image.sprite = Sprites.instance.sprites.StageSprites[p].stages[i];
-                    }
-                }
+                Stages.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(ThePlant.plant, "plant stages", i);
                 break;
             }
         }
+        CalculateSkipCost(out int cost);
 
         if (elapsedMinutes >= ThePlant.GrowthTime)
         {
@@ -337,9 +352,28 @@ public class FarmingTS : MonoBehaviour
             Debug.Log("Saving details");
             StaticDatas.PlayerData.FarmSlots[SlotNumber].PlantDetails = ThePlant;
             MoneySystem.instance.UpdateXp(2 * amount);
-            LuckyBox.instance.TryToFindBox(0.3f);
+            LuckyBox.instance.TryToFindBox(0.1f);
             StaticDatas.SaveDatas(); LoadUI();
             anim.SetBool("Show Watering", false);
+        }
+    }
+
+    private void CalculateSkipCost(out int cost)
+    {
+        cost = 0;
+        cost = StaticDatas.FindSkipCost(ThePlant.waterTime, "Food", ThePlant.GrowthTime);
+        Debug.Log($"cost = {cost}");
+        transform.Find("Skip Button/Price/Cost").GetComponent<TextMeshProUGUI>().text = cost.ToString();
+    }
+
+    private void SkipPlant()
+    {
+        CalculateSkipCost(out int cost);
+        if (MoneySystem.instance.hasEnough(Currency.Crystal, cost))
+        {
+            MoneySystem.instance.UpdateCyrstal(-cost, out bool enought);
+            ThePlant.state = PlantState.ReadyToHarvest;
+            LoadUI();
         }
     }
 
@@ -382,8 +416,7 @@ public class FarmingTS : MonoBehaviour
         btn.onClick.RemoveAllListeners();
         btn.onClick.AddListener(() => Harvest());
         StaticDatas.PlayerData.FarmSlots[SlotNumber].PlantDetails = ThePlant;
-        Image rimage = ready.GetComponent<Image>();
-        rimage.sprite = Sprites.instance.sprites.readySprites.Find(e => e.plant == ThePlant.plant).sprite;
+        ready.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(ThePlant.plant);
     }
 
     private void Harvest()

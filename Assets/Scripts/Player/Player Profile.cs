@@ -267,6 +267,7 @@ public class PlayerProfile : MonoBehaviour
             StaticDatas.PlayerData.PlayerInfos.Coin += reward.Coin;
         if (reward.Crystal > 0 && !given)
             StaticDatas.PlayerData.PlayerInfos.Crystal += reward.Crystal;
+        StaticDatas.SaveDatas();
     }
 
     #endregion

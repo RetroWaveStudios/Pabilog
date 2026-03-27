@@ -100,8 +100,7 @@ public class WaterSL : MonoBehaviour
         {
             Debug.Log($"Setting to {!isAnTrue("Open Water Upgrade")}");
             anim.SetBool("Open Water Upgrade", true);
-            priceImage.sprite = Sprites.instance.sprites.currencies.
-                Find(e => e.Currency == WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel].currency).sprite;
+            priceImage.sprite = Sprites.instance.GetSpriteFromSource(WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel].currency);
             priceText.text = WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel].price.ToString();
         }
         else
@@ -138,8 +137,7 @@ public class WaterSL : MonoBehaviour
                     CheckLevel();
                     SetImages();
                     StaticDatas.SaveDatas();
-                    priceImage.sprite = Sprites.instance.sprites.currencies.
-                    Find(e => e.Currency == WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel].currency).sprite;
+                    priceImage.sprite = Sprites.instance.GetSpriteFromSource(WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel].currency);
                     priceText.text = WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel].price.ToString();
                 }
                 else FinishLevel();
@@ -192,8 +190,7 @@ public class WaterSL : MonoBehaviour
         maxAmountText.text = StaticDatas.PlayerData.PlayerInfos.Water.MaxAmount.ToString();
         if (StaticDatas.PlayerData.PlayerInfos.WellLevel < 5)
         {
-            priceImage.sprite = Sprites.instance.sprites.currencies.
-                Find(e => e.Currency == WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel].currency).sprite;
+            priceImage.sprite = Sprites.instance.GetSpriteFromSource(WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel].currency);
             priceText.text = WaterLevels[StaticDatas.PlayerData.PlayerInfos.WellLevel].price.ToString();
         }
     }
@@ -279,6 +276,8 @@ public class WaterSL : MonoBehaviour
         for (int i = 0; i < FarmLogic.instance.Slots.Count; i++)
             if (FarmLogic.instance.Slots[i].GetComponent<FarmingTS>().landstate == LandState.Planted && !FarmLogic.instance.Slots[i].GetComponent<FarmingTS>().ThePlant.hasWater)
                 FarmLogic.instance.Slots[i].GetComponent<FarmingTS>().CalculateReqWater();
+            else
+                FarmLogic.instance.Slots[i].GetComponent<FarmingTS>().LoadUI();
         for (int i = 0; i < ForestLogic.instance.Slots.Count; i++)
             ForestLogic.instance.Slots[i].GetComponent<TreeSlot>().LoadUI();
     }

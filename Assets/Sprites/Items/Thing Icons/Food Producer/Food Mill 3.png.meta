@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Food Mill 3_0: 7750854946816350479
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

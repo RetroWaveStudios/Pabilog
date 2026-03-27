@@ -107,7 +107,7 @@ public class TradeCenter : MonoBehaviour
         itemCountInStorage.Clear();
 
         Items[] uItems = (Items[])Enum.GetValues(typeof(Items));
-        uItems = uItems.Where(x => x != Items.None).ToArray();
+        uItems = uItems.Where(x => x != Items.None && x != Items.ToolSet).ToArray();
         for (int i = 0; i < uItems.Length; i++)
             itemCountInStorage.Add(FillThingCount(uItems[i], Storage.instance.GetCountOf(uItems[i])));
         for (int i = 0; i < uItems.Length; i++)
