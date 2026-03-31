@@ -125,12 +125,14 @@ public class Machine : MonoBehaviour
                 {
                     if (!qEditing && queue.Count > 0)
                         queue[0].transform.Find("BG").GetComponent<Image>().color = Color.darkBlue;
+                        queue[0].transform.Find("Skip Button").gameObject.SetActive(true);
                     timerPot.SetActive(true);
                 }
                 else if (TheProduct.state == AState.ReadyToCollect)
                 {
                     if (!qEditing && queue.Count > 0)
                         queue[0].transform.Find("BG").GetComponent<Image>().color = Color.green;
+                        queue[0].transform.Find("Skip Button").gameObject.SetActive(false);
                     timerPot.SetActive(false);
                 }
             }

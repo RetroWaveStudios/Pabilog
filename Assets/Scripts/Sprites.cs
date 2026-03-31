@@ -8,6 +8,8 @@ public class Sprites : MonoBehaviour
 
     public GameObject SkipButton;
     public GameObject InfoButtonPrefab;
+    public GameObject HolderPrefab;
+    public GameObject LockedHolderPrefab;
 
     private void Awake()
     {

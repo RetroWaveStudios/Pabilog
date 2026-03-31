@@ -4136,7 +4136,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -386.2, y: 274.10037}
+  m_AnchoredPosition: {x: -386.2, y: 274.10056}
   m_SizeDelta: {x: 790, y: 548}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &310559751
@@ -8590,8 +8590,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlantsHolder
   ph: {fileID: 894056490}
-  PlantPrefab: {fileID: 8801553674126074948, guid: 9cce881970f17de4b9e50e646f874fc3, type: 3}
   PlantsInPH: []
+  L_PlantsInPH: []
   Farm: {fileID: 217700943}
 --- !u!1 &574968776
 GameObject:
@@ -12646,8 +12646,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1273446541}
   m_HandleRect: {fileID: 1273446540}
   m_Direction: 2
-  m_Value: -0.0015257858
-  m_Size: 0.99961996
+  m_Value: -0.0027464144
+  m_Size: 0.99962074
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -12828,7 +12828,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -386.2, y: 274.70035}
+  m_AnchoredPosition: {x: -386.2, y: 274.70056}
   m_SizeDelta: {x: 790, y: 548}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &831614703
@@ -15456,7 +15456,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: 1.0607018}
+  m_AnchoredPosition: {x: 0, y: 1.0600928}
   m_SizeDelta: {x: 723, y: 1080.9}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &946802461
@@ -16593,6 +16593,8 @@ MonoBehaviour:
   EraseItem: {fileID: 21300000, guid: 6383305d765aa8b4aba41b46789edbdd, type: 3}
   SkipButton: {fileID: 3988546453472414284, guid: d4b9860d48a453d489e405882e8897fc, type: 3}
   InfoButtonPrefab: {fileID: 8836679156702708020, guid: 1c1d6e270a49f1d44936a6bcb0cb7f24, type: 3}
+  HolderPrefab: {fileID: 8801553674126074948, guid: 9cce881970f17de4b9e50e646f874fc3, type: 3}
+  LockedHolderPrefab: {fileID: 8801553674126074948, guid: 781a8bed5777f44448d240e06d2a8ca9, type: 3}
 --- !u!1 &979659748
 GameObject:
   m_ObjectHideFlags: 0
@@ -24339,7 +24341,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -332.5, y: 11945943}
+  m_AnchoredPosition: {x: -332.5, y: 12056568}
   m_SizeDelta: {x: 664, y: 800}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1501697308
@@ -27202,7 +27204,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 211763094}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.999985
+  m_Size: 0.99998575
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -28200,8 +28202,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1341554300}
   m_HandleRect: {fileID: 1341554299}
   m_Direction: 2
-  m_Value: -0.00057570526
-  m_Size: 0.999018
+  m_Value: -0.000115154304
+  m_Size: 0.99901736
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -31587,7 +31589,7 @@ MonoBehaviour:
     Machine: 
     Coin: 0
     Crystal: 0
-  - Plant: 04000000
+  - Plant: 03000000
     Trees: 
     Animal: 
     AnimalProduct: 

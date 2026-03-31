@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -94,11 +93,13 @@ public class FoodPL : MonoBehaviour
             timer.gameObject.SetActive(true);
             if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].PrState == PlantState.Growing)
             {
+                queue[0].transform.Find("Skip Button").gameObject.SetActive(true);
                 if(queue.Count > 0)
                     queue[0].transform.Find("BG").GetComponent<Image>().color = Color.darkBlue;
             }
             else if (StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].PrState == PlantState.ReadyToHarvest)
             {
+                queue[0].transform.Find("Skip Button").gameObject.SetActive(false);
                 if (queue.Count > 0)
                     queue[0].transform.Find("BG").GetComponent<Image>().color = Color.green;
             }

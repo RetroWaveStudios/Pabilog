@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -7,10 +8,12 @@ public class AHolder : MonoBehaviour
 {
     public static AHolder instance;
     public Transform Holder;
-    public GameObject A_P_Prefab;
 
     public List<GameObject> allAnimals;
     public List<GameObject> allProducts;
+
+    public List<GameObject> l_animals;
+    public List<GameObject> l_products;
 
     public int spotnumber;
 
@@ -35,48 +38,83 @@ public class AHolder : MonoBehaviour
 
     private void ChooseAnimal()
     {
-        allAnimals = new();
+        allAnimals = new(); l_animals = new();
         foreach (Transform item in Holder) Destroy(item.gameObject);
 
+        Animals[] animal_names = (Animals[])Enum.GetValues(typeof(Animals));
+        int indexToRemove = 0;
+        for (int f = 0; f < animal_names.Length; f++) if (animal_names[f] == Animals.None) indexToRemove = f;
+
+        Animals[] newArr = new Animals[animal_names.Length - 1];
+
+        for (int i = 0, j = 0; i < animal_names.Length; i++)
+        {
+            if (i == indexToRemove) continue;
+            newArr[j++] = animal_names[i];
+        }
+        animal_names = newArr;
+
         if (StaticDatas.PlayerData.unlocked_items.u_animals != null || StaticDatas.PlayerData.unlocked_items.u_animals.Count > 0)
-            for (int i = 0; i < StaticDatas.PlayerData.unlocked_items.u_animals.Count; i++)
+        {
+            for (int i = 0; i < animal_names.Length; i++)
             {
-                Animals a = StaticDatas.PlayerData.unlocked_items.u_animals[i];
-                GameObject dublicate = Instantiate(A_P_Prefab, Holder);
-                dublicate.transform.name = a.ToString();
+                if (StaticDatas.PlayerData.unlocked_items.u_animals.Contains(animal_names[i]))
+                {
+                    Animals a = StaticDatas.PlayerData.unlocked_items.u_animals[i];
+                    GameObject dublicate = Instantiate(Sprites.instance.HolderPrefab, Holder);
+                    dublicate.transform.name = a.ToString();
 
-                Image image = dublicate.GetComponent<Image>();
-                image.sprite = Sprites.instance.sprites.animals.Find(e => e.animal == a).sprite;
+                    Image image = dublicate.GetComponent<Image>();
+                    image.sprite = Sprites.instance.GetSpriteFromSource(a);
 
-                RectTransform rts = dublicate.GetComponent<RectTransform>();
-                rts.sizeDelta = new Vector2(110, 110);
+                    dublicate.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 100);
 
-                dublicate.transform.Find("Details").gameObject.SetActive(true);
-                dublicate.transform.Find("Details").gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 30);
-                
-                dublicate.transform.Find("Details/Price").gameObject.SetActive(true);
-                dublicate.transform.Find("Details/Icon").gameObject.SetActive(true);
-                dublicate.transform.Find("Details/Icon").GetComponent<Image>().sprite = Sprites.instance.sprites.currencies.Find(e => e.Currency == Currency.Coin).sprite;
-                dublicate.transform.Find("Details/Price").GetComponent<TextMeshProUGUI>().text = AnimalsLogic.instance.AnimalsDetails.Find(e => e.animal == a).a_price.ToString();
+                    dublicate.transform.Find("Details").gameObject.SetActive(true);
+                    dublicate.transform.Find("Details").gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 30);
 
-                RectTransform rt = dublicate.GetComponent<RectTransform>();
-                rt.sizeDelta = new Vector2(100, 100);
+                    dublicate.transform.Find("Details/Price").gameObject.SetActive(true);
+                    dublicate.transform.Find("Details/Icon").gameObject.SetActive(true);
+                    dublicate.transform.Find("Details/Icon").GetComponent<Image>().sprite = Sprites.instance.sprites.currencies.Find(e => e.Currency == Currency.Coin).sprite;
+                    dublicate.transform.Find("Details/Price").GetComponent<TextMeshProUGUI>().text = AnimalsLogic.instance.AnimalsDetails.Find(e => e.animal == a).a_price.ToString();
 
-                Debug.Log("spotnumber = " + spotnumber);
-                AnimalSpot ans = AnimalsLogic.instance.Spots[spotnumber].GetComponent<AnimalSpot>();
+                    Debug.Log("spotnumber = " + spotnumber);
+                    AnimalSpot ans = AnimalsLogic.instance.Spots[spotnumber].GetComponent<AnimalSpot>();
 
-                Button button = dublicate.GetComponent<Button>();
-                button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() => ans.BuyAnimal(a));
-                allAnimals.Add(dublicate);
+                    Button button = dublicate.GetComponent<Button>();
+                    button.onClick.RemoveAllListeners();
+                    button.onClick.AddListener(() => ans.BuyAnimal(a));
+                    allAnimals.Add(dublicate);
+                }
+                else
+                {
+                    Animals a = animal_names[i];
+                    GameObject dublicate = Instantiate(Sprites.instance.LockedHolderPrefab, Holder);
+                    dublicate.transform.name = "locked " + a.ToString();
+
+                    dublicate.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 100);
+
+                    dublicate.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(a);
+                    dublicate.GetComponent<Image>().color = new Color32(77, 77, 77, 255);
+                    dublicate.transform.Find("Details").gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 30);
+
+                    int level = 0;
+                    for (int l = 0; l < PlayerProfile.instance.rewards.Count; l++) if (PlayerProfile.instance.rewards[l].Animal.Contains(a)) level = l;
+
+                    Debug.Log($"locked: working on Animal {a} and level = {level}");
+                    dublicate.transform.Find("Details/Count").GetComponent<TextMeshProUGUI>().text = "Lvl " + level;
+
+                    l_animals.Add(dublicate);
+                }
             }
+        }
     }
 
     private void ChooseProduct(Animals animal)
     {
         Debug.Log($"{animal} sent for product choosing");
-        allProducts = new();
+        allProducts = new(); l_products = new();
         foreach (Transform item in Holder) Destroy(item.gameObject);
+
         foreach (var item in products)
         {
             if (item.Key == animal)
@@ -89,7 +127,7 @@ public class AHolder : MonoBehaviour
                     if (ap != AProducts.None && StaticDatas.PlayerData.unlocked_items.u_a_products.Contains(ap))
                     {
                         Debug.Log($"animal product {ap} is unlocked");
-                        GameObject dublicate = Instantiate(A_P_Prefab, Holder);
+                        GameObject dublicate = Instantiate(Sprites.instance.HolderPrefab, Holder);
                         dublicate.transform.name = ap.ToString();
 
                         AnimalSpot ans = AnimalsLogic.instance.Spots[spotnumber].GetComponent<AnimalSpot>();
@@ -124,6 +162,25 @@ public class AHolder : MonoBehaviour
                         allProducts.Add(dublicate);
                         index++;
                     }
+                    else
+                    {
+                        AProducts a = ap;
+                        GameObject dublicate = Instantiate(Sprites.instance.LockedHolderPrefab, Holder);
+                        dublicate.transform.name = "locked " + a.ToString();
+
+                        dublicate.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 100);
+                        dublicate.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(a);
+                        dublicate.GetComponent<Image>().color = new Color32(77, 77, 77, 255);
+                        dublicate.transform.Find("Details").gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 30);
+
+                        int level = 0;
+                        for (int l = 0; l < PlayerProfile.instance.rewards.Count; l++) if (PlayerProfile.instance.rewards[l].AnimalProduct.Contains(ap)) level = l;
+
+                        Debug.Log($"locked: working on Animal {a} and level = {level}");
+                        dublicate.transform.Find("Details/Count").GetComponent<TextMeshProUGUI>().text = "Lvl " + level;
+
+                        l_products.Add(dublicate);
+                    }
                 }
             }
         }
@@ -132,7 +189,7 @@ public class AHolder : MonoBehaviour
 
     private void AddEraseButton()
     {
-        GameObject ei = Instantiate(A_P_Prefab, Holder);
+        GameObject ei = Instantiate(Sprites.instance.HolderPrefab, Holder);
         RectTransform rts = ei.GetComponent<RectTransform>();
         rts.sizeDelta = new Vector2(130, 130);
 

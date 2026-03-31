@@ -8,8 +8,8 @@ public class PlantsHolder : MonoBehaviour
 {
     public static PlantsHolder instance;
     public Transform ph;
-    public GameObject PlantPrefab;
     public List<GameObject> PlantsInPH = new();
+    public List<GameObject> L_PlantsInPH = new();
 
     public Transform Farm;
     private void Awake()
@@ -22,15 +22,84 @@ public class PlantsHolder : MonoBehaviour
     public void PopulatePlantsHolder()
     {
         PlantsInPH = new();
+        L_PlantsInPH = new();
         int hindex = 0;
         foreach (Transform item in ph) Destroy(item.gameObject);
 
+        Plants[] plant_names = (Plants[])Enum.GetValues(typeof(Plants));
+        int indexToRemove = 0;
+        for (int f = 0; f < plant_names.Length; f++) if (plant_names[f] == Plants.None) indexToRemove = f;
+
+        Plants[] newArr = new Plants[plant_names.Length - 1];
+
+        for (int i = 0, j = 0; i < plant_names.Length; i++)
+        {
+            if (i == indexToRemove) continue;
+            newArr[j++] = plant_names[i];
+        }
+
+        plant_names = newArr;
         if (StaticDatas.PlayerData.unlocked_items.u_plants != null || StaticDatas.PlayerData.unlocked_items.u_plants.Count > 0)
+        {
+            for (int i = 0; i < plant_names.Length; i++)
+            {
+                if (StaticDatas.PlayerData.unlocked_items.u_plants.Contains(plant_names[i]))
+                {
+                    Plants p = plant_names[i];
+                    Debug.Log("working on Plant " + p);
+                    GameObject dublicate = Instantiate(Sprites.instance.HolderPrefab, ph);
+                    dublicate.transform.name = p.ToString();
+
+                    Button button = dublicate.GetComponent<Button>();
+                    button.onClick.RemoveAllListeners();
+                    int chosen = hindex;
+                    button.onClick.AddListener(() => PHChoosePlant(chosen, p));
+
+                    dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant == p).sprite;
+
+                    #region Info Button detailing
+                        GameObject ib = Instantiate(Sprites.instance.InfoButtonPrefab, dublicate.transform);
+                        RectTransform ibrts = ib.GetComponent<RectTransform>();
+                        ibrts.anchoredPosition = new Vector2(0, 10);
+                        ibrts.anchorMax = new Vector2(0.5f, 1);
+                        ibrts.anchorMin = new Vector2(0.5f, 1);
+                        ib.GetComponent<InfoDetails>().btn.onClick.RemoveAllListeners();
+                        ib.GetComponent<InfoDetails>().btn.onClick.AddListener(() => ib.GetComponent<InfoDetails>().DetailsOnOff("CT", "Item", p, null, chosen));
+                    #endregion
+
+                    PlantsInPH.Add(dublicate);
+                    UpdateCountOfPlants();
+                    hindex++;
+                }
+                else
+                {
+                    Plants p = plant_names[i];
+                    GameObject dublicate = Instantiate(Sprites.instance.LockedHolderPrefab, ph);
+                    dublicate.transform.name = "locked " + p.ToString();
+
+                    dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant == p).sprite;
+                    dublicate.GetComponent<Image>().color = new Color32(77, 77, 77, 255);
+
+                    int level = 0;
+                    for (int l = 0; l < PlayerProfile.instance.rewards.Count; l++)
+                        if (PlayerProfile.instance.rewards[l].Plant.Contains(p)) level = l;
+
+                    Debug.Log($"locked: working on Plant {p} and level = {level}");
+                    dublicate.transform.Find("Details/Count").GetComponent<TextMeshProUGUI>().text = "Lvl " + level;
+
+                    L_PlantsInPH.Add(dublicate);
+                }
+            }
+        }
+
+        /*
+        if (StaticDatas.PlayerData.unlocked_items.u_plants != null || StaticDatas.PlayerData.unlocked_items.u_plants.Count > 0)
+        {
             for (int i = 0; i < StaticDatas.PlayerData.unlocked_items.u_plants.Count; i++)
             {
                 Plants p = StaticDatas.PlayerData.unlocked_items.u_plants[i];
                     Debug.Log("working on Plant " + p);
-                    GameObject dublicate = Instantiate(PlantPrefab, ph);
+                    GameObject dublicate = Instantiate(Sprites.instance.HolderPrefab, ph);
                     dublicate.transform.name = p.ToString();
 
                     Button button = dublicate.GetComponent<Button>();
@@ -54,10 +123,16 @@ public class PlantsHolder : MonoBehaviour
                     UpdateCountOfPlants();
                     hindex++;
             }
+        }
+        */
 
         GridLayoutGroup glg = ph.GetComponent<GridLayoutGroup>();
         RectTransform rts = ph.GetComponent<RectTransform>();
-        rts.sizeDelta = new Vector2((PlantsInPH.Count * glg.cellSize.x) + ((PlantsInPH.Count - 1) * glg.spacing.x) + glg.padding.left + glg.padding.right + 115, 160);
+        int totalCount = PlantsInPH.Count + L_PlantsInPH.Count;
+        Debug.Log($"totalCount = {totalCount}");
+        Debug.Log($"glg.cellSize.x = {glg.cellSize.x}");
+        Debug.Log($"glg.spacing.x = {glg.spacing.x}");
+        rts.sizeDelta = new Vector2((totalCount * glg.cellSize.x) + ((totalCount - 1) * glg.spacing.x) + glg.padding.left + glg.padding.right + 280, 160);
         if (rts.sizeDelta.x < 1000) rts.sizeDelta = new Vector2(1000, rts.sizeDelta.y);
     }
 

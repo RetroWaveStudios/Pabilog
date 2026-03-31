@@ -45,7 +45,7 @@ public class PlayerProfile : MonoBehaviour
         infoWindow.SetActive(false);
         StaticDatas.LoadDatas();
         Debug.Log("creating ls");
-        ls = new LevelSystem(17);
+        ls = new LevelSystem(50);
         level = ls.GetLevelByXP(StaticDatas.PlayerData.PlayerInfos.XP);
 
         Debug.Log($"Current Level: {level.LevelNumber}, XP needed: {level.reqXP}");
