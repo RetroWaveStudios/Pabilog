@@ -63,10 +63,6 @@ public class InfoDetails : MonoBehaviour
         {
             name = FarmLogic.instance.PlantDetails.Find(e => e.plant == (Plants)item).plant.ToString();
             timeInfo = FarmLogic.instance.PlantDetails.Find(e => e.plant == (Plants)item).GrowthTime;
-
-            if (StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == (Plants)item) != null)
-                countInfo = StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == (Plants)item).count;
-            else countInfo = 0;
         }
         else if(item is Fruits)
         {
@@ -76,10 +72,6 @@ public class InfoDetails : MonoBehaviour
             for (int i = 0; i < td.GrowthTimeByStage.Count; i++)
                 time += td.GrowthTimeByStage[i];
             timeInfo = time;
-
-            if (StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == (Fruits)item) != null)
-                countInfo = StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == (Fruits)item).count;
-            else countInfo = 0;
         }
         else if(item is AProducts)
         {
@@ -87,10 +79,6 @@ public class InfoDetails : MonoBehaviour
             name = apd.products.Find(e => e == (AProducts)item).ToString();
             int index = apd.products.IndexOf((AProducts)item);
             timeInfo = apd.prTimes[index];
-
-            if (StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == (AProducts)item) != null)
-                countInfo = StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == (AProducts)item).count;
-            else countInfo = 0;
         }
         else if(item is Products)
         {
@@ -98,20 +86,15 @@ public class InfoDetails : MonoBehaviour
 
             name = prd.name;
             timeInfo = prd.prTimer;
-
-            if (StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == (Products)item) != null)
-                countInfo = StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == (Products)item).count;
-            else countInfo = 0;
         }
         else if(item is Items)
         {
             name = StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == (Items)item).ToString();
             details.Find("Timer Holder").gameObject.SetActive(false);
-
-            if (StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == (Items)item) != null)
-                countInfo = StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == (Items)item).count;
-            else countInfo = 0;
         }
+
+        countInfo = Storage.instance.GetCountOf(item);
+
         timeInfo = timeInfo * 60;
         details.Find("Name Holder/Name").GetComponent<TextMeshProUGUI>().text = name;
         TimeSpan remaining = TimeSpan.FromSeconds(timeInfo);
@@ -171,11 +154,11 @@ public class InfoDetails : MonoBehaviour
                     main.GetChild(i).Find("Info Button(Clone)").GetComponent<Animator>().SetBool(aDr, false);
             }
         else if (type == "Machine")
-            for (int i = 0; i < ProductionLogic.instance.Machines.Count; i++)
+            for (int i = 0; i < ProductionLogic.instance.ActiveMachines.Count; i++)
             {
-                Transform main = ProductionLogic.instance.Machines[i].transform.Find("Name/Info Button");
+                Transform main = ProductionLogic.instance.ActiveMachines[i].transform.Find("Name/Info Button");
                 if (main == null) Debug.Log("Machine info button not found");
-                if (ProductionLogic.instance.Machines[i].name != sourceInfos.ToString() && main.GetComponent<Animator>().GetBool(aDr))
+                if (ProductionLogic.instance.ActiveMachines[i].name != sourceInfos.ToString() && main.GetComponent<Animator>().GetBool(aDr))
                     main.GetComponent<Animator>().SetBool(aDr, false);
             }
     }

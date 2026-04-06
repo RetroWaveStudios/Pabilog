@@ -21,6 +21,7 @@ public class TestTask : MonoBehaviour
         task = TasksLogic.instance.SendRequest(TaskType.Hard, TasksLogic.instance.totalPoints[TaskType.Hard]);
         SetDetails();
     }
+
     public void PopulateInfoHolder()
     {
         Transform ih = transform.parent.parent.Find("Info Holder");
@@ -161,6 +162,7 @@ public class TestTask : MonoBehaviour
             ih.Find("Send").GetComponent<Button>().onClick.AddListener(() => CompleteTask());
         }
     }
+
     public void SetDetails()
     {
         transform.Find("Money/Icon").GetComponent<Image>().sprite = Sprites.instance.sprites.currencies.Find(e => e.Currency == task.currency).sprite;
@@ -168,6 +170,7 @@ public class TestTask : MonoBehaviour
         transform.Find("Money/Reward").GetComponent<TextMeshProUGUI>().text = task.Money.ToString();
         transform.Find("Xp/Reward").GetComponent<TextMeshProUGUI>().text = task.Xp.ToString();
     }
+
     private void CheckReqs(out bool met)
     {
         met = false;
@@ -222,6 +225,7 @@ public class TestTask : MonoBehaviour
             met = true;
         }
     }
+
     private void CompleteTask()
     {
         Debug.Log($"Task Completed. Rewards:\nMoney: {task.Money}\nXp: {task.Xp}");

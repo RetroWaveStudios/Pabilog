@@ -87,7 +87,7 @@ public class SaveLoadManager : MonoBehaviour
             u_Products = new List<Products>()
             {
             },
-            u_machines = new List<string>()
+            u_machines = new List<Unlocked_Machines>()
             {
             }
         },

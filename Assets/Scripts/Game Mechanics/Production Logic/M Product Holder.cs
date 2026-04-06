@@ -42,7 +42,7 @@ public class MachinePH : MonoBehaviour
 
                 Button button = dublicate.GetComponent<Button>();
                 button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() => ProductionLogic.instance.Machines.Find(e => e.name == mp.MachineName).GetComponent<Machine>().PickProduct(mp.products.Find(e => e.product == p).Clone()));
+                button.onClick.AddListener(() => ProductionLogic.instance.ActiveMachines.Find(e => e.name == mp.MachineName).GetComponent<Machine>().PickProduct(mp.products.Find(e => e.product == p).Clone()));
 
                 #region Info Button detailing
                     GameObject ib = Instantiate(Sprites.instance.InfoButtonPrefab, dublicate.transform);

@@ -396,7 +396,7 @@ public class FoodPL : MonoBehaviour
         private void Collect()
         {
             if (!anim.GetBool("Open Upgrade") && StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].PrState == PlantState.ReadyToHarvest &&
-                Storage.instance.hasEnStorage(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].collectAmount))
+                Storage.instance.hasEnStorage(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].collectAmount, true))
             {
                 Storage.instance.UpdateThingCount(StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].Food, StaticDatas.PlayerData.PlayerInfos.Food.InQueue[0].collectAmount);
                 MoneySystem.instance.UpdateXp(StaticDatas.PlayerData.PlayerInfos.Food.xp);

@@ -125,7 +125,7 @@ public class LuckyBox : MonoBehaviour
 
     public void OpenTheBox()
     {
-        itemImage.sprite = Sprites.instance.sprites.items.Find(e => e.item == TheItem).sprite;
+        itemImage.sprite = Sprites.instance.GetSpriteFromSource(TheItem);
         anim.SetTrigger("Open Box");
     }
 

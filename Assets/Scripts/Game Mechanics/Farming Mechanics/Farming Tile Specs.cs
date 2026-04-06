@@ -362,7 +362,6 @@ public class FarmingTS : MonoBehaviour
     {
         cost = 0;
         cost = StaticDatas.FindSkipCost(ThePlant.waterTime, "Food", ThePlant.GrowthTime);
-        Debug.Log($"cost = {cost}");
         transform.Find("Skip Button/Price/Cost").GetComponent<TextMeshProUGUI>().text = cost.ToString();
     }
 
@@ -421,7 +420,7 @@ public class FarmingTS : MonoBehaviour
 
     private void Harvest()
     {
-        if (ThePlant.state == PlantState.ReadyToHarvest && Storage.instance.hasEnStorage(ThePlant.harvestAmount))
+        if (ThePlant.state == PlantState.ReadyToHarvest && Storage.instance.hasEnStorage(ThePlant.harvestAmount, true))
         {
             anim.SetBool("Show Timer", false);
             Storage.instance.UpdateThingCount(ThePlant.plant, ThePlant.harvestAmount);

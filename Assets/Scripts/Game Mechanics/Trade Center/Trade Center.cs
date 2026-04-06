@@ -284,8 +284,15 @@ public class TradeCenter : MonoBehaviour
         Transform makeADeal = transform.Find("Make A Deal");
         makeADeal.Find("Leftover Money/Money").GetComponent<TextMeshProUGUI>().text = leftover.ToString();
         makeADeal.GetComponent<Button>().onClick.RemoveAllListeners();
-        if (leftover >= 0 && c_SI.Count > 0)
+
+        int selling = 0, buying = 0;
+        for (int i = 0; i < c_SI.Count; i++) selling += c_SI[i].count;
+        for (int i = 0; i < c_MI.Count; i++) buying += c_MI[i].count;
+
+        if (leftover >= 0 && c_SI.Count > 0 && Storage.instance.hasEnStorage(buying - selling, false))
             makeADeal.GetComponent<Button>().onClick.AddListener(() => MakeADeal());
+        else if (!Storage.instance.hasEnStorage(buying - selling, false))
+            makeADeal.GetComponent<Button>().onClick.AddListener(() => PushNotice.instance.Push($"No Space in Storage", PushType.Alert));
         else
             makeADeal.GetComponent<Button>().onClick.AddListener(() => PushNotice.instance.Push($"Change trade items to match deal money - {leftover}", PushType.Notice));
     }

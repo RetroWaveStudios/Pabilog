@@ -51,7 +51,7 @@ public class WaterSL : MonoBehaviour
         anim = GetComponent<Animator>();
         instance = this;
         StaticDatas.LoadDatas();
-        SetImages(); CheckLevel();
+        SetImages(); CheckLevel(); Calculate(out int cost);
         transform.Find("Water Well/Holder Colored/Details/Tap Value").gameObject.SetActive(false);
     }
 
@@ -258,6 +258,22 @@ public class WaterSL : MonoBehaviour
         timer.text = timeString;
     }
 
+    public void Calculate(out int cost)
+    {
+        double price = 25.0 / StaticDatas.PlayerData.PlayerInfos.Water.MaxAmount;
+        cost = (int)Math.Ceiling(price * (StaticDatas.PlayerData.PlayerInfos.Water.MaxAmount - StaticDatas.PlayerData.PlayerInfos.Water.amount));
+        Debug.Log($"water filling cost = {cost} and price {price}");
+        transform.Find("Water Well/Holder Colored/Details/Fill Quick/Price").GetComponent<TextMeshProUGUI>().text = cost.ToString();
+    }
+
+    public void FillQuick()
+    {
+        Calculate(out int cost);
+        MoneySystem.instance.UpdateCyrstal(-cost, out bool enought);
+        if(enought) TriggerAmount(StaticDatas.PlayerData.PlayerInfos.Water.MaxAmount - StaticDatas.PlayerData.PlayerInfos.Water.amount);
+
+    }
+
     public void TriggerAmount(int amount)
     {
         u_waterAmount.text = amount.ToString();
@@ -280,6 +296,7 @@ public class WaterSL : MonoBehaviour
                 FarmLogic.instance.Slots[i].GetComponent<FarmingTS>().LoadUI();
         for (int i = 0; i < ForestLogic.instance.Slots.Count; i++)
             ForestLogic.instance.Slots[i].GetComponent<TreeSlot>().LoadUI();
+        Calculate(out int cost);
     }
 
     public void UpdateWaterAmount()

@@ -35,8 +35,8 @@ public class MyShop : MonoBehaviour
     };
     public Dictionary<AProducts, int> AProductPR = new Dictionary<AProducts, int>()
     {
-        { AProducts.Egg, 8 },           { AProducts.Ch_Meat, 150 },         { AProducts.Milk, 10 },
-        { AProducts.Cow_Meat, 250 },    { AProducts.Wool, 20 },             { AProducts.Bacon, 120 },
+        { AProducts.Egg, 8 },       { AProducts.ChickenMeat, 150 },     { AProducts.Milk, 10 },
+        { AProducts.Beef, 250 },    { AProducts.Wool, 20 },             { AProducts.Bacon, 120 },
     };
     public Dictionary<Products, int> ProductPR = new Dictionary<Products, int>()
     {
@@ -190,47 +190,42 @@ public class MyShop : MonoBehaviour
         {
             Plants p = (Plants)item;
             PriceRange = new Vector2(1, PlantPR[p]);
-            if (StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == p).count < 10)
-                maxcount = StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == p).count;
+            if (Storage.instance.GetCountOf(p) < 10) maxcount = Storage.instance.GetCountOf(p);
             else maxcount = 10;
         }
         else if (item is Fruits)
         {
             Fruits f = (Fruits)item;
             PriceRange = new Vector2(1, FruitPR[f]);
-            if (StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == f).count < 10)
-                maxcount = StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == f).count;
+            if (Storage.instance.GetCountOf(f) < 10) maxcount = Storage.instance.GetCountOf(f);
             else maxcount = 10;
         }
         else if (item is AProducts)
         {
             AProducts ap = (AProducts)item;
             PriceRange = new Vector2(1, AProductPR[ap]);
-            if (StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == ap).count < 10)
-                maxcount = StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == ap).count;
+            if (Storage.instance.GetCountOf(ap) < 10) maxcount = Storage.instance.GetCountOf(ap);
             else maxcount = 10;
         }
         else if (item is Products)
         {
             Products ap = (Products)item;
             PriceRange = new Vector2(1, ProductPR[ap]);
-            if (StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == ap).count < 10)
-                maxcount = StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == ap).count;
-            else
-                maxcount = 10;
+            if (Storage.instance.GetCountOf(ap) < 10) maxcount = Storage.instance.GetCountOf(ap);
+            else maxcount = 10;
         }
         else if (item is Items)
         {
             Items it = (Items)item;
             PriceRange = new Vector2(1, ItemPR[it]);
-            if (!Storage.instance.hasEnought(it, 10, false)) maxcount = StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == it).count;
+            if (!Storage.instance.hasEnought(it, 10, false)) maxcount = Storage.instance.GetCountOf(it);
             else maxcount = 10;
         }
         else if (item is a_f_types)
         {
             a_f_types af = (a_f_types)item;
             PriceRange = new Vector2(1, afPR[af]);
-            if (!Storage.instance.hasEnought(af, 10, false)) maxcount = StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == af).amount;
+            if (!Storage.instance.hasEnought(af, 10, false)) maxcount = Storage.instance.GetCountOf(af);
             else maxcount = 10;
         }
         TempPriceRange = PriceRange;

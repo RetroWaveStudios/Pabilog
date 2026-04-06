@@ -55,7 +55,7 @@ public class PlantsHolder : MonoBehaviour
                     int chosen = hindex;
                     button.onClick.AddListener(() => PHChoosePlant(chosen, p));
 
-                    dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant == p).sprite;
+                    dublicate.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(p);
 
                     #region Info Button detailing
                         GameObject ib = Instantiate(Sprites.instance.InfoButtonPrefab, dublicate.transform);
@@ -77,7 +77,7 @@ public class PlantsHolder : MonoBehaviour
                     GameObject dublicate = Instantiate(Sprites.instance.LockedHolderPrefab, ph);
                     dublicate.transform.name = "locked " + p.ToString();
 
-                    dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant == p).sprite;
+                    dublicate.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(p);
                     dublicate.GetComponent<Image>().color = new Color32(77, 77, 77, 255);
 
                     int level = 0;
@@ -91,40 +91,6 @@ public class PlantsHolder : MonoBehaviour
                 }
             }
         }
-
-        /*
-        if (StaticDatas.PlayerData.unlocked_items.u_plants != null || StaticDatas.PlayerData.unlocked_items.u_plants.Count > 0)
-        {
-            for (int i = 0; i < StaticDatas.PlayerData.unlocked_items.u_plants.Count; i++)
-            {
-                Plants p = StaticDatas.PlayerData.unlocked_items.u_plants[i];
-                    Debug.Log("working on Plant " + p);
-                    GameObject dublicate = Instantiate(Sprites.instance.HolderPrefab, ph);
-                    dublicate.transform.name = p.ToString();
-
-                    Button button = dublicate.GetComponent<Button>();
-                    button.onClick.RemoveAllListeners();
-                    int chosen = hindex;
-                    button.onClick.AddListener(() => PHChoosePlant(chosen, p));
-
-                    dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant == p).sprite;
-
-                    #region Info Button detailing
-                        GameObject ib = Instantiate(Sprites.instance.InfoButtonPrefab, dublicate.transform);
-                        RectTransform ibrts = ib.GetComponent<RectTransform>();
-                        ibrts.anchoredPosition = new Vector2(0, 10);
-                        ibrts.anchorMax = new Vector2(0.5f, 1);
-                        ibrts.anchorMin = new Vector2(0.5f, 1);
-                        ib.GetComponent<InfoDetails>().btn.onClick.RemoveAllListeners();
-                        ib.GetComponent<InfoDetails>().btn.onClick.AddListener(() => ib.GetComponent<InfoDetails>().DetailsOnOff("CT", "Item", p, null, chosen));
-                    #endregion
-
-                    PlantsInPH.Add(dublicate);
-                    UpdateCountOfPlants();
-                    hindex++;
-            }
-        }
-        */
 
         GridLayoutGroup glg = ph.GetComponent<GridLayoutGroup>();
         RectTransform rts = ph.GetComponent<RectTransform>();
@@ -172,13 +138,13 @@ public class PlantsHolder : MonoBehaviour
             if (Storage.instance.hasEnought(p, 1, false))
             {
                 plant.transform.Find("Details/Count").gameObject.SetActive(true);
-                plant.transform.Find("Details/Count").GetComponent<TextMeshProUGUI>().text = Storage.instance.Boxes.Find(e => e.GetComponent<S_Box>().plant == p).GetComponent<S_Box>().count.ToString();
+                plant.transform.Find("Details/Count").GetComponent<TextMeshProUGUI>().text = Storage.instance.GetCountOf(p).ToString();
             }
             else
             {
                 plant.transform.Find("Details/Price").gameObject.SetActive(true);
                 plant.transform.Find("Details/Icon").gameObject.SetActive(true);
-                plant.transform.Find("Details/Icon").GetComponent<Image>().sprite = Sprites.instance.sprites.currencies.Find(e => e.Currency == Currency.Crystal).sprite;
+                plant.transform.Find("Details/Icon").GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(Currency.Crystal);
                 plant.transform.Find("Details/Price").GetComponent<TextMeshProUGUI>().text = "1";
             }
         }

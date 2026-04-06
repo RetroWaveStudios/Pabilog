@@ -19,8 +19,8 @@ public class AHolder : MonoBehaviour
 
     private Dictionary<Animals, (AProducts, AProducts)> products = new Dictionary<Animals, (AProducts, AProducts)>()
     {
-        { Animals.Chicken, (AProducts.Egg, AProducts.Ch_Meat) },
-        { Animals.Cow, (AProducts.Milk, AProducts.Cow_Meat) },
+        { Animals.Chicken, (AProducts.Egg, AProducts.ChickenMeat) },
+        { Animals.Cow, (AProducts.Milk, AProducts.Beef) },
         { Animals.Sheep, (AProducts.Wool, AProducts.None) },
         { Animals.Pig, (AProducts.Bacon, AProducts.None) },
     };
@@ -74,7 +74,7 @@ public class AHolder : MonoBehaviour
 
                     dublicate.transform.Find("Details/Price").gameObject.SetActive(true);
                     dublicate.transform.Find("Details/Icon").gameObject.SetActive(true);
-                    dublicate.transform.Find("Details/Icon").GetComponent<Image>().sprite = Sprites.instance.sprites.currencies.Find(e => e.Currency == Currency.Coin).sprite;
+                    dublicate.transform.Find("Details/Icon").GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(Currency.Coin);
                     dublicate.transform.Find("Details/Price").GetComponent<TextMeshProUGUI>().text = AnimalsLogic.instance.AnimalsDetails.Find(e => e.animal == a).a_price.ToString();
 
                     Debug.Log("spotnumber = " + spotnumber);
@@ -133,7 +133,7 @@ public class AHolder : MonoBehaviour
                         AnimalSpot ans = AnimalsLogic.instance.Spots[spotnumber].GetComponent<AnimalSpot>();
 
                         Image image = dublicate.GetComponent<Image>();
-                        image.sprite = Sprites.instance.sprites.a_products.Find(e => e.a_product == ap).sprite;
+                        image.sprite = Sprites.instance.GetSpriteFromSource(ap);
 
                         dublicate.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 100);
 

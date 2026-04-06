@@ -3209,7 +3209,7 @@ RectTransform:
   m_Father: {fileID: 273570201}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 0.9999928}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -4347,7 +4347,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -386.2, y: 274.10022}
+  m_AnchoredPosition: {x: -386.2, y: 274.1}
   m_SizeDelta: {x: 790, y: 548}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &310559751
@@ -5437,31 +5437,22 @@ MonoBehaviour:
   ItProPers:
   - item: 0
     count: 30
-    name: 
   - item: 1
     count: 27
-    name: 
   - item: 2
     count: 10
-    name: 
   - item: 3
     count: 10
-    name: 
   - item: 4
     count: 10
-    name: 
   - item: 5
     count: 4
-    name: 
   - item: 6
     count: 4
-    name: 
   - item: 7
     count: 4
-    name: 
   - item: 8
     count: 1
-    name: 
   itemPool: 
   openedNumbers: []
   openedItems: 
@@ -6608,7 +6599,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &438493623
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6624,9 +6615,9 @@ RectTransform:
   - {fileID: 880862000}
   m_Father: {fileID: 1906839591}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 40, y: -691.10004}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &438493624
@@ -10552,12 +10543,10 @@ MonoBehaviour:
       p_Used:
       - Plant: 0
         count: 1
-        name: 
       f_used: []
       ap_Used:
       - animal_products: 0
         count: 1
-        name: 
       pr_Used: []
       prTimer: 5
       Time: 
@@ -10569,12 +10558,10 @@ MonoBehaviour:
       p_Used:
       - Plant: 1
         count: 1
-        name: 
       f_used: []
       ap_Used:
       - animal_products: 0
         count: 1
-        name: 
       pr_Used: []
       prTimer: 10
       Time: 
@@ -10586,16 +10573,13 @@ MonoBehaviour:
       p_Used:
       - Plant: 0
         count: 2
-        name: 
       f_used: []
       ap_Used:
       - animal_products: 0
         count: 1
-        name: 
       pr_Used:
       - product: 19
         count: 1
-        name: 
       prTimer: 30
       Time: 
       amount: 1
@@ -10606,16 +10590,13 @@ MonoBehaviour:
       p_Used:
       - Plant: 4
         count: 1
-        name: 
       f_used: []
       ap_Used: []
       pr_Used:
       - product: 3
         count: 1
-        name: 
       - product: 2
         count: 1
-        name: 
       prTimer: 60
       Time: 
       amount: 1
@@ -10626,19 +10607,15 @@ MonoBehaviour:
       p_Used:
       - Plant: 4
         count: 1
-        name: 
       f_used: []
       ap_Used:
       - animal_products: 1
         count: 1
-        name: 
       pr_Used:
       - product: 3
         count: 1
-        name: 
       - product: 2
         count: 1
-        name: 
       prTimer: 120
       Time: 
       amount: 1
@@ -10649,19 +10626,15 @@ MonoBehaviour:
       p_Used:
       - Plant: 4
         count: 1
-        name: 
       - Plant: 8
         count: 2
-        name: 
       f_used: []
       ap_Used: []
       pr_Used:
       - product: 3
         count: 1
-        name: 
       - product: 2
         count: 1
-        name: 
       prTimer: 120
       Time: 
       amount: 1
@@ -10676,7 +10649,6 @@ MonoBehaviour:
       ap_Used:
       - animal_products: 2
         count: 1
-        name: 
       pr_Used: []
       prTimer: 30
       Time: 
@@ -10690,7 +10662,6 @@ MonoBehaviour:
       ap_Used:
       - animal_products: 2
         count: 2
-        name: 
       pr_Used: []
       prTimer: 60
       Time: 
@@ -10704,7 +10675,6 @@ MonoBehaviour:
       ap_Used:
       - animal_products: 2
         count: 3
-        name: 
       pr_Used: []
       prTimer: 120
       Time: 
@@ -10718,7 +10688,6 @@ MonoBehaviour:
       p_Used:
       - Plant: 1
         count: 2
-        name: 
       f_used: []
       ap_Used: []
       pr_Used: []
@@ -10732,13 +10701,11 @@ MonoBehaviour:
       p_Used:
       - Plant: 1
         count: 2
-        name: 
       f_used: []
       ap_Used: []
       pr_Used:
       - product: 1
         count: 1
-        name: 
       prTimer: 90
       Time: 
       amount: 0
@@ -10749,10 +10716,8 @@ MonoBehaviour:
       p_Used:
       - Plant: 1
         count: 2
-        name: 
       - Plant: 8
         count: 1
-        name: 
       f_used: []
       ap_Used: []
       pr_Used: []
@@ -10768,19 +10733,15 @@ MonoBehaviour:
       p_Used:
       - Plant: 0
         count: 2
-        name: 
       f_used:
       - Fruit: 0
         count: 2
-        name: 
       ap_Used:
       - animal_products: 0
         count: 1
-        name: 
       pr_Used:
       - product: 19
         count: 1
-        name: 
       prTimer: 120
       Time: 
       amount: 1
@@ -10791,19 +10752,15 @@ MonoBehaviour:
       p_Used:
       - Plant: 0
         count: 2
-        name: 
       - Plant: 2
         count: 2
-        name: 
       f_used: []
       ap_Used:
       - animal_products: 0
         count: 1
-        name: 
       pr_Used:
       - product: 19
         count: 1
-        name: 
       prTimer: 150
       Time: 
       amount: 1
@@ -10814,19 +10771,15 @@ MonoBehaviour:
       p_Used:
       - Plant: 0
         count: 2
-        name: 
       f_used: []
       ap_Used:
       - animal_products: 0
         count: 1
-        name: 
       - animal_products: 6
         count: 2
-        name: 
       pr_Used:
       - product: 19
         count: 1
-        name: 
       prTimer: 210
       Time: 
       amount: 1
@@ -10839,7 +10792,6 @@ MonoBehaviour:
       p_Used:
       - Plant: 6
         count: 2
-        name: 
       f_used: []
       ap_Used: []
       pr_Used: []
@@ -10854,7 +10806,6 @@ MonoBehaviour:
       f_used:
       - Fruit: 0
         count: 2
-        name: 
       ap_Used: []
       pr_Used: []
       prTimer: 60
@@ -10868,22 +10819,19 @@ MonoBehaviour:
       f_used:
       - Fruit: 2
         count: 2
-        name: 
       ap_Used: []
       pr_Used: []
       prTimer: 60
       Time: 
       amount: 1
       xp: 30
-  machPrefab: {fileID: 504724544448982185, guid: 01b2163df5d861142a3866ad57602872, type: 3}
-  buyMachPrefab: {fileID: 504724544448982185, guid: 5b5eb5b624211404a946f459e3bcb246, type: 3}
-  ActiveMachines: []
+  machPrefab: {fileID: 504724544448982185, guid: 5b5eb5b624211404a946f459e3bcb246, type: 3}
+  Machines: []
   MachinesSprites:
-  - {fileID: 21300000, guid: 006dbefbf1117d24e9b983d0f26ec554, type: 3}
-  - {fileID: 21300000, guid: 827adf714687d4f41a4292ae74d91cea, type: 3}
-  - {fileID: 21300000, guid: 9d1cba987e2f69b4fb42466d433887f1, type: 3}
-  - {fileID: 21300000, guid: 08b26bf0c2394414fb3027cbf8296743, type: 3}
-  - {fileID: 21300000, guid: eb1e434d608192c468f57ed9d7ef5ec6, type: 3}
+  - {fileID: 21300000, guid: bfeb709d140910e43b7515d27360669d, type: 3}
+  - {fileID: 21300000, guid: 1e4cfa97b80fb3542884e553b39dd3b5, type: 3}
+  - {fileID: 21300000, guid: f3e1a58ee9fcc434cbd841db94f807ae, type: 3}
+  - {fileID: 21300000, guid: 74ef24762a7af644f89872f82c78cba0, type: 3}
 --- !u!225 &717300390
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -13046,8 +12994,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1273446541}
   m_HandleRect: {fileID: 1273446540}
   m_Direction: 2
-  m_Value: -0.00091547146
-  m_Size: 0.99962777
+  m_Value: 0.00030506405
+  m_Size: 0.9986148
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -13228,7 +13176,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -386.2, y: 274.70016}
+  m_AnchoredPosition: {x: -386.2, y: 274.70004}
   m_SizeDelta: {x: 790, y: 548}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &831614703
@@ -13871,9 +13819,9 @@ RectTransform:
   m_Father: {fileID: 360754880}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -17, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &853194272
 MonoBehaviour:
@@ -15856,7 +15804,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: 1.0601171}
+  m_AnchoredPosition: {x: 0, y: 1.0601077}
   m_SizeDelta: {x: 723, y: 1080.9}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &946802461
@@ -17886,7 +17834,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1014632325
 RectTransform:
   m_ObjectHideFlags: 0
@@ -19329,9 +19277,9 @@ RectTransform:
   m_Father: {fileID: 644321101}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -17, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1149738207
 MonoBehaviour:
@@ -21387,7 +21335,7 @@ RectTransform:
   m_Father: {fileID: 1964470653}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 0.99962777}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -22907,9 +22855,9 @@ RectTransform:
   - {fileID: 644321101}
   m_Father: {fileID: 1014632325}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 425, y: -1118.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 820, y: 579}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1378118674
@@ -24610,9 +24558,9 @@ RectTransform:
   - {fileID: 2115201739}
   m_Father: {fileID: 1014632325}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 425, y: -1710.2}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 286.6, y: 104.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1501643407
@@ -24742,7 +24690,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -332.5, y: 13004926}
+  m_AnchoredPosition: {x: -332.5, y: 12953878}
   m_SizeDelta: {x: 664, y: 800}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1501697308
@@ -27877,7 +27825,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 211763094}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9999928
+  m_Size: 0.998987
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -28876,7 +28824,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1341554299}
   m_Direction: 2
   m_Value: -0.000115154304
-  m_Size: 0.97423446
+  m_Size: 0.9969953
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -36053,9 +36001,9 @@ RectTransform:
   - {fileID: 1731703231}
   m_Father: {fileID: 1014632325}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 425, y: -289.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 820, y: 579}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2128907677

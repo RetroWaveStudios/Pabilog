@@ -185,8 +185,7 @@ public class AnimalsLogic : MonoBehaviour
     
     public void PopulateFoodChooser()
     {
-        TheFoodImage.sprite = Sprites.instance.sprites.AnimalFoodSprites
-            .Find(e => e.food == TheFood).sprite;
+        TheFoodImage.sprite = Sprites.instance.GetSpriteFromSource(TheFood);
 
         foreach (Transform item in FoodsHolder) { Destroy(item.gameObject); Foods.Clear(); }
         foreach (Transform fitem in FoodPL.instance.transform.Find("Food Producer/Foods in Storage/Holder")) Destroy(fitem.gameObject);
@@ -197,7 +196,7 @@ public class AnimalsLogic : MonoBehaviour
                 GameObject dublicate = Instantiate(FoodPrefab, FoodsHolder);
                 dublicate.transform.name = StaticDatas.PlayerData.PlayerInfos.Food.materials[i].material.ToString() + " Animal Food";
                 dublicate.GetComponent<Image>().sprite =
-                    Sprites.instance.sprites.AnimalFoodSprites.Find(e => e.food == foodnames[i]).sprite;
+                    Sprites.instance.GetSpriteFromSource(foodnames[i]);
                 int index = i;
                 if (Storage.instance.hasEnought(foodnames[i], 1, false))
                 {
@@ -231,7 +230,7 @@ public class AnimalsLogic : MonoBehaviour
         if (Storage.instance.hasEnought(food, 1, true))
         {
             TheFood = food;
-            TheFoodImage.sprite = Sprites.instance.sprites.AnimalFoodSprites.Find(e => e.food == TheFood).sprite;
+            TheFoodImage.sprite = Sprites.instance.GetSpriteFromSource(TheFood);
             OpenFoodChooser(false);
             for (int i = 0; i < Spots.Count; i++)
                 if (Spots[i].GetComponent<AnimalSpot>().TheAnimal.state == AState.Fertilizing && !Spots[i].GetComponent<AnimalSpot>().TheAnimal.hasFood) Spots[i].GetComponent<AnimalSpot>().CalculateFoodCount();

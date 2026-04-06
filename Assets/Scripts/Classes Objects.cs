@@ -25,10 +25,10 @@ public enum Plants
     Wheat,
     Corn,
     Carrot,
-    Potato,
+    SugarCane,
     Tomato,
     Onion,
-    SugarCane,
+    Potato,
     Herbs,
     Spice,
     Cotton,
@@ -74,11 +74,11 @@ public enum AState
 public enum AProducts
 {
     Egg,
-    Ch_Meat,
+    ChickenMeat,
     Milk,
-    Cow_Meat,
+    Beef,
     Wool,
-    Sh_Meat,
+    SheepMeat,
     Bacon,
     None
 }
@@ -616,9 +616,11 @@ public class afAmount : IStorageItem
     public Category category;
     public a_f_types food;
     public int amount;
+    public string name;
 
 
     public int Count => amount;
+    public string Name => name;
     public object Item => food;
 }
 
@@ -757,6 +759,15 @@ public class LevelSystem
 
 #endregion
 
+
+    [System.Serializable]
+    public class Unlocked_Machines
+    {
+        public Machines machEnum;
+        public string MachineName;
+        public bool bought;
+    }
+
     [System.Serializable]
     public class u_items
     {
@@ -764,7 +775,7 @@ public class LevelSystem
         public List<Fruits> u_fruits;
         public List<Animals> u_animals;
         public List<AProducts> u_a_products;
-        public List<string> u_machines;
+        public List<Unlocked_Machines> u_machines;
         public List<Products> u_Products;
     }
 
@@ -774,8 +785,10 @@ public class LevelSystem
     {
         public object item;
         public int count;
+        public string name;
 
         public int Count => count;
+        public string Name => name;
         public object Item => item;
     }
 
@@ -783,6 +796,7 @@ public class LevelSystem
     {
         int Count { get; }
         object Item { get; }
+        string Name { get; }
     }
 
     [System.Serializable]
@@ -790,50 +804,59 @@ public class LevelSystem
     {
         public Plants Plant;
         public int count;
+        public string name;
 
         public int Count => count;
+        public string Name => name;
         public object Item => Plant;
     }
     [System.Serializable]
 
     public class FruitCount : IStorageItem
-{
+    {
         public Fruits Fruit;
         public int count;
-
+        public string name;
         public int Count => count;
+        public string Name => name;
         public object Item => Fruit;
-}
+    }
 
     [System.Serializable]
     public class APCount : IStorageItem
-{
+    {
         public AProducts animal_products;
         public int count;
+        public string name;
 
         public int Count => count;
+        public string Name => name;
         public object Item => animal_products;
-}
+    }
 
     [System.Serializable]
     public class ProductCount : IStorageItem
-{
+    {
         public Products product;
         public int count;
+        public string name;
 
         public int Count => count;
+        public string Name => name;
         public object Item => product;
-}
+    }
 
     [System.Serializable]
     public class ItemCount : IStorageItem
-{
+    {
         public Items item;
         public int count;
+        public string name;
 
         public int Count => count;
+        public string Name => name;
         public object Item => item;
-}
+    }
 
 [System.Serializable]
     public class StorageItems

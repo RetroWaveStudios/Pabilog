@@ -170,10 +170,10 @@ public class Storage : MonoBehaviour
         rts.sizeDelta = new Vector2(660, size);
     }
 
-    public bool hasEnStorage(int reqAmount)
+    public bool hasEnStorage(int reqAmount, bool callBack)
     {
         if (LevelReqs[StaticDatas.PlayerData.StorageLevel - 1].Capacity - SumCount() >= reqAmount) return true;
-        else PushNotice.instance.Push("No Space in Storage", PushType.Alert); return false;
+        else { if(callBack)PushNotice.instance.Push("No Space in Storage", PushType.Alert); return false; }
     }
 
     public int SumCount()
@@ -202,39 +202,12 @@ public class Storage : MonoBehaviour
 
     public int GetCountOf(object item)
     {
-        for (int i = 0; i < Boxes.Count; i++)
-        {
-            S_Box s = Boxes[i].GetComponent<S_Box>();
-            if (s.category == Category.Plants && item is Plants)
-            {
-                if (s.plant == (Plants)item) { Debug.Log($"item found: {(Plants)item} count: {s.count}"); return s.count; }
-            }
-
-            else if (s.category == Category.Fruits && item is Fruits)
-            {
-                if (s.fruit == (Fruits)item) { Debug.Log($"item found: {(Fruits)item} count: {s.count}"); return s.count; }
-            }
-
-            else if (s.category == Category.AnimalFood && item is a_f_types)
-            {
-                if(s.Food == (a_f_types)item) { Debug.Log($"item found: {(a_f_types)item} count: {s.count}"); return s.count; }
-            }
-
-            else if (s.category == Category.AProducts && item is AProducts)
-            {
-                if (s.animal_product == (AProducts)item) { Debug.Log($"item found: {(AProducts)item} count: {s.count}"); return s.count; }
-            }
-
-            else if (s.category == Category.Products && item is Products)
-            {
-                if (s.product == (Products)item) { Debug.Log($"item found: {(Products)item} count: {s.count}"); return s.count; }
-            }
-
-            else if (s.category == Category.Items && item is Items)
-            {
-                if (s.item == (Items)item) { Debug.Log($"item found: {(Items)item} count: {s.count}"); return s.count; }
-            }
-        }
+        if (item is Plants) { if (StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant.Equals((Plants)item)) != null) return StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant.Equals((Plants)item)).count; else return 0; }
+        else if (item is Fruits) { if (StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit.Equals((Fruits)item)) != null) return StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit.Equals((Fruits)item)).count; else return 0; }
+        else if (item is AProducts) { if (StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products.Equals((AProducts)item)) != null) return StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products.Equals((AProducts)item)).count; else return 0; }
+        else if (item is Products) { if (StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product.Equals((Products)item)) != null) return StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product.Equals((Products)item)).count; else return 0; }
+        else if (item is Items) { if (StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item.Equals((Items)item)) != null) return StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item.Equals((Items)item)).count; else return 0; }
+        else if (item is a_f_types) { if (StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food.Equals((a_f_types)item)) != null) return StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food.Equals((a_f_types)item)).amount; else return 0; }
         return 0;
     }
 
@@ -259,11 +232,15 @@ public class Storage : MonoBehaviour
         // Find existing entry
         if (StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == plant) == null)
         {
-            StaticDatas.PlayerData.Storage.PlantsInStorage.Add(new PlantCount { Plant = plant, count = count });
+            StaticDatas.PlayerData.Storage.PlantsInStorage.Add(new PlantCount { Plant = plant, count = count, name = plant.ToString() });
             AddBox(plant, StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == plant).count, Category.Plants);
         }
         else
+        {
             StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == plant).count += count;
+            if (string.IsNullOrEmpty(StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == plant).name))
+                StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == plant).name = plant.ToString();
+        }
         StaticDatas.SaveDatas();
         PopulateBoxItems();
     }
@@ -273,11 +250,15 @@ public class Storage : MonoBehaviour
         // Find existing entry
         if (StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == fruit) == null)
         {
-            StaticDatas.PlayerData.Storage.FruitInStorage.Add(new FruitCount { Fruit = fruit, count = count });
+            StaticDatas.PlayerData.Storage.FruitInStorage.Add(new FruitCount { Fruit = fruit, count = count, name = fruit.ToString() });
             AddBox(fruit, StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == fruit).count, Category.Fruits);
         }
         else
+        {
             StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == fruit).count += count;
+            if (string.IsNullOrEmpty(StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == fruit).name))
+                StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == fruit).name = fruit.ToString();
+        }
         StaticDatas.SaveDatas();
         PopulateBoxItems();
     }
@@ -288,11 +269,15 @@ public class Storage : MonoBehaviour
         if (StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == ap) == null)
         {
             // Add new if not found
-            StaticDatas.PlayerData.Storage.a_p_inStorage.Add(new APCount { animal_products = ap, count = count });
+            StaticDatas.PlayerData.Storage.a_p_inStorage.Add(new APCount { animal_products = ap, count = count, name = ap.ToString() });
             AddBox(ap, StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == ap).count,Category.AProducts);
         }
-        else 
+        else
+        {
             StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == ap).count += count;
+            if (string.IsNullOrEmpty(StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == ap).name))
+                StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == ap).name = ap.ToString();
+        }
         StaticDatas.SaveDatas();
         PopulateBoxItems();
     }
@@ -303,11 +288,15 @@ public class Storage : MonoBehaviour
         if (StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == pr) == null)
         {
             // Add new if not found
-            StaticDatas.PlayerData.Storage.ProductsInStorage.Add(new ProductCount { product = pr, count = count });
+            StaticDatas.PlayerData.Storage.ProductsInStorage.Add(new ProductCount { product = pr, count = count, name = pr.ToString() });
             AddBox(pr, StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == pr).count, Category.Products);
         }
         else
+        {
             StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == pr).count += count;
+            if (string.IsNullOrEmpty(StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == pr).name))
+                StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == pr).name = pr.ToString();
+        }
         StaticDatas.SaveDatas();
         PopulateBoxItems();
     }
@@ -318,16 +307,20 @@ public class Storage : MonoBehaviour
         if (StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == item) == null)
         {
             // Add new if not found
-            StaticDatas.PlayerData.Storage.ItemsInStorage.Add(new ItemCount { item = item, count = count });
+            StaticDatas.PlayerData.Storage.ItemsInStorage.Add(new ItemCount { item = item, count = count, name = item.ToString() });
             AddBox(item, StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == item).count, Category.Items);
         }
         else
+        {
             StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == item).count += count;
+            if (string.IsNullOrEmpty(StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == item).name))
+                StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == item).name = item.ToString();
+        }
 
         StaticDatas.SaveDatas();
         PopulateBoxItems();
-        for (int i = 0; i < ProductionLogic.instance.Machines.Count; i++)
-            if (ProductionLogic.instance.Machines[i].GetComponent<Machine>().mStats.state == ASpotState.Broken) ProductionLogic.instance.Machines[i].GetComponent<Machine>().PopulateFixers();
+        for (int i = 0; i < ProductionLogic.instance.ActiveMachines.Count; i++)
+            if (ProductionLogic.instance.ActiveMachines[i].GetComponent<Machine>().mStats.state == ASpotState.Broken) ProductionLogic.instance.ActiveMachines[i].GetComponent<Machine>().PopulateFixers();
         for (int i = 0; i < FarmLogic.instance.Slots.Count; i++) FarmLogic.instance.Slots[i].GetComponent<FarmingTS>().LoadUI();
     }
 
@@ -335,13 +328,17 @@ public class Storage : MonoBehaviour
     {
         bool add = false;
         if (StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == food) == null){
-            StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Add(new afAmount() { food = food, amount = amount }); add = true;
+            StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Add(new afAmount() { food = food, amount = amount, name = food.ToString() }); add = true;
         }
         else if (StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == food).amount == 0){
             StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == food).amount += amount; add = true;
         }
         else
+        {
             StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == food).amount += amount;
+            if (string.IsNullOrEmpty(StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == food).name))
+                StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == food).name = food.ToString();
+        }
 
         if (add)
             AddBox(food, StaticDatas.PlayerData.PlayerInfos.Food.Amounts.Find(e => e.food == food).amount, Category.AnimalFood);
@@ -371,15 +368,15 @@ public class Storage : MonoBehaviour
             if (s.count <= 0)
             {
                 if (s.category == Category.Plants)StaticDatas.PlayerData.Storage.PlantsInStorage.
-                        Remove(StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == s.plant));
+                        Remove(StaticDatas.PlayerData.Storage.PlantsInStorage.Find(e => e.Plant == (Plants)s.theItem));
                 else if (s.category == Category.Fruits)StaticDatas.PlayerData.Storage.FruitInStorage.
-                        Remove(StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == s.fruit));
+                        Remove(StaticDatas.PlayerData.Storage.FruitInStorage.Find(e => e.Fruit == (Fruits)s.theItem));
                 else if (s.category == Category.AProducts)StaticDatas.PlayerData.Storage.a_p_inStorage.
-                        Remove(StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == s.animal_product));
+                        Remove(StaticDatas.PlayerData.Storage.a_p_inStorage.Find(e => e.animal_products == (AProducts)s.theItem));
                 else if (s.category == Category.Products)StaticDatas.PlayerData.Storage.ProductsInStorage.
-                        Remove(StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == s.product));
+                        Remove(StaticDatas.PlayerData.Storage.ProductsInStorage.Find(e => e.product == (Products)s.theItem));
                 else if (s.category == Category.Items)StaticDatas.PlayerData.Storage.ItemsInStorage.
-                        Remove(StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == s.item));
+                        Remove(StaticDatas.PlayerData.Storage.ItemsInStorage.Find(e => e.item == (Items)s.theItem));
                 Destroy(Boxes[i].gameObject);
                 Boxes.RemoveAt(i);
             }
@@ -388,23 +385,11 @@ public class Storage : MonoBehaviour
         currentCount.text = SumCount().ToString();
         capacityCount.text = LevelReqs[StaticDatas.PlayerData.StorageLevel - 1].Capacity.ToString();
     }
-
+    
     public bool hasEnought(object item, int count, bool push)
     {
-        for (int i = 0; i < Boxes.Count; i++)
-        {
-            if (Boxes[i] == null) { Debug.Log("Boxes[i] == null for " + item); return false; }
-            S_Box s = Boxes[i].GetComponent<S_Box>();
-            if (s == null) { Debug.Log("s is null"); return false; }
-            if (s.category == Category.Plants && item is Plants) { if (s.plant == (Plants)item && s.count >= count) return true; }
-            else if (s.category == Category.Fruits && item is Fruits) { if (s.fruit == (Fruits)item && s.count >= count) return true; }
-            else if (s.category == Category.AnimalFood && item is a_f_types) { if (s.Food == (a_f_types)item && s.count >= count) return true; }
-            else if (s.category == Category.AProducts && item is AProducts){ if (s.animal_product == (AProducts)item && s.count >= count) return true; }
-            else if (s.category == Category.Products && item is Products){ if (s.product == (Products)item && s.count >= count)  return true; }
-            else if (s.category == Category.Items && item is Items){ if(s.item == (Items)item && s.count >= count) return true; }
-        }
-        if(push) PushNotice.instance.Push("No Enough Resources", PushType.Alert);
-        return false;
+        if (GetCountOf(item) >= count) return true;
+        else { if (push) PushNotice.instance.Push("No Enough Resources", PushType.Alert); return false; }
     }
 
     #region Storage Expand

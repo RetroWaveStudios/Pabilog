@@ -53,7 +53,7 @@ public class Machine : MonoBehaviour
         machineName = mStats.MachineName;
         gameObject.transform.name = mProducts.MachineName;
         mName.text = mProducts.MachineName.ToString();
-        gameObject.GetComponent<Image>().sprite = ProductionLogic.instance.MachinesSprites.Find(e => e.name == mProducts.MachineName);
+        transform.Find("Machine Image").GetComponent<Image>().sprite = ProductionLogic.instance.MachinesSprites.Find(e => e.name == mProducts.MachineName + " Image");
         ShelfHolder = gameObject.transform.Find("Shelf Holder");
         ShelfHolder.gameObject.SetActive(false);
 
@@ -107,14 +107,18 @@ public class Machine : MonoBehaviour
                 }
                 else if (TheProduct.state == AState.Fertilizing)
                 {
-                    if (!qEditing && queue.Count > 0)
+                    if (!qEditing && queue.Count > 0){
                         queue[0].transform.Find("BG").GetComponent<Image>().color = Color.darkBlue;
+                        queue[0].transform.Find("Skip Button").gameObject.SetActive(true);
+                    }
                     prHolder.gameObject.SetActive(false); switchBtn.SetActive(false); timerPot.SetActive(true);
                 }
                 else if (TheProduct.state == AState.ReadyToCollect)
                 {
-                    if (!qEditing && queue.Count > 0)
+                    if (!qEditing && queue.Count > 0){
                         queue[0].transform.Find("BG").GetComponent<Image>().color = Color.green;
+                        queue[0].transform.Find("Skip Button").gameObject.SetActive(false);
+                    }
                     timerPot.SetActive(false);
                 }
             }
@@ -125,14 +129,12 @@ public class Machine : MonoBehaviour
                 {
                     if (!qEditing && queue.Count > 0)
                         queue[0].transform.Find("BG").GetComponent<Image>().color = Color.darkBlue;
-                        queue[0].transform.Find("Skip Button").gameObject.SetActive(true);
                     timerPot.SetActive(true);
                 }
                 else if (TheProduct.state == AState.ReadyToCollect)
                 {
                     if (!qEditing && queue.Count > 0)
                         queue[0].transform.Find("BG").GetComponent<Image>().color = Color.green;
-                        queue[0].transform.Find("Skip Button").gameObject.SetActive(false);
                     timerPot.SetActive(false);
                 }
             }
@@ -524,7 +526,7 @@ public class Machine : MonoBehaviour
 
     private void CollectProduct()
     {
-        if (TheProduct.state == AState.ReadyToCollect && Storage.instance.hasEnStorage(TheProduct.amount))
+        if (TheProduct.state == AState.ReadyToCollect && Storage.instance.hasEnStorage(TheProduct.amount, true))
         {
             foreach (Transform item in ShelfHolder) Destroy(item.gameObject); ShelfHolder.gameObject.SetActive(false);
 

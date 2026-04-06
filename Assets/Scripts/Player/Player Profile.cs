@@ -103,7 +103,7 @@ public class PlayerProfile : MonoBehaviour
             {
                 Debug.Log("Level " + (level.LevelNumber + 1) + " has plant to unlock");
                 GameObject dublicate = Instantiate(PlantPrefab, irHolder);
-                dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.plants.Find(e => e.plant == rewards[level.LevelNumber - 1].Plant[i]).sprite;
+                dublicate.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(rewards[level.LevelNumber - 1].Plant[i]);
                 dublicate.transform.Find("Price").gameObject.SetActive(false);
                 dublicate.GetComponent<RectTransform>().sizeDelta = new Vector2(30, 30);
             }
@@ -114,7 +114,7 @@ public class PlayerProfile : MonoBehaviour
             {
                 Debug.Log("Level " + (level.LevelNumber + 1) + " has fruit to unlock");
                 GameObject dublicate = Instantiate(PlantPrefab, irHolder);
-                dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.fruits.Find(e => e.fruit == rewards[level.LevelNumber - 1].Trees[i]).sprite;
+                dublicate.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(rewards[level.LevelNumber - 1].Trees[i]);
                 dublicate.transform.Find("Price").gameObject.SetActive(false);
                 dublicate.GetComponent<RectTransform>().sizeDelta = new Vector2(30, 30);
             }
@@ -125,7 +125,7 @@ public class PlayerProfile : MonoBehaviour
             {
                 Debug.Log("Level " + (level.LevelNumber + 1) + " has animal to unlock");
                 GameObject dublicate = Instantiate(AnimalPrefab, irHolder);
-                dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.animals.Find(e => e.animal == rewards[level.LevelNumber - 1].Animal[i]).sprite;
+                dublicate.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(rewards[level.LevelNumber - 1].Animal[i]);
                 dublicate.transform.Find("Price").gameObject.SetActive(false);
                 dublicate.GetComponent<RectTransform>().sizeDelta = new Vector2(30, 30);
             }
@@ -136,7 +136,7 @@ public class PlayerProfile : MonoBehaviour
             {
                 Debug.Log("Level " + (level.LevelNumber + 1) + " has animal product to unlock");
                 GameObject dublicate = Instantiate(AProductPrefab, irHolder);
-                dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.a_products.Find(e => e.a_product == rewards[level.LevelNumber - 1].AnimalProduct[i]).sprite;
+                dublicate.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(rewards[level.LevelNumber - 1].AnimalProduct[i]);
                 dublicate.transform.Find("Price").gameObject.SetActive(false);
                 dublicate.GetComponent<RectTransform>().sizeDelta = new Vector2(30, 30);
             }
@@ -147,7 +147,7 @@ public class PlayerProfile : MonoBehaviour
             {
                 Debug.Log("Level " + (level.LevelNumber + 1) + " has product to unlock");
                 GameObject dublicate = Instantiate(AProductPrefab, irHolder);
-                dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.products.Find(e => e.product == rewards[level.LevelNumber - 1].Product[i]).sprite;
+                dublicate.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(rewards[level.LevelNumber - 1].Product[i]);
                 dublicate.transform.Find("Price").gameObject.SetActive(false);
                 dublicate.GetComponent<RectTransform>().sizeDelta = new Vector2(30, 30);
             }
@@ -158,7 +158,7 @@ public class PlayerProfile : MonoBehaviour
             {
                 Debug.Log("Level " + (level.LevelNumber + 1) + " has product to unlock");
                 GameObject dublicate = Instantiate(AProductPrefab, irHolder);
-                dublicate.GetComponent<Image>().sprite = Sprites.instance.sprites.machines.Find(e => e.machine == rewards[level.LevelNumber - 1].Machine[i]).sprite;
+                dublicate.GetComponent<Image>().sprite = Sprites.instance.GetSpriteFromSource(rewards[level.LevelNumber - 1].Machine[i]);
                 dublicate.transform.Find("Price").gameObject.SetActive(false);
                 dublicate.GetComponent<RectTransform>().sizeDelta = new Vector2(30, 30);
             }
@@ -171,7 +171,7 @@ public class PlayerProfile : MonoBehaviour
         {
             GameObject dublicate = Instantiate(CoinPrefab, mrHolder);
             Image image = dublicate.GetComponent<Image>();
-            image.sprite = Sprites.instance.sprites.currencies.Find(e => e.Currency == Currency.Coin).sprite;
+            image.sprite = Sprites.instance.GetSpriteFromSource(Currency.Coin);
             TextMeshProUGUI t = dublicate.GetComponentInChildren<TextMeshProUGUI>();
             t.text = rewards[level.LevelNumber - 1].Coin.ToString();
         }
@@ -179,7 +179,7 @@ public class PlayerProfile : MonoBehaviour
         {
             GameObject dublicate = Instantiate(CoinPrefab, mrHolder);
             Image image = dublicate.GetComponent<Image>();
-            image.sprite = Sprites.instance.sprites.currencies.Find(e => e.Currency == Currency.Crystal).sprite;
+            image.sprite = Sprites.instance.GetSpriteFromSource(Currency.Crystal);
             TextMeshProUGUI t = dublicate.GetComponentInChildren<TextMeshProUGUI>();
             t.text = rewards[level.LevelNumber - 1].Crystal.ToString();
         }
@@ -255,9 +255,9 @@ public class PlayerProfile : MonoBehaviour
         if (reward.Machine.Count > 0)
             for (int i = 0; i < reward.Machine.Count; i++)
             {
-                if (!StaticDatas.PlayerData.unlocked_items.u_machines.Contains(StaticDatas.FormatEnum(reward.Machine[i])))
+                if (StaticDatas.PlayerData.unlocked_items.u_machines.Find(e => e.MachineName == StaticDatas.FormatEnum(reward.Machine[i])) == null)
                 {
-                    StaticDatas.PlayerData.unlocked_items.u_machines.Add(StaticDatas.FormatEnum(reward.Machine[i]));
+                    StaticDatas.PlayerData.unlocked_items.u_machines.Add(new Unlocked_Machines() { machEnum = reward.Machine[i], MachineName = StaticDatas.FormatEnum(reward.Machine[i]), bought = false });
                     Debug.Log($"{reward.Machine[i]} unlocked");
                     given = false;
                 }

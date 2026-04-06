@@ -115,7 +115,6 @@ public class StaticDatas : MonoBehaviour
 
         TimeSpan elapsed = DateTime.UtcNow - startTime;
         elapsedMinutes = Math.Abs(elapsed.TotalMinutes);
-        Debug.Log($"elapsed in em = {elapsedMinutes}");
         return true;
     }
 

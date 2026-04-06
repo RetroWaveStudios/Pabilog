@@ -107,7 +107,7 @@ public class AnimalSpot : MonoBehaviour
             {
                 FeedingPot.SetActive(false);
                 tPro.gameObject.SetActive(true); tProBg.gameObject.SetActive(true);
-                tPro.sprite = Sprites.instance.sprites.a_products.Find(e => e.a_product == TheAnimal.theProduct).sprite;
+                tPro.sprite = Sprites.instance.GetSpriteFromSource(TheAnimal.theProduct);
             }
             else
             {
@@ -142,7 +142,7 @@ public class AnimalSpot : MonoBehaviour
                 btn.onClick.RemoveAllListeners(); btn.onClick.AddListener(() => CollectProduct()); }
 
             Image image = AnimalImage.GetComponent<Image>();
-            image.sprite = Sprites.instance.sprites.animals.Find(e => e.animal == TheAnimal.animal).sprite;
+            image.sprite = Sprites.instance.GetSpriteFromSource(TheAnimal.animal);
             RectTransform rts = AnimalImage.GetComponent<RectTransform>();
             rts.localPosition = a_s_pos[TheAnimal.animal].Item1;
             rts.sizeDelta = a_s_pos[TheAnimal.animal].Item2;
@@ -175,7 +175,7 @@ public class AnimalSpot : MonoBehaviour
             Debug.Log("TheAnimal.a_price = " + AnimalsLogic.instance.AnimalsDetails.Find(e => e.animal == animal).a_price);
             AnimalImage.SetActive(true);
             Image image = AnimalImage.GetComponent<Image>();
-            image.sprite = Sprites.instance.sprites.animals.Find(e => e.animal == animal).sprite;
+            image.sprite = Sprites.instance.GetSpriteFromSource(animal);
             RectTransform rts = AnimalImage.GetComponent<RectTransform>();
             rts.localPosition = a_s_pos[animal].Item1;
             rts.sizeDelta = a_s_pos[animal].Item2;
@@ -204,7 +204,7 @@ public class AnimalSpot : MonoBehaviour
             TheAnimal.state = AState.Fertilizing;
             for(int i = 0; i < TheAnimal.products.Count; i++)
                 if (product == TheAnimal.products[i]) { TheAnimal.xp = TheAnimal.prXp[i]; TheAnimal.amount = TheAnimal.prAmounts[i]; }
-            tPro.sprite = Sprites.instance.sprites.a_products.Find(e => e.a_product == TheAnimal.theProduct).sprite;
+            tPro.sprite = Sprites.instance.GetSpriteFromSource(TheAnimal.theProduct);
             SaveState();
             foreach (Transform item in AHolder.instance.Holder) Destroy(item.gameObject);
             LoadUI(); CalculateFoodCount();
@@ -389,7 +389,7 @@ public class AnimalSpot : MonoBehaviour
 
     private void CollectProduct()
     {
-        if (TheAnimal.state == AState.ReadyToCollect && Storage.instance.hasEnStorage(TheAnimal.amount))
+        if (TheAnimal.state == AState.ReadyToCollect && Storage.instance.hasEnStorage(TheAnimal.amount, true))
         {
             Storage.instance.UpdateThingCount(TheAnimal.theProduct, TheAnimal.amount);
             MoneySystem.instance.UpdateXp(TheAnimal.xp);

@@ -386,7 +386,7 @@ public class TreeSlot : MonoBehaviour
 
     private void Collect()
     {
-        if (TheTree.state == PlantState.ReadyToHarvest && Storage.instance.hasEnStorage(1))
+        if (TheTree.state == PlantState.ReadyToHarvest && Storage.instance.hasEnStorage(1, true))
         {
             TheTree.pauseTime = 0;
             TheTree.waterTime = "";

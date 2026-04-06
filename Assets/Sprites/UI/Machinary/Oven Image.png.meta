@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 134df70cb3a8c6d4ead34490e5282de7
+guid: 006dbefbf1117d24e9b983d0f26ec554
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6047544203564243165
-    second: Skip Button_0
+      213: 3378199331910517101
+    second: Oven Image_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Skip Button_0
+      name: Oven Image_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 743
-        height: 743
+        width: 2011
+        height: 2023
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: dd85be079613de350800000000000000
-      internalID: 6047544203564243165
+      spriteID: d610df6d466c1ee20800000000000000
+      internalID: 3378199331910517101
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Skip Button_0: 6047544203564243165
+      Oven Image_0: 3378199331910517101
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
