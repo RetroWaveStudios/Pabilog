@@ -152,7 +152,7 @@ public class SaveLoadManager : MonoBehaviour
 
     public static PlayerDatas LoadGameData()
     {
-        string path = Path.Combine(Application.persistentDataPath, "gameData.json");
+        string path = Path.Combine(Application.persistentDataPath, "gamedata.json");
         if (File.Exists(path))
         {
             string json = File.ReadAllText(path);

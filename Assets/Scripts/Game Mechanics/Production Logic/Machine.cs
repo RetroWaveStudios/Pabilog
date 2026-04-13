@@ -82,6 +82,7 @@ public class Machine : MonoBehaviour
 
     public void LoadUI()
     {
+        Debug.Log("Load UI in progress");
         btn.onClick.RemoveAllListeners();
         if (mStats.state == ASpotState.Empty && !prChoosed)
         {
@@ -117,7 +118,7 @@ public class Machine : MonoBehaviour
                 {
                     if (!qEditing && queue.Count > 0){
                         queue[0].transform.Find("BG").GetComponent<Image>().color = Color.green;
-                        queue[0].transform.Find("Skip Button").gameObject.SetActive(false);
+                        if (queue[0].transform.Find("Skip Button") != null) queue[0].transform.Find("Skip Button").gameObject.SetActive(false);
                     }
                     timerPot.SetActive(false);
                 }
@@ -139,6 +140,7 @@ public class Machine : MonoBehaviour
                 }
             }
         }
+        Debug.Log("Load UI ended");
     }
 
     private void MachineClicked()
@@ -190,11 +192,13 @@ public class Machine : MonoBehaviour
             }
             else
             {
+                Debug.Log("There is nothing on queue");
                 dublicate.transform.name = "Empty Slot";
                 dublicate.transform.Find("Item").GetComponent<Image>().enabled = false;
                 dublicate.transform.Find("Price").gameObject.SetActive(false);
             }
 
+            Debug.Log("Queue listed");
             dublicate.transform.Find("BG").GetComponent<Image>().color = Color.darkBlue;
             dublicate.GetComponent<RectTransform>().localScale =
                 new Vector3(1 - (float)(i * 0.07), 1 - (float)(i * 0.07), 1);
@@ -537,9 +541,11 @@ public class Machine : MonoBehaviour
 
             mStats.queue.RemoveAt(0);
             PopulateQueue();
+            Debug.Log("Queue repaired");
             btn.onClick.RemoveAllListeners();
             if (mStats.queue.Count <= 0 || mStats.queue == null)
             {
+                Debug.Log("All slots empty now");
                 TheProduct = new PrD()
                 {
                     state = AState.None,
@@ -550,6 +556,7 @@ public class Machine : MonoBehaviour
             }
             else
             {
+                Debug.Log("Passing to next product to work on");
                 btn.onClick.AddListener(() => CollectProduct());
                 TheProduct = mStats.queue[0];
             }

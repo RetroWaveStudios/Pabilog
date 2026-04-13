@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -45,10 +46,19 @@ public class LuckyBox : MonoBehaviour
 
     private void BuildItemPool()
     {
+        bool addAxe = false, addFixers = false;
+
+        if(StaticDatas.PlayerData.unlocked_items.u_fruits.Count > 0) addAxe = true;
+        if(StaticDatas.PlayerData.unlocked_items.u_machines.Count > 0) addFixers = true;
         itemPool = new List<Items>();
         foreach (var it in ItProPers)
             for (int i = 0; i < it.count; i++)
-                itemPool.Add(it.item);
+            {
+                if (it.item == Items.Axe && !addAxe) itemPool.Add(Items.Rake);
+                else if ((it.item == Items.Hammer || it.item == Items.Screw || it.item == Items.Bolt) && !addFixers) itemPool.Add(Items.Rake);
+                else itemPool.Add(it.item);
+            }
+
         StaticDatas.Shuffle(itemPool);
     }
 
@@ -82,9 +92,10 @@ public class LuckyBox : MonoBehaviour
     {
         for (int i = 0; i < 1000; i++)
         {
-            TryToFindBox();
+            TryToFindBox(0.0f);
         }
-    }*/
+    }
+    */
 
     public void TryToFindBox(float increas)
     {
